@@ -9,10 +9,10 @@ const urgencyStyle = {
 };
 
 const statusStyle = {
-  Pending:     { bg: "#EFF6FF", color: "#1D4ED8" },
+  Pending: { bg: "#EFF6FF", color: "#1D4ED8" },
   "In Progress": { bg: "#FFF7ED", color: "#C2410C" },
-  Resolved:    { bg: "#F0FDF4", color: "#15803D" },
-  Rejected:    { bg: "#FFF1F2", color: "#BE123C" },
+  Resolved: { bg: "#F0FDF4", color: "#15803D" },
+  Rejected: { bg: "#FFF1F2", color: "#BE123C" },
 };
 
 const Badge = ({ label, styleMap }) => {
@@ -74,6 +74,10 @@ const StatCard = ({ label, value, color, icon }) => (
 );
 
 export default function EmployeeComplaintDashboard() {
+  const handleLogout = () => {
+    localStorage.clear(); // Clears user session and roles
+    window.location.href = "/"; // Redirects to login/home
+  };
   const [users, setUsers] = useState([]);
   const [complaints, setComplaints] = useState([]);
   const [search, setSearch] = useState("");
@@ -82,35 +86,45 @@ export default function EmployeeComplaintDashboard() {
   const [sortBy, setSortBy] = useState("urgency");
   const [sortOrder, setSortOrder] = useState("asc");
   const [replies, setReplies] = useState({});
-const [sentStatus, setSentStatus] = useState({});
+  const [sentStatus, setSentStatus] = useState({});
   useEffect(() => {
-    fetch("http://localhost:5000/api/users")
-      .then(r => r.json())
-      .then(d => setUsers(Array.isArray(d) ? d : []))
-      .catch(() => setUsers([]));
+    const savedUser = localStorage.getItem("user");
+    const role = localStorage.getItem("role");
 
-    fetch("http://localhost:5000/api/complaints")
-      .then(r => r.json())
-      .then(d => {
-        const list = Array.isArray(d) ? d : [];
-        const demo = [
-          { id: "1", userName: "John Doe",     title: "Street light not working", category: "Electricity", urgency: "Urgent", status: "Pending",     date: "05/05/2026" },
-          { id: "2", userName: "Priya Nair",   title: "Road pothole near market",  category: "Roads",       urgency: "Medium", status: "In Progress", date: "04/05/2026" },
-          { id: "3", userName: "Rajan Pillai", title: "Garbage not collected",      category: "Sanitation",  urgency: "Normal", status: "Resolved",    date: "03/05/2026" },
-          { id: "4", userName: "Meera Suresh", title: "Water supply disrupted",     category: "Water Supply",urgency: "Urgent", status: "Pending",     date: "02/05/2026" },
-        ];
-        setComplaints(list.length ? list.map(c => ({
-          ...c,
-          id: c._id || c.id,
-          userName: c.userName || c.user?.name || "Unknown",
-          urgency: c.urgency || "Normal",
-          status: c.status || "Pending",
-          date: c.date ? new Date(c.date).toLocaleDateString() : "-",
-        })) : demo);
-      })
-      .catch(() => setComplaints([
-        { id: "1", userName: "John Doe", title: "Street light not working", category: "Electricity", urgency: "Urgent", status: "Pending", date: "05/05/2026" },
-      ]));
+    // Security Gate: If no user or role is found, or if the role isn't "employee", redirect to login
+    if (!savedUser || role !== "employee") {
+      window.location.replace("/");
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        // 1. Fetch all Citizens for the stat cards
+        const userRes = await fetch("http://localhost:3001/api/users");
+        const userData = await userRes.json();
+        setUsers(Array.isArray(userData) ? userData : []);
+
+        // 2. Fetch all Complaints
+        const complaintRes = await fetch("http://localhost:3001/complaints");
+        const complaintData = await complaintRes.json();
+
+        if (Array.isArray(complaintData)) {
+          setComplaints(complaintData.map(c => ({
+            ...c,
+            id: c._id || c.id,
+            // If citizenId is populated by NestJS, we use c.citizenId.name
+            userName: c.citizenId?.name || c.userName || "Unknown Citizen",
+            urgency: c.urgency || "Normal",
+            status: c.status || "Pending",
+            date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "-",
+          })));
+        }
+      } catch (err) {
+        console.error("Connection Error:", err);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleSort = (field) => {
@@ -123,15 +137,15 @@ const [sentStatus, setSentStatus] = useState({});
   const filtered = useMemo(() => {
     let data = complaints.filter(c => {
       const q = search.toLowerCase();
-      const matchSearch = !q || [c.userName, c.title, c.category, c.urgency].some(v => (v||"").toLowerCase().includes(q));
+      const matchSearch = !q || [c.userName, c.title, c.category, c.urgency].some(v => (v || "").toLowerCase().includes(q));
       const matchUrgency = !urgencyFilter || c.urgency === urgencyFilter;
       const matchStatus = !statusFilter || c.status === statusFilter;
       return matchSearch && matchUrgency && matchStatus;
     });
 
     data = [...data].sort((a, b) => {
-      let av = sortBy === "urgency" ? URGENCY_RANK[a.urgency] : (a[sortBy]||"").toString().toLowerCase();
-      let bv = sortBy === "urgency" ? URGENCY_RANK[b.urgency] : (b[sortBy]||"").toString().toLowerCase();
+      let av = sortBy === "urgency" ? URGENCY_RANK[a.urgency] : (a[sortBy] || "").toString().toLowerCase();
+      let bv = sortBy === "urgency" ? URGENCY_RANK[b.urgency] : (b[sortBy] || "").toString().toLowerCase();
       if (av < bv) return sortOrder === "asc" ? -1 : 1;
       if (av > bv) return sortOrder === "asc" ? 1 : -1;
       return 0;
@@ -141,19 +155,53 @@ const [sentStatus, setSentStatus] = useState({});
 
   const cols = [
     { key: "userName", label: "Citizen" },
-    { key: "title",    label: "Complaint" },
-    { key: null,       label: "Category" },
-    { key: "urgency",  label: "Urgency" },
-    { key: "status",   label: "Status" },
-    { key: "date",     label: "Date" },
+    { key: "title", label: "Complaint" },
+    { key: null, label: "Category" },
+    { key: "urgency", label: "Urgency" },
+    { key: "status", label: "Status" },
+    { key: "date", label: "Date" },
     { key: "reply", label: "Reply" }
   ];
   const handleReplyChange = (id, value) => {
-  setReplies(prev => ({ ...prev, [id]: value }));
-};
+    setReplies(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSendReply = async (id) => {
+    const replyText = replies[id];
+    if (!replyText) return;
+
+    try {
+      const response = await fetch(`http://localhost:3001/complaints/${id}/reply`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: replyText,
+          from: "Employee" // Or pull the employee name from state
+        }),
+      });
+
+      if (response.ok) {
+        // 1. Show success message
+        setSentStatus(prev => ({ ...prev, [id]: "Sent successfully ✅" }));
+
+        // 2. Clear the input
+        setReplies(prev => ({ ...prev, [id]: "" }));
+
+        // 3. Optional: Refresh complaints to show local updates
+        // (The Citizen will see this next time they refresh their dashboard)
+
+        setTimeout(() => {
+          setSentStatus(prev => ({ ...prev, [id]: "" }));
+        }, 2000);
+      }
+    } catch (err) {
+      alert("Failed to send reply to database.");
+    }
+  };
 
   return (
     <div style={{ minHeight: "100vh", background: "#F8FAFC", fontFamily: "'DM Sans', 'Segoe UI', sans-serif", padding: "28px 32px" }}>
+
 
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
@@ -169,49 +217,71 @@ const [sentStatus, setSentStatus] = useState({});
             MLA Portal · Employee View
           </p>
         </div>
-        <a
-  href="/login"
-  style={{
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 7,
-    padding: "9px 18px",
-    background: "#fff",
-    border: "1px solid #E2E8F0",
-    borderRadius: 9,
-    fontSize: 13,
-    fontWeight: 600,
-    color: "#334155",
-    textDecoration: "none",
-    boxShadow: "0 1px 3px rgba(240, 217, 217, 0.05)",
-    cursor: "pointer",
-  }}
->
-  <svg
-    width="15"
-    height="15"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#2563EB"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
-    <polyline points="9 21 9 12 15 12 15 21"/>
-  </svg>
 
-  Home
-</a>
+        <div style={{ display: "flex", gap: 10 }}>
+          {/* Home Button */}
+          <a
+            href="/login"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 7,
+              padding: "9px 18px",
+              background: "#fff",
+              border: "1px solid #E2E8F0",
+              borderRadius: 9,
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#334155",
+              textDecoration: "none",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+              cursor: "pointer",
+            }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+              <polyline points="9 21 9 12 15 12 15 21" />
+            </svg>
+            Home
+          </a>
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 7,
+              padding: "9px 18px",
+              background: "#FEF2F2",
+              border: "1px solid #FEE2E2",
+              borderRadius: 9,
+              fontSize: 13,
+              fontWeight: 600,
+              color: "#B91C1C",
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#FEE2E2"}
+            onMouseLeave={(e) => e.currentTarget.style.background = "#FEF2F2"}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Stat Cards */}
       <div style={{ display: "flex", gap: 14, marginBottom: 24, flexWrap: "wrap" }}>
-        <StatCard label="Total Citizens"   value={users.length}               color="#6366F1" icon="👥" />
-        <StatCard label="Total Complaints" value={complaints.length}           color="#2563EB" icon="📋" />
-        <StatCard label="Urgent"           value={countByUrgency("Urgent")}    color="#EF4444" icon="🔴" />
-        <StatCard label="Medium"           value={countByUrgency("Medium")}    color="#F59E0B" icon="🟡" />
-        <StatCard label="Normal"           value={countByUrgency("Normal")}    color="#22C55E" icon="🟢" />
+        <StatCard label="Total Citizens" value={users.length} color="#6366F1" icon="👥" />
+        <StatCard label="Total Complaints" value={complaints.length} color="#2563EB" icon="📋" />
+        <StatCard label="Urgent" value={countByUrgency("Urgent")} color="#EF4444" icon="🔴" />
+        <StatCard label="Medium" value={countByUrgency("Medium")} color="#F59E0B" icon="🟡" />
+        <StatCard label="Normal" value={countByUrgency("Normal")} color="#22C55E" icon="🟢" />
       </div>
 
       {/* Filters Row */}
@@ -224,8 +294,8 @@ const [sentStatus, setSentStatus] = useState({});
         {/* Search */}
         <div style={{ position: "relative", flex: 2, minWidth: 200 }}>
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-            <circle cx="6.5" cy="6.5" r="5" stroke="#94A3B8" strokeWidth="1.5"/>
-            <path d="M10.5 10.5L13.5 13.5" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round"/>
+            <circle cx="6.5" cy="6.5" r="5" stroke="#94A3B8" strokeWidth="1.5" />
+            <path d="M10.5 10.5L13.5 13.5" stroke="#94A3B8" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           <input
             type="text" placeholder="Search citizen, complaint, category..."
@@ -276,7 +346,7 @@ const [sentStatus, setSentStatus] = useState({});
             <col style={{ width: "11%" }} />
             <col style={{ width: "13%" }} />
             <col style={{ width: "12%" }} />
-            <col style={{ width: "18" }} /> 
+            <col style={{ width: "18" }} />
           </colgroup>
           <thead>
             <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #E2E8F0" }}>
@@ -296,7 +366,7 @@ const [sentStatus, setSentStatus] = useState({});
                     {col.key && <SortIcon active={sortBy === col.key} direction={sortOrder} />}
                   </span>
                 </th>
-                
+
               ))}
             </tr>
           </thead>
@@ -353,69 +423,47 @@ const [sentStatus, setSentStatus] = useState({});
                   <span style={{ fontSize: 12, color: "#94A3B8", fontWeight: 500 }}>{c.date}</span>
                 </td>
                 {/* Reply */}
-<td style={{ padding: "12px 16px" }}>
-  <div style={{ display: "flex", gap: 6 }}>
-    <input
-      type="text"
-      placeholder="Send reply..."
-      value={replies[c.id] || ""}
-      color=""
-      onChange={(e) => handleReplyChange(c.id, e.target.value)}
-      style={{
-        flex: 1,
-        padding: "6px 8px",
-        border: "1px solid #E2E8F0",
-        borderRadius: 6,
-        fontSize: 12,
-        outline: "none",
-        background: "#F8FAFC",
-        color: "#000"
-      }}
-    />
-   <button
-  onClick={() => {
-    if (!replies[c.id]) return;
-
-    setSentStatus(prev => ({
-      ...prev,
-      [c.id]: "Sent successfully ✅"
-    }));
-
-    console.log("Reply sent:", c.id, replies[c.id]);
-
-    // clear input
-    setReplies(prev => ({
-      ...prev,
-      [c.id]: ""
-    }));
-
-    setTimeout(() => {
-      setSentStatus(prev => ({
-        ...prev,
-        [c.id]:""
-      }));
-    }, 2000);
-  }}
-      style={{
-        padding: "6px 10px",
-        fontSize: 12,
-        background: "#2563EB",
-        color: "#fff",
-        border: "none",
-        borderRadius: 6,
-        cursor: "pointer"
-      }}
-    >
-      Send
-    </button>
-  </div>
-   {/* 👇 ADD THIS HERE (THIS IS WHAT YOU ASKED) */}
-  {sentStatus[c.id] && (
-    <p style={{ fontSize: 11, color: "green", marginTop: 4 }}>
-      {sentStatus[c.id]}
-    </p>
-  )}
-</td>
+                <td style={{ padding: "12px 16px" }}>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <input
+                      type="text"
+                      placeholder="Send reply..."
+                      value={replies[c.id] || ""}
+                      color=""
+                      onChange={(e) => handleReplyChange(c.id, e.target.value)}
+                      style={{
+                        flex: 1,
+                        padding: "6px 8px",
+                        border: "1px solid #E2E8F0",
+                        borderRadius: 6,
+                        fontSize: 12,
+                        outline: "none",
+                        background: "#F8FAFC",
+                        color: "#000"
+                      }}
+                    />
+                    <button
+                      onClick={() => handleSendReply(c.id)}   
+                      style={{
+                        padding: "6px 10px",
+                        fontSize: 12,
+                        background: "#2563EB",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 6,
+                        cursor: "pointer"
+                      }}
+                    >
+                      Send
+                    </button>
+                  </div>
+                  {/* 👇 ADD THIS HERE (THIS IS WHAT YOU ASKED) */}
+                  {sentStatus[c.id] && (
+                    <p style={{ fontSize: 11, color: "green", marginTop: 4 }}>
+                      {sentStatus[c.id]}
+                    </p>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 
 const clr = {
   bg: "#F8FAFC", card: "#FFFFFF", border: "#E2E8F0", text: "#0F172A",
@@ -26,7 +27,7 @@ const Avatar = ({ name, size = 52 }) => {
 
 const UrgencyBadge = ({ level }) => {
   const map = {
-    Urgent: { bg: clr.dangerBg,  color: clr.dangerText,  dot: clr.danger },
+    Urgent: { bg: clr.dangerBg, color: clr.dangerText, dot: clr.danger },
     Medium: { bg: clr.warningBg, color: clr.warningText, dot: clr.warning },
     Normal: { bg: clr.successBg, color: clr.successText, dot: clr.success },
   };
@@ -83,67 +84,152 @@ export default function CitizenDashboard() {
   const [urgency, setUrgency] = useState("");
   const [details, setDetails] = useState("");
   const [visibility, setVisibility] = useState("");
-  
+
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const[file,setFile]=useState(null);
-
-  useEffect(() => {
-    fetch("http://localhost:5000/api/user")
-      .then(r => r.json()).then(d => setUser(d))
-      .catch(() => setUser({ name: "Guest User", email: "guest@email.com", phone: "N/A", location: "Unknown" }));
-  }, []);
-
-  useEffect(() => {
-    setLoading(true);
-    fetch("http://localhost:5000/api/complaints")
-      .then(r => r.json())
-      .then(data => {
-        setComplaints(data.map(c => ({ ...c, id: c._id, date: new Date(c.date).toLocaleDateString(), color: c.status === "Submitted" ? "primary" : "warning" })));
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
-
-  const handleAddComplaint = async (e) => {
-    e.preventDefault();
-    const newErrors = {};
-    if (!title) newErrors.title = "Title is required";
-    if (!category) newErrors.category = "Category is required";
-    if (!urgency) newErrors.urgency = "Urgency is required";
-    if (!details) newErrors.details = "Details are required";
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
-const newComplaint = {
-      _id: Date.now().toString(),
-      id: Date.now().toString(),
-      title,
-      category,
-      urgency,
-      details,
-      visibility,
-      status: "pending", // Set a default status so StatusBadge works
-      userId: user?._id || "usr_123456",
-      date: new Date().toLocaleDateString(),
-      evidence: file ? file.name : null,
-      replies: [],
-    };
-    setComplaints(prev=>[newComplaint,...prev]);
-    setTitle(""); 
-    setCategory(""); 
-    setUrgency(""); 
-    setDetails(""); 
-    setVisibility(""); 
-    setErrors({});
-    setSubmitSuccess(true);
-    setFile(null);
-    setTimeout(() => setSubmitSuccess(false), 3000);
+  const [file, setFile] = useState(null);
+  const handleLogout = () => {
+    localStorage.clear(); // Clears role and any session data
+    window.location.href = "/"; // Redirects to login page
   };
 
-  
-  const filteredComplaints = complaints.filter(c =>
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    const role = localStorage.getItem("role");
+
+    if (!savedUser || role !== "citizen") {
+      window.location.replace("/");
+      return;
+    }
+
+    const userData = JSON.parse(savedUser);
+    setUser(userData);
+
+    // 🔥 2. FETCH ONLY THIS CITIZEN'S COMPLAINTS
+    const fetchMyComplaints = async () => {
+      setLoading(true);
+      try {
+        // We use the specific route we created in the Controller
+        const response = await fetch(`http://localhost:3001/complaints/citizen/${userData._id}`);
+        const data = await response.json();
+        
+        if (Array.isArray(data)) {
+          setComplaints(data.map(c => ({
+            ...c,
+            id: c._id, // Map MongoDB _id to the UI 'id' key
+            date: new Date(c.createdAt).toLocaleDateString()
+          })));
+        }
+      } catch (err) {
+        console.error("Failed to load complaints:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMyComplaints();
+  }, []);
+
+  // useEffect(() => {
+  //   fetch("http://localhost:5000/api/user")
+  //     .then(r => r.json()).then(d => setUser(d))
+  //     .catch(() => setUser({ name: "Guest User", email: "guest@email.com", phone: "N/A", location: "Unknown" }));
+  // }, []);
+
+  // useEffect(() => {
+  //   // 1. Get user from storage
+  //   const savedUser = localStorage.getItem("user");
     
-    ((c.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-     (c.id || "").toLowerCase().includes(searchQuery.toLowerCase()))
+  //   if (savedUser) {
+  //     try {
+  //       const userData = JSON.parse(savedUser);
+  //       setUser(userData);
+        
+  //       // 2. Fetch Complaints from the correct NestJS port (3001)
+  //       setLoading(true);
+  //       fetch("http://localhost:3001/complaints") 
+  //         .then(res => {
+  //           if (!res.ok) throw new Error("Failed to fetch");
+  //           return res.json();
+  //         })
+  //         .then(data => {
+  //           // Map the _id from MongoDB to the 'id' used in your UI components
+  //           const mappedData = data.map(c => ({ 
+  //             ...c, 
+  //             id: c._id, 
+  //             date: new Date(c.date).toLocaleDateString() 
+  //           }));
+  //           setComplaints(mappedData);
+  //           setLoading(false);
+  //         })
+  //         .catch(err => {
+  //           console.error("Complaint fetch error:", err);
+  //           setLoading(false);
+  //         });
+
+  //     } catch (err) {
+  //       console.error("Session corrupted:", err);
+  //       handleLogout();
+  //     }
+  //   } else {
+  //     // 3. No user? Force redirect to login
+  //     handleLogout();
+  //   }
+  // }, []); // Run only once when the dashboard mounts
+
+  // Inside CitizenDashboard.jsx
+const handleAddComplaint = async (e) => {
+  e.preventDefault();
+  
+  console.log("Current User State:", user);
+  // Basic Validation
+  if (!title || !category || !urgency || !details){
+    alert("Please fill in all required fields (Title, Category, Urgency, and Details) before submitting.");
+    return;
+  }
+
+  const complaintPayload = {
+    title,
+    category,
+    urgency,
+    details,
+    visibility: visibility || "Public",
+    citizenId: user._id, // 🔥 This comes from your logged-in user state
+  };
+
+  console.log("Sending Payload:", complaintPayload);
+
+  try {
+      const response = await fetch("http://localhost:3001/complaints", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(complaintPayload),
+      });
+
+      if (response.ok) {
+        const savedComplaint = await response.json();
+        
+        // Update UI with the real object from DB
+        setComplaints(prev => [{
+          ...savedComplaint,
+          id: savedComplaint._id,
+          date: new Date().toLocaleDateString()
+        }, ...prev]);
+
+        // Reset form
+        setTitle(""); setCategory(""); setDetails(""); setUrgency("");
+        setSubmitSuccess(true);
+        setTimeout(() => setSubmitSuccess(false), 3000);
+      }
+    } catch (error) {
+      alert("Submission failed. Check backend connection.");
+    }
+};
+
+
+  const filteredComplaints = complaints.filter(c =>
+
+  ((c.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (c.id || "").toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   if (!user) return (
@@ -165,12 +251,47 @@ const newComplaint = {
           <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, letterSpacing: "-0.4px" }}>Citizen Dashboard</h1>
           <p style={{ fontSize: 12, color: clr.hint, margin: "3px 0 0" }}>MLA Portal · Civic Complaint System</p>
         </div>
-        <button style={{ width: 40, height: 40, borderRadius: "50%", border: `1px solid ${clr.border}`, background: clr.card, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: shadow, position: "relative" }}>
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={clr.muted} strokeWidth="2" strokeLinecap="round">
-            <path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
-          </svg>
-          <span style={{ position: "absolute", top: 8, right: 8, width: 7, height: 7, borderRadius: "50%", background: clr.danger, border: "2px solid #fff" }} />
-        </button>
+
+        {/* Action Buttons Container */}
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+
+          {/* Notification Button */}
+          <button style={{ width: 40, height: 40, borderRadius: "50%", border: `1px solid ${clr.border}`, background: clr.card, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: shadow, position: "relative" }}>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke={clr.muted} strokeWidth="2" strokeLinecap="round">
+              <path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
+            </svg>
+            <span style={{ position: "absolute", top: 8, right: 8, width: 7, height: 7, borderRadius: "50%", background: clr.danger, border: "2px solid #fff" }} />
+          </button>
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "0 16px",
+              height: 40,
+              borderRadius: radius.md,
+              border: `1px solid ${clr.danger}`,
+              background: clr.dangerBg,
+              color: clr.dangerText,
+              fontSize: 12,
+              fontWeight: 700,
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = "#FEE2E2"}
+            onMouseLeave={(e) => e.currentTarget.style.background = clr.dangerBg}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* ── ROW 1: Profile | Track Details ── */}
@@ -192,7 +313,7 @@ const newComplaint = {
             {[
               { icon: "✉️", val: user.email },
               { icon: "📞", val: user.phone },
-              { icon: "📍", val: user.location },
+              // { icon: "📍", val: user.location },
             ].map((item, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{ fontSize: 13 }}>{item.icon}</span>
@@ -207,8 +328,8 @@ const newComplaint = {
           <p style={labelSt}>Track Complaint</p>
           <div style={{ position: "relative", margin: "14px 0 12px" }}>
             <svg width="14" height="14" viewBox="0 0 15 15" fill="none" style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-              <circle cx="6.5" cy="6.5" r="5" stroke={clr.hint} strokeWidth="1.5"/>
-              <path d="M10.5 10.5L13.5 13.5" stroke={clr.hint} strokeWidth="1.5" strokeLinecap="round"/>
+              <circle cx="6.5" cy="6.5" r="5" stroke={clr.hint} strokeWidth="1.5" />
+              <path d="M10.5 10.5L13.5 13.5" stroke={clr.hint} strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             <input type="text" placeholder="Search by ID or title..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
               style={{ ...inputBase(false), paddingLeft: 32 }} />
@@ -236,12 +357,12 @@ const newComplaint = {
                     <p style={{ fontSize: 12, color: clr.muted, margin: 0, lineHeight: 1.6 }}>{selectedComplaint.details}</p>
                   </div>
                 )}
-                const [replyText, setReplyText] = useState("");
+                
               </div>
             ) : (
               <div style={{ textAlign: "center" }}>
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={clr.hint} strokeWidth="1.5" style={{ marginBottom: 8 }}>
-                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                  <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                 </svg>
                 <p style={{ fontSize: 12, color: clr.hint, margin: 0, lineHeight: 1.7 }}>Click a complaint below<br />to view its full details</p>
               </div>
@@ -312,19 +433,19 @@ const newComplaint = {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <label style={{ display: "inline-flex", alignItems: "center", gap: 7, fontSize: 13, color: clr.muted, fontWeight: 500, border: `1px dashed ${clr.border}`, borderRadius: radius.sm, padding: "7px 14px", cursor: "pointer" }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
               </svg>
               Upload Evidence
-              <input hidden type="file" accept="image/*" onChange={(e)=>setFile(e.target.files[0])} />
+              <input hidden type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0])} />
             </label>
             {file && (
-  <p style={{ fontSize: 12, color: "green", marginTop: 6 }}>
-    File selected: {file.name}
-  </p>
-)}
+              <p style={{ fontSize: 12, color: "green", marginTop: 6 }}>
+                File selected: {file.name}
+              </p>
+            )}
             <button type="submit" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "9px 24px", borderRadius: radius.sm, background: clr.primary, color: "#fff", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", boxShadow: "0 2px 8px rgba(37,99,235,0.25)" }}>
               Submit Complaint
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
             </button>
           </div>
         </form>
@@ -342,7 +463,7 @@ const newComplaint = {
         ) : filteredComplaints.length === 0 ? (
           <div style={{ padding: "32px 0", textAlign: "center" }}>
             <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke={clr.hint} strokeWidth="1.5" style={{ marginBottom: 8 }}>
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" />
             </svg>
             <p style={{ fontSize: 13, color: clr.hint, margin: 0 }}>No complaints found. Submit one above.</p>
           </div>
@@ -362,39 +483,39 @@ const newComplaint = {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <StatusBadge status={c.status} />
                   <span style={{ fontSize: 10, color: "#CBD5E1", fontWeight: 500 }}>#{(c.id || "").slice(-6).toUpperCase()}</span>
- {c.evidence && (
-  <div style={{ fontSize: 11, color: "#16A34A", marginTop: 6 }}>
-    📎 {c.evidence}
-  </div>
-)}
-{/* 🔥 Updates / Replies Section */}
-<div style={{ marginTop: 10 }}>
-  <div style={{ fontSize: 10, fontWeight: 700, color: clr.hint, marginBottom: 4 }}>
-    Updates
-  </div>
+                  {c.evidence && (
+                    <div style={{ fontSize: 11, color: "#16A34A", marginTop: 6 }}>
+                      📎 {c.evidence}
+                    </div>
+                  )}
+                  {/* 🔥 Updates / Replies Section */}
+                  <div style={{ marginTop: 10 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: clr.hint, marginBottom: 4 }}>
+                      Updates
+                    </div>
 
-  {/* Show replies */}
-  <div style={{ maxHeight: 70, overflowY: "auto", marginBottom: 6 }}>
-    {c.replies && c.replies.length > 0 ? (
-      c.replies.map((r, i) => (
-        <div key={i} style={{
-          fontSize: 11,
-          background: "#F8FAFC",
-          border: `1px solid ${clr.border}`,
-          borderRadius: 6,
-          padding: "4px 6px",
-          marginBottom: 4
-        }}>
-          <strong>{r.from}:</strong> {r.text}
-        </div>
-      ))
-    ) : (
-      <span style={{ fontSize: 10, color: clr.hint }}>No updates</span>
-    )}
-  </div>
+                    {/* Show replies */}
+                    <div style={{ maxHeight: 70, overflowY: "auto", marginBottom: 6 }}>
+                      {c.replies && c.replies.length > 0 ? (
+                        c.replies.map((r, i) => (
+                          <div key={i} style={{
+                            fontSize: 11,
+                            background: "#F8FAFC",
+                            border: `1px solid ${clr.border}`,
+                            borderRadius: 6,
+                            padding: "4px 6px",
+                            marginBottom: 4
+                          }}>
+                            <strong>{r.from}:</strong> {r.text}
+                          </div>
+                        ))
+                      ) : (
+                        <span style={{ fontSize: 10, color: clr.hint }}>No updates</span>
+                      )}
+                    </div>
 
-  
-</div>
+
+                  </div>
 
                 </div>
               </div>

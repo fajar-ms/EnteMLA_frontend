@@ -1,150 +1,183 @@
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import React from 'react';
+import axios from 'axios';
 
 export default function LoginPage() {
-    const navigate = useNavigate();
-
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const handleLogin = (e) => {
-  e.preventDefault();
 
-  const role = localStorage.getItem("role");
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const role = localStorage.getItem("role");
 
-  const credentials = {
-    citizen: {
-      email: "citizen@gmail.com",
-      password: "1234",
-      route: "/citizen",
-    },
-    mla: {
-      email: "mla@gmail.com",
-      password: "5678",
-      route: "/mla",
-    },
-    employee: {
-      email: "employee@gmail.com",
-      password: "9999",
-      route: "/employee",
-    },
+    if (!role) {
+      alert("Please select a role first");
+      navigate("/role");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:3001/auth/login", {
+        email,
+        password,
+        role: role
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        const userData = response.data.user;
+        if (userData) {
+          localStorage.setItem("user", JSON.stringify(userData));
+          localStorage.setItem("role", role);
+          
+          const routes = {
+            citizen: "/citizen",
+            mla: "/mla",
+            employee: "/employee",
+          };
+          navigate(routes[role] || "/");
+        }
+      }
+    } catch (error) {
+      const errorMsg = error.response?.data?.message || "Login failed. Check your credentials.";
+      alert(errorMsg);
+    }
   };
 
-  const user = credentials[role];
-
-  if (!role || !user) {
-    alert("Please select role first");
-    navigate("/role");
-    return;
-  }
-
-  // 🔥 REAL AUTH CHECK
-  if (email === user.email && password === user.password) {
-    navigate(user.route);
-  } else {
-    alert("Incorrect email or password");
-  }
-};
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <div style={styles.iconWrap}>
-          <span style={styles.icon}>🔒</span>
-        </div>
-        <h1 style={styles.title}>Welcome back</h1>
-        <p style={styles.subtitle}>Please sign in to continue</p>
+    <div style={styles.authContainer}>
+      <div style={styles.loginFormWrapper}>
+        <header style={styles.header}>
+          <div style={styles.logoBadge}>Ente<span>MLA</span></div>
+          <h1 style={styles.mainTitle}>Access Portal</h1>
+          <p style={styles.subText}>Enter your credentials to manage your constituency services</p>
+        </header>
 
-        <form style={styles.form} onSubmit={handleLogin}  >
-          <div style={styles.field}>
-            <label style={styles.label}>Email ID</label>
-            <input type="email" placeholder="Enter your email" style={styles.input} value={email}
-  onChange={(e) => setEmail(e.target.value)} />
+        <form style={styles.form} onSubmit={handleLogin}>
+          <div style={styles.inputGroup}>
+            <label style={styles.inputLabel}>Official Email Address</label>
+            <input
+              type="email"
+              placeholder="name@example.com"
+              style={styles.textInput}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
 
-          <div style={styles.field}>
-            <label style={styles.label}>Password</label>
-            <input type="password" placeholder="Enter your password" style={styles.input}  value={password}
-  onChange={(e) => setPassword(e.target.value)} />
+          <div style={styles.inputGroup}>
+            <label style={styles.inputLabel}>Security Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              style={styles.textInput}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
 
-          <button type="submit" style={styles.button}>Log In</button>
+          <button type="submit" style={styles.submitBtn}>
+            Sign In to Portal
+          </button>
         </form>
+
+        <footer style={styles.footer}>
+          <p>© 2026 Digital Governance Initiative. Secure Access Only.</p>
+        </footer>
       </div>
     </div>
   );
 }
 
 const styles = {
-  page: {
+  authContainer: {
     minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'linear-gradient(135deg, #e9f2ff 0%, #f7f0ff 50%, #eefbf6 100%)',
-    fontFamily: 'Arial, sans-serif',
-    padding: '20px',
+    background: '#f8fafc', // Clean light gray/blue background
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   },
-  card: {
+  loginFormWrapper: {
     width: '100%',
-    maxWidth: '420px',
-    background: 'rgba(255,255,255,0.92)',
-    backdropFilter: 'blur(10px)',
-    borderRadius: '24px',
-    boxShadow: '0 20px 60px rgba(0,0,0,0.12)',
-    padding: '36px 30px',
-    border: '1px solid rgba(255,255,255,0.7)',
+    maxWidth: '440px',
+    background: '#ffffff',
+    padding: '48px 40px',
+    borderRadius: '12px',
+    border: '1px solid #e2e8f0',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
   },
-  iconWrap: {
-    width: '64px',
-    height: '64px',
-    borderRadius: '18px',
-    background: 'linear-gradient(135deg, #6d7cff, #8b5cf6)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: '18px',
-    boxShadow: '0 12px 24px rgba(109,124,255,0.35)',
+  header: {
+    textAlign: 'center',
+    marginBottom: '32px',
   },
-  icon: { fontSize: '28px', color: '#fff' },
-  title: {
-    margin: '0 0 8px',
-    fontSize: '28px',
-    fontWeight: 700,
-    color: '#1f2937',
+  logoBadge: {
+    fontSize: '20px',
+    fontWeight: '800',
+    color: '#0a66c2',
+    marginBottom: '16px',
+    letterSpacing: '-0.5px',
   },
-  subtitle: {
-    margin: '0 0 28px',
-    color: '#6b7280',
-    fontSize: '15px',
+  mainTitle: {
+    fontSize: '24px',
+    fontWeight: '700',
+    color: '#0f172a',
+    margin: '0 0 8px 0',
   },
-  form: { display: 'grid', gap: '18px' },
-  field: { display: 'grid', gap: '8px' },
-  label: {
+  subText: {
     fontSize: '14px',
-    fontWeight: 600,
-    color: '#374151',
+    color: '#64748b',
+    lineHeight: '1.5',
+    margin: 0,
   },
-  input: {
-    height: '48px',
-    borderRadius: '14px',
-    border: '1px solid #dbe3f0',
-    outline: 'none',
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '24px',
+  },
+  inputGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  inputLabel: {
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#334155',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+  },
+  textInput: {
+    height: '46px',
+    borderRadius: '8px',
+    border: '1px solid #cbd5e1',
     padding: '0 16px',
     fontSize: '15px',
-    background: '#fff',
-    color: '#111827',
-    boxShadow: '0 1px 2px rgba(16,24,40,0.04) inset',
+    color: '#1e293b',
+    outline: 'none',
+    transition: 'border-color 0.2s',
+    background: '#ffffff',
   },
-  button: {
-    marginTop: '6px',
-    height: '50px',
+  submitBtn: {
+    height: '48px',
+    background: '#0f172a', // Dark navy/slate for an authoritative look
+    color: '#ffffff',
     border: 'none',
-    borderRadius: '14px',
-    background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-    color: '#fff',
-    fontSize: '16px',
-    fontWeight: 700,
+    borderRadius: '8px',
+    fontSize: '15px',
+    fontWeight: '600',
     cursor: 'pointer',
-    boxShadow: '0 14px 28px rgba(79,70,229,0.28)',
+    transition: 'background 0.2s',
+    marginTop: '8px',
   },
+  footer: {
+    marginTop: '40px',
+    textAlign: 'center',
+    fontSize: '12px',
+    color: '#94a3b8',
+    borderTop: '1px solid #f1f5f9',
+    paddingTop: '20px',
+  }
 };

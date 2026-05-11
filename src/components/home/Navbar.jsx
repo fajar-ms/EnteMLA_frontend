@@ -11,111 +11,81 @@ const Navbar = () => {
   const loginRef = useRef();
   const registerRef = useRef();
   const langRef = useRef();
-  
+
   useEffect(() => {
     const handleClickOutside = (event) => {
-
-      if (loginRef.current && !loginRef.current.contains(event.target)) {
-        setAuthOpen(false);
-      }
-
-      if (registerRef.current && !registerRef.current.contains(event.target)) {
-        setRegisterOpen(false);
-      }
-
-      if (langRef.current && !langRef.current.contains(event.target)) {
-        setLangOpen(false);
-      }
+      if (loginRef.current && !loginRef.current.contains(event.target)) setAuthOpen(false);
+      if (registerRef.current && !registerRef.current.contains(event.target)) setRegisterOpen(false);
+      if (langRef.current && !langRef.current.contains(event.target)) setLangOpen(false);
     };
-
     document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-}, []);
   const handleLanguageChange = (lang) => {
-    let label = "Translate";
-    if (lang === "en") label = "English";
-    if (lang === "ml") label = "Malayalam";
-    if (lang === "hi") label = "Hindi";
-
+    let label = lang === "en" ? "English" : lang === "ml" ? "Malayalam" : "Hindi";
     setSelectedLang(label);
     setLangOpen(false);
   };
 
   return (
     <nav className="navbar">
+      <div className="navbar-container">
+        {/* LOGO */}
+        <div className="logo">Ente<span>MLA</span></div>
 
-      {/* LOGO */}
-      <div className="logo">EnteMLA</div>
-
-      {/* NAV LINKS */}
-      <div className="nav-links">
-        <button><Link to="/">Home</Link></button>
-        <button><Link to="/about">About</Link></button>
-        <button><Link to="/complaint">Complaints</Link></button>
-        <button><Link to="/qa">Q/A</Link></button>
-        <button><Link to="/contact">Contact</Link></button>
-      </div>
-
-      {/* RIGHT SECTION */}
-      <div className="right-section">
-
-        {/* TRANSLATE */}
-        <div className="translate-container">
-          <button
-            className="translate-btn"
-            onClick={() => setLangOpen(!langOpen)}
-          >
-            🌐 {selectedLang} ⌄
-          </button>
-
-          {langOpen && (
-            <div className="translate-menu" ref={langRef}>
-              <div onClick={() => handleLanguageChange("en")}>English</div>
-              <div onClick={() => handleLanguageChange("ml")}>Malayalam</div>
-              <div onClick={() => handleLanguageChange("hi")}>Hindi</div>
-            </div>
-          )}
+        {/* CENTER NAV LINKS */}
+        <div className="nav-links">
+          <Link to="/" className="nav-item">Home</Link>
+          <Link to="/about" className="nav-item">About</Link>
+          <Link to="/complaint" className="nav-item">Complaints</Link>
+          <Link to="/qa" className="nav-item">Q/A</Link>
+          <Link to="/contact" className="nav-item">Contact</Link>
         </div>
 
-
-        {/* LOGIN DROPDOWN */}
-        <div className="translate-container" ref={loginRef}>
-          <button
-            className="login"
-            onClick={() => setAuthOpen(!authOpen)}
-          >
-            🔐 Login
-          </button>
-
-          {authOpen && (
-            <div className="translate-menu">
-              <Link to="/login"
-  onClick={() => localStorage.setItem("role", "citizen")}>👤 Citizen</Link>
-              <Link to="/login"
-  onClick={() => localStorage.setItem("role", "mla")}>🏛️ MLA</Link>
-              <Link to="/login"
-  onClick={() => localStorage.setItem("role", "employee")}>👨‍💼 Employee</Link>
-            </div>
-          )}
-        </div>
-        
-          <div className="translate-container" ref={registerRef}>
-          <button
-            className="register"
-            onClick={() => setRegisterOpen(!registerOpen)}
-          >
-            🔐 Register
-          </button>
-          {registerOpen && (
-            <div className="translate-menu">
-              <Link to="/Register">👤 Citizen</Link>
-              <Link to="/RegisterEmp">👨‍💼 Employee</Link>
-            </div>
-          )}
+        {/* RIGHT ACTIONS */}
+        <div className="right-section">
+          {/* LANGUAGE SELECTOR */}
+          <div className="dropdown-wrapper" ref={langRef}>
+            <button className="secondary-btn" onClick={() => setLangOpen(!langOpen)}>
+              🌐 {selectedLang} <span className="arrow">▼</span>
+            </button>
+            {langOpen && (
+              <div className="dropdown-menu">
+                <div onClick={() => handleLanguageChange("en")}>English</div>
+                <div onClick={() => handleLanguageChange("ml")}>Malayalam</div>
+                <div onClick={() => handleLanguageChange("hi")}>Hindi</div>
+              </div>
+            )}
           </div>
+
+          {/* LOGIN */}
+          <div className="dropdown-wrapper" ref={loginRef}>
+            <button className="primary-btn" onClick={() => setAuthOpen(!authOpen)}>
+              Login <span className="arrow">▼</span>
+            </button>
+            {authOpen && (
+              <div className="dropdown-menu">
+                <Link to="/login" onClick={() => localStorage.setItem("role", "citizen")}>Citizen User</Link>
+                <Link to="/login" onClick={() => localStorage.setItem("role", "mla")}>MLA Portal</Link>
+                <Link to="/login" onClick={() => localStorage.setItem("role", "employee")}>Employee Access</Link>
+              </div>
+            )}
+          </div>
+
+          {/* REGISTER */}
+          <div className="dropdown-wrapper" ref={registerRef}>
+            <button className="outline-btn" onClick={() => setRegisterOpen(!registerOpen)}>
+              Register
+            </button>
+            {registerOpen && (
+              <div className="dropdown-menu">
+                <Link to="/Register">Citizen Sign Up</Link>
+                <Link to="/RegisterEmp">Employee Sign Up</Link>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </nav>
   );

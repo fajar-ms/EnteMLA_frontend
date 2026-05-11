@@ -1,89 +1,82 @@
 import React from "react";
 import "./Hero.css";
-import mlaImage from "../../assets/mla.jpg";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   const navigate = useNavigate();
   return (
     <div className="hero">
-
-      {/* LEFT */}
-      <div className="hero-left">
-
-        {/* 🔥 MAIN HERO TEXT */}
-        <div className="hero-intro">
-          <h1>
-            Your Voice. <span>Real Change.</span>
-          </h1>
-          <p>
-            Report issues, track progress, and stay connected with your MLA 
+      <div className="hero-grid">
+        
+        {/* TOP SECTION: HEADING & SUBTITLE */}
+        <header className="hero-header">
+          <div className="label-group">
+            <span className="gov-label">Digital Governance Initiative</span>
+            <span className="division-line"></span>
+            <span className="constituency-label">Greenfield</span>
+          </div>
+          <h1>Your Voice. <span className="text-muted">Real Change.</span></h1>
+          <p className="description">
+            A transparent platform for infrastructure reporting, community project 
+            oversight, and direct citizen-representative engagement.
           </p>
-        </div>
+        </header>
 
-        {/* 👤 MLA CARD */}
-        <div className="mla-card">
+        <div className="hero-content-split">
+          
+          {/* LEFT: PRIMARY ACTIONS & STATS */}
+          <section className="main-actions">
+            {/* <div className="action-meta">
+              <div className="meta-item">
+                <span className="meta-title">Representative</span>
+                <span className="meta-value">MLA Name, M.Tech</span>
+                <button className="inline-link" onClick={() => navigate("/about")}>
+                  Full Bio →
+                </button>
+              </div>
+            </div> */}
 
-          <div className="mla-top">
-            <div className="mla-image">
-              <img src={mlaImage} alt="MLA" />
+            <div className="stats-grid">
+              <div className="stat-block">
+                <span className="stat-number">320</span>
+                <span className="stat-caption">Active Projects</span>
+              </div>
+              <div className="stat-block">
+                <span className="stat-number">12.5K</span>
+                <span className="stat-caption">Citizens Joined</span>
+              </div>
+              <div className="stat-block">
+                <span className="stat-number">98%</span>
+                <span className="stat-caption">Issue Resolution</span>
+              </div>
+            </div>
+          </section>
+
+          {/* RIGHT: UPDATES & OFFICE INFO */}
+          <aside className="side-brief">
+            <div className="brief-section">
+              <h4>Constituency Office</h4>
+              <p>Greenfield Secretariat, Block A. <br />Available 09:00 — 17:00</p>
             </div>
 
-            <div className="mla-content">
-              <h2>MLA Name</h2>
-              <p className="mla-details">🎓 Qualification </p>
-              <p className="mla-details">📍 Place</p>
-              <p className="mla-desc">
-                Focused on delivering fast and transparent public services.
-              </p>
+            <div className="brief-section">
+              <h4>Live Progress</h4>
+              <ul className="bullet-list">
+                <li>Market Street roadwork finalized</li>
+                <li>East-Side Green Park inaugurated</li>
+              </ul>
             </div>
-          </div>
 
-          {/* STATS */}
-          <div className="hero-stats">
-            <div><h3>320+</h3><p>Projects</p></div>
-            <div><h3>12.5K+</h3><p>Citizens</p></div>
-            <div><h3>98%</h3><p>Efficiency</p></div>
-          </div>
-
-          {/* BUTTON */}
-          <button className="primary-btn"
-            onClick={() => navigate("/about")}
-          >
-            About Us →
-          </button>
-
+            <div className="brief-section">
+              <h4>Recent Resolutions</h4>
+              <ul className="resolution-list">
+                <li><span className="dot pnd"></span> Street Light repair</li>
+                <li><span className="dot res"></span> Water Supply restoration</li>
+              </ul>
+            </div>
+          </aside>
+          
         </div>
-      </div>
-
-      {/* RIGHT */}
-      <div className="hero-right">
-
-        <div className="info-box highlight">
-          <h3>📍 Constituency</h3>
-          <p>Greenfield Constituency</p>
-          <p>🕒 9 AM – 5 PM</p>
-          <p className="promise">
-            All complaints resolved within 48 hours
-          </p>
-        </div>
-
-        <div className="info-box highlight">
-          <h3>🚧 Live Updates</h3>
-          <ul>
-            <li>✔ Road repair completed</li>
-            <li>✔ Park inaugurated</li>
-          </ul>
-        </div>
-
-        <div className="info-box highlight">
-          <h3>📢 Recent Issues</h3>
-          <ul>
-            <li>Street light - Pending</li>
-            <li>Water issue - Resolved</li>
-          </ul>
-        </div>
-
       </div>
     </div>
   );

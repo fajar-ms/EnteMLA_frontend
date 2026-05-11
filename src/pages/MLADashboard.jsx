@@ -90,50 +90,38 @@ export default function MlaComplaintDashboard() {
   useEffect(() => {
   setLoading(true);
 
+  // Fetch from your NestJS backend (Port 3001)
   Promise.all([
-    fetch("http://localhost:5000/api/complaints").then(r => r.json()).catch(() => []),
-    fetch("http://localhost:5000/api/users").then(r => r.json()).catch(() => []),
+    fetch("http://localhost:3001/complaints").then(r => {
+      if (!r.ok) throw new Error("Failed to fetch complaints");
+      return r.json();
+    }),
+    fetch("http://localhost:3001/api/users").then(r => r.json()).catch(() => []),
   ])
     .then(([complaintsData, usersData]) => {
+      // Map Mongoose data to your UI structure
+      const formattedComplaints = Array.isArray(complaintsData) 
+        ? complaintsData.map(c => ({
+            ...c,
+            id: c._id, // Use MongoDB _id
+            // If citizenId was populated by NestJS, use the name; otherwise fallback
+            userName: c.citizenId?.name || "Unknown Citizen",
+            date: new Date(c.createdAt).toLocaleDateString(),
+            ward: c.ward || "General", // Fallback if ward isn't in your schema yet
+          }))
+        : [];
 
-      const demoComplaints = [
-        {
-          id: "1",
-          userName: "John Doe",
-          title: "Street light not working",
-          category: "Electricity",
-          urgency: "Urgent",
-          status: "Pending",
-          date: "05/05/2026",
-          ward: "Ward 1",
-        },
-      ];
-
-      const list = Array.isArray(complaintsData) ? complaintsData : [];
-
-      const finalData = list.length > 0 ? list : demoComplaints;
-
-      setComplaints(finalData);
+      setComplaints(formattedComplaints);
       setUsers(Array.isArray(usersData) ? usersData : []);
 
-      if (finalData.length > 0) setSelectedComplaint(finalData[0]);
-
+      // Automatically select the first complaint if available
+      if (formattedComplaints.length > 0) {
+        setSelectedComplaint(formattedComplaints[0]);
+      }
       setLoading(false);
     })
-    .catch(() => {
-      setComplaints([
-        {
-          id: "1",
-          userName: "Demo User",
-          title: "Street light not working",
-          category: "Electricity",
-          urgency: "Urgent",
-          status: "Pending",
-          date: "05/05/2026",
-          ward: "Ward 1",
-        },
-      ]);
-
+    .catch((err) => {
+      setError("Could not connect to the server. Please ensure the NestJS backend is running on port 3001.");
       setLoading(false);
     });
 }, []);
@@ -184,23 +172,34 @@ export default function MlaComplaintDashboard() {
       </div>
     </div>
   );
- const updateStatus = (newStatus) => {
+ const updateStatus = async (newStatus) => {
   if (!selectedComplaint) return;
+  setActionLoading(true);
 
-  // update complaints list
-  setComplaints(prev =>
-    prev.map(c =>
-      c.id === selectedComplaint.id
-        ? { ...c, status: newStatus }
-        : c
-    )
-  );
+  try {
+    const response = await fetch(`http://localhost:3001/complaints/${selectedComplaint.id}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus }),
+    });
 
-  // update right panel
-  setSelectedComplaint(prev => ({
-    ...prev,
-    status: newStatus
-  }));
+    if (response.ok) {
+      // Update local state list
+      setComplaints(prev =>
+        prev.map(c =>
+          c.id === selectedComplaint.id ? { ...c, status: newStatus } : c
+        )
+      );
+      // Update Detail Panel
+      setSelectedComplaint(prev => ({ ...prev, status: newStatus }));
+    } else {
+      alert("Failed to update status in database.");
+    }
+  } catch (err) {
+    alert("Network error. Could not update status.");
+  } finally {
+    setActionLoading(false);
+  }
 };
 
   return (

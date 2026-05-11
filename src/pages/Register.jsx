@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Register.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -8,260 +9,112 @@ const Register = () => {
   const [form, setForm] = useState({
     name: "",
     phone: "",
-    otp: "",
     email: "",
-    emailOtp: "",
     place: "",
     password: "",
     confirmPassword: ""
   });
 
-  const [otpSent, setOtpSent] = useState(false);
-  const [emailOtpSent, setEmailOtpSent] = useState(false);
-
-  const [phoneTimer, setPhoneTimer] = useState(30);
-  const [emailTimer, setEmailTimer] = useState(30);
-
-  const [phoneVerified, setPhoneVerified] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
-
-  const [phoneMsg, setPhoneMsg] = useState("");
-  const [emailMsg, setEmailMsg] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
-  // Handle input
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Phone OTP
-  const sendPhoneOtp = () => {
-    if (!form.phone) return alert("Enter phone number");
-
-    setOtpSent(true);
-    let count = 30;
-
-    const interval = setInterval(() => {
-      count--;
-      setPhoneTimer(count);
-      if (count === 0) clearInterval(interval);
-    }, 1000);
-  };
-
-  // Email OTP
-  const sendEmailOtp = () => {
-    if (!form.email) return alert("Enter email");
-
-    setEmailOtpSent(true);
-    let count = 30;
-
-    const interval = setInterval(() => {
-      count--;
-      setEmailTimer(count);
-      if (count === 0) clearInterval(interval);
-    }, 1000);
-  };
-
-  // Submit
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!phoneVerified || !emailVerified) {
-      alert("Verify phone and email first");
-      return;
-    }
-
+    // 1. Password Match Validation
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match");
       return;
     }
 
-    setShowPopup(true);
-    console.log(form);
+    try {
+      // 2. Prepare Payload (No OTP fields needed)
+      const payload = {
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        place: form.place,
+        password: form.password,
+        role:"citizen"
+      };
+
+      // 3. API Call to NestJS
+      const response = await axios.post("http://localhost:3001/auth/register", payload);
+
+      if (response.status === 201 || response.status === 200) {
+        setShowPopup(true);
+      }
+    } catch (error) {
+      const errorMsg = error.response?.data?.message || "Registration failed";
+      alert(Array.isArray(errorMsg) ? errorMsg.join(", ") : errorMsg);
+    }
   };
 
   return (
     <div className="register-container">
       <div className="register-card">
-
-        <h2>Create Account </h2>
-        <p>Track complaints easily and stay updated</p>
+        <h2>Create Account</h2>
+        {/* <p>Direct registration enabled (OTP skipped)</p> */}
 
         <form onSubmit={handleSubmit}>
-
           {/* Name */}
           <div className="input-group">
             <span>👤</span>
-            <input
-              type="text"
-              name="name"
-              placeholder="Full Name"
-              onChange={handleChange}
-              required
-            />
+            <input type="text" name="name" placeholder="Full Name" onChange={handleChange} required />
           </div>
 
-          {/* Phone */}
-          <div className="otp-group">
-            <div className="input-group">
-              <span>📱</span>
-              <input
-                type="text"
-                name="phone"
-                placeholder="Phone Number"
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <button type="button" className="otp-btn" onClick={sendPhoneOtp}>
-              {otpSent ? "Resend" : "Send OTP"}
-            </button>
+          {/* Phone (Simple Input) */}
+          <div className="input-group">
+            <span>📱</span>
+            <input type="text" name="phone" placeholder="Phone Number" onChange={handleChange} required />
           </div>
 
-          {otpSent && (
-            <div className="otp-box">
-              <input
-                type="text"
-                name="otp"
-                placeholder="Enter OTP"
-                onChange={handleChange}
-              />
-              <button
-                type="button"
-                className="verify-btn"
-                onClick={() => {
-                  if (form.otp === "1234") {
-                    setPhoneVerified(true);
-                    setPhoneMsg("✔ Phone Verified");
-                  } else {
-                    setPhoneVerified(false);
-                    setPhoneMsg("✖ Invalid OTP");
-                  }
-                }}
-              >
-                Verify
-              </button>
-              <p className={phoneVerified ? "success" : "error"}>
-                {phoneMsg}
-              </p>
-              <small>{phoneTimer}s remaining</small>
-            </div>
-          )}
-
-          {/* Email */}
-          <div className="otp-group">
-            <div className="input-group">
-              <span>📧</span>
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                onChange={handleChange}
-              />
-            </div>
-            <button type="button" className="otp-btn" onClick={sendEmailOtp}>
-              {emailOtpSent ? "Resend" : "Send OTP"}
-            </button>
+          {/* Email (Simple Input) */}
+          <div className="input-group">
+            <span>📧</span>
+            <input type="email" name="email" placeholder="Email Address" onChange={handleChange} required />
           </div>
-
-          {emailOtpSent && (
-            <div className="otp-box">
-              <input
-                type="text"
-                name="emailOtp"
-                placeholder="Enter Email OTP"
-                onChange={handleChange}
-              />
-              <button
-                type="button"
-                className="verify-btn"
-                onClick={() => {
-                  if (form.emailOtp === "1234") {
-                    setEmailVerified(true);
-                    setEmailMsg("✔ Email Verified");
-                  } else {
-                    setEmailVerified(false);
-                    setEmailMsg("✖ Invalid OTP");
-                  }
-                }}
-              >
-                Verify
-              </button>
-              <p className={emailVerified ? "success" : "error"}>
-                {emailMsg}
-              </p>
-              <small>{emailTimer}s remaining</small>
-            </div>
-          )}
 
           {/* Place */}
           <div className="input-group">
             <span>📍</span>
-            <input
-              type="text"
-              name="place"
-              placeholder="Your Location"
-              onChange={handleChange}
-              required
-            />
+            <input type="text" name="place" placeholder="Your Location" onChange={handleChange} required />
           </div>
 
           {/* Password */}
           <div className="input-group">
             <span>🔒</span>
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Password"
-              onChange={handleChange}
-              required
+            <input 
+              type={showPassword ? "text" : "password"} 
+              name="password" 
+              placeholder="Password" 
+              onChange={handleChange} 
+              required 
             />
-            <span
-              className="eye"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              👁
-            </span>
+            <span className="eye" onClick={() => setShowPassword(!showPassword)}>👁</span>
           </div>
 
           {/* Confirm Password */}
           <div className="input-group">
             <span>🔑</span>
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              onChange={handleChange}
-              required
-            />
+            <input type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleChange} required />
           </div>
 
-          <button type="submit" className="register-btn">
-            Create Account
-          </button>
-
+          <button type="submit" className="register-btn">Create Account</button>
         </form>
 
-        {/* Popup */}
         {showPopup && (
           <div className="popup-overlay">
             <div className="popup">
               <h2>Registration Successful!</h2>
-              <p>Your account has been created successfully.</p>
-              <button
-                onClick={() => {
-                  setShowPopup(false);
-                  navigate("/");
-                }}
-              >
-                Continue
-              </button>
+              <button onClick={() => navigate("/")}>Continue</button>
             </div>
           </div>
         )}
-
       </div>
     </div>
   );
