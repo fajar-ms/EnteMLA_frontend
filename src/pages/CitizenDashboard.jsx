@@ -79,6 +79,7 @@ export default function CitizenDashboard() {
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [customCategory, setCustomCategory] = useState("");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [urgency, setUrgency] = useState("");
@@ -189,7 +190,7 @@ const handleAddComplaint = async (e) => {
 
   const complaintPayload = {
     title,
-    category,
+    category: category === "Other" ? customCategory : category,
     urgency,
     details,
     visibility: visibility || "Public",
@@ -398,8 +399,21 @@ const handleAddComplaint = async (e) => {
                 <option>Roads & Infrastructure</option>
                 <option>Sanitation</option>
                 <option value="Water">Water Supply</option>
-                <option>Other</option>
+                <option value="Other">Other</option>
               </select>
+              {/* Show textbox when Other is selected */}
+              {category === "Other" && (
+                <input
+                  type="text"
+                  placeholder="Enter custom category"
+                  value={customCategory}
+                  onChange={(e) => setCustomCategory(e.target.value)}
+                  style={{
+                    ...inputBase(false),
+                    marginTop: 8,
+                  }}
+                />
+              )}
               <FieldError msg={errors.category} />
             </div>
             <div>

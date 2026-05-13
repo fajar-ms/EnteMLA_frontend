@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "entemlaproject",
   "version": "0.1.0",
   "private": true,
@@ -19,7 +18,7 @@
     "react-router-dom": "^7.14.2",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
-=======
+  },
   "name": "entemla_frontend",
   "version": "1.0.0",
   "private": true,
@@ -30,7 +29,6 @@
     "react-router-dom": "^7.15.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^5.2.0"
->>>>>>> 8236608 (updated 1)
   },
   "scripts": {
     "start": "react-scripts start",
@@ -38,15 +36,12 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-<<<<<<< HEAD
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
     ]
   },
-=======
->>>>>>> 8236608 (updated 1)
   "browserslist": {
     "production": [
       ">0.2%",
