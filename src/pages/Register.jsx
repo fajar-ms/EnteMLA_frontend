@@ -82,6 +82,8 @@ const Register = () => {
     name: "",
     phone: "",
     email: "",
+    district: "",      // Added
+    constituency: "",
     place: "",
     password: "",
     confirmPassword: ""
@@ -90,14 +92,14 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
-   const handleChange = (e) => {
-  const { name, value } = e.target;
-  setForm(prev => ({
-    ...prev,
-    [name]: value,
-    ...(name === "district" ? { constituency: "" } : {})
-  }));
-};
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm(prev => ({
+      ...prev,
+      [name]: value,
+      ...(name === "district" ? { constituency: "" } : {})
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -114,9 +116,11 @@ const Register = () => {
         name: form.name,
         phone: form.phone,
         email: form.email,
+        district: form.district,         // Sent to NestJS
+        constituency: form.constituency,
         place: form.place,
         password: form.password,
-        role:"citizen"
+        role: "citizen"
       };
 
       // 3. API Call to NestJS
@@ -155,38 +159,44 @@ const Register = () => {
             <span>📧</span>
             <input type="email" name="email" placeholder="Email Address" onChange={handleChange} required />
           </div>
-{/* District */}
-<div className="input-group">
-  <span>🗺️</span>
-  <select name="district" onChange={handleChange} required>
-    <option value="" disabled selected>Select District</option>
-    <option value="thiruvananthapuram">Thiruvananthapuram</option>
-    <option value="kollam">Kollam</option>
-    <option value="pathanamthitta">Pathanamthitta</option>
-    <option value="alappuzha">Alappuzha</option>
-    <option value="kottayam">Kottayam</option>
-    <option value="idukki">Idukki</option>
-    <option value="ernakulam">Ernakulam</option>
-    <option value="thrissur">Thrissur</option>
-    <option value="palakkad">Palakkad</option>
-    <option value="malappuram">Malappuram</option>
-    <option value="kozhikode">Kozhikode</option>
-    <option value="wayanad">Wayanad</option>
-    <option value="kannur">Kannur</option>
-    <option value="kasaragod">Kasaragod</option>
-  </select>
-</div>
+          {/* District */}
+          <div className="input-group">
+            <span>🗺️</span>
+            <select name="district" value={form.district} onChange={handleChange} required>
+              <option value="" disabled selected>Select District</option>
 
-{/* Constituency */}
-<div className="input-group">
-  <span>🏛️</span>
-  <select name="constituency" onChange={handleChange} required>
-    <option value="" disabled selected>Select Constituency</option>
-    {form.district && constituencyMap[form.district]?.map((c) => (
-      <option key={c.value} value={c.value}>{c.label}</option>
-    ))}
-  </select>
-</div>
+              <option value="thiruvananthapuram">Thiruvananthapuram</option>
+              <option value="kollam">Kollam</option>
+              <option value="pathanamthitta">Pathanamthitta</option>
+              <option value="alappuzha">Alappuzha</option>
+              <option value="kottayam">Kottayam</option>
+              <option value="idukki">Idukki</option>
+              <option value="ernakulam">Ernakulam</option>
+              <option value="thrissur">Thrissur</option>
+              <option value="palakkad">Palakkad</option>
+              <option value="malappuram">Malappuram</option>
+              <option value="kozhikode">Kozhikode</option>
+              <option value="wayanad">Wayanad</option>
+              <option value="kannur">Kannur</option>
+              <option value="kasaragod">Kasaragod</option>
+              {Object.keys(constituencyMap).map(dist => (
+                <option key={dist} value={dist}>
+                  {dist.charAt(0).toUpperCase() + dist.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Constituency */}
+          <div className="input-group">
+            <span>🏛️</span>
+            <select name="constituency" value={form.constituency} onChange={handleChange} required>
+              <option value="" disabled selected>Select Constituency</option>
+              {form.district && constituencyMap[form.district]?.map((c) => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </select>
+          </div>
 
 
 
@@ -202,12 +212,12 @@ const Register = () => {
           {/* Password */}
           <div className="input-group">
             <span>🔒</span>
-            <input 
-              type={showPassword ? "text" : "password"} 
-              name="password" 
-              placeholder="Password" 
-              onChange={handleChange} 
-              required 
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              onChange={handleChange}
+              required
             />
             <span className="eye" onClick={() => setShowPassword(!showPassword)}>👁</span>
           </div>
