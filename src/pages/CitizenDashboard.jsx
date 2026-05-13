@@ -85,9 +85,11 @@ export default function CitizenDashboard() {
   const [urgency, setUrgency] = useState("");
   const [details, setDetails] = useState("");
   const [visibility, setVisibility] = useState("");
-
+  
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [file, setFile] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [imageModal, setImageModal] = useState(false);
   const handleLogout = () => {
     localStorage.clear(); // Clears role and any session data
     window.location.href = "/"; // Redirects to login page
@@ -481,13 +483,45 @@ export default function CitizenDashboard() {
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
               </svg>
               Upload Evidence
-              <input hidden type="file" accept="image/*" onChange={(e) => setFile(e.target.files[0])} />
+              <input
+                hidden
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const selectedFile = e.target.files[0];
+
+                  if (selectedFile) {
+                    setFile(selectedFile);
+
+                    // Create preview URL
+                    const imageUrl = URL.createObjectURL(selectedFile);
+                    setPreviewImage(imageUrl);
+                  }
+                }}
+              />
             </label>
             {file && (
-              <p style={{ fontSize: 12, color: "green", marginTop: 6 }}>
+            <div style={{ marginTop: 10 }}>
+              
+              <p style={{ fontSize: 12, color: "green", marginBottom: 8 }}>
                 File selected: {file.name}
               </p>
-            )}
+
+              <img
+                src={previewImage}
+                alt="Preview"
+                onClick={() => setImageModal(true)}
+                style={{
+                  width: 120,
+                  height: 120,
+                  objectFit: "cover",
+                  borderRadius: 10,
+                  border: `1px solid ${clr.border}`,
+                  cursor: "pointer",
+                }}
+              />
+            </div>
+          )}
             <button type="submit" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "9px 24px", borderRadius: radius.sm, background: clr.primary, color: "#fff", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer", boxShadow: "0 2px 8px rgba(37,99,235,0.25)" }}>
               Submit Complaint
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
@@ -623,6 +657,53 @@ export default function CitizenDashboard() {
           </div>
         )}
       </div>
+      {/* Image Modal */}
+      {imageModal && (
+        <div
+          onClick={() => setImageModal(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.7)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+        >
+          {/* Close Button */}
+                <button
+                  onClick={() => setImageModal(false)}
+                  style={{
+                    position: "absolute",
+                    top: 20,
+                    right: 20,
+                    background: "#fff",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: 40,
+                    height: 40,
+                    fontSize: 22,
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  ×
+                </button>
+          <img
+            src={previewImage}
+            alt="Full Preview"
+            style={{
+              maxWidth: "90%",
+              maxHeight: "90%",
+              borderRadius: 12,
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
