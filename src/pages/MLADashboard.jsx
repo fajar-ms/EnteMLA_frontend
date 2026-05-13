@@ -88,6 +88,7 @@ export default function MlaComplaintDashboard() {
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [filters, setFilters] = useState({ urgency: "", category: "", ward: "", status: "" });
+  const [comment, setComment] = useState("");
 
   useEffect(() => {
   setLoading(true);
@@ -98,6 +99,7 @@ export default function MlaComplaintDashboard() {
       if (!r.ok) throw new Error("Failed to fetch complaints");
       return r.json();
     }),
+    
     fetch("http://localhost:3001/api/users").then(r => r.json()).catch(() => []),
   ])
     .then(([complaintsData, usersData]) => {
@@ -187,18 +189,28 @@ export default function MlaComplaintDashboard() {
     const response = await fetch(`http://localhost:3001/complaints/${selectedComplaint.id}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
+      body: JSON.stringify({
+          comment: comment,
+          userId: selectedComplaint.citizenId?._id || selectedComplaint.citizenId,
+      }),
     });
 
     if (response.ok) {
       // Update local state list
       setComplaints(prev =>
         prev.map(c =>
-          c.id === selectedComplaint.id ? { ...c, status: newStatus } : c
+          c.id === selectedComplaint.id
+          ? { ...c, status: newStatus, comment }
+          : c
         )
       );
       // Update Detail Panel
-      setSelectedComplaint(prev => ({ ...prev, status: newStatus }));
+      setSelectedComplaint(prev => ({
+        ...prev,
+        status: newStatus,
+        comment,
+      }));
+      
     } else {
       alert("Failed to update status in database.");
     }
@@ -208,6 +220,52 @@ export default function MlaComplaintDashboard() {
     setActionLoading(false);
   }
 };
+
+const sendMessage = async () => {
+  if (!selectedComplaint || !comment.trim()) {
+    alert("Please type a message");
+    return;
+  }
+
+  setActionLoading(true);
+
+  try {
+    const response = await fetch(
+      `http://localhost:3001/complaints/${selectedComplaint.id}/message`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          comment: comment,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Request failed");
+    }
+
+    const data = await response.json();
+
+    // safer fallback
+    const updatedReplies = data.replies || data;
+
+    setSelectedComplaint(prev => ({
+      ...prev,
+      replies: updatedReplies,
+    }));
+
+    setComment("");
+    alert("Message sent successfully");
+
+  } catch (err) {
+    console.log(err);
+    alert("Failed to send message");
+  } finally {
+    setActionLoading(false);
+  }
+};
+
 
   return (
     <div style={{ minHeight: "100vh", background: clr.bg, padding: "24px 28px", fontFamily: "'DM Sans','Segoe UI',sans-serif", fontSize: 14, color: clr.text }}>
@@ -429,7 +487,10 @@ export default function MlaComplaintDashboard() {
                   const isSelected = selectedComplaint?.id === c.id;
                   return (
                     <tr key={c.id}
-                      onClick={() => setSelectedComplaint(c)}
+                      onClick={() => {
+                        setSelectedComplaint(c);
+                        setComment("");
+                      }}
                       style={{ borderBottom: i < filteredComplaints.length - 1 ? "1px solid #F1F5F9" : "none", background: isSelected ? clr.blue : "transparent", cursor: "pointer", transition: "background 0.1s" }}
                       onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = "#F8FAFC"; }}
                       onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = "transparent"; }}
@@ -468,6 +529,7 @@ export default function MlaComplaintDashboard() {
           {selectedComplaint ? (
             <div>
               <div style={{ marginBottom: 14 }}>
+                
                 <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.3, marginBottom: 4 }}>{selectedComplaint.title}</div>
                 <div style={{ fontSize: 11, color: clr.hint }}>{selectedComplaint.id} · {selectedComplaint.date}</div>
               </div>
@@ -499,7 +561,95 @@ export default function MlaComplaintDashboard() {
                   <p style={{ fontSize: 12, color: clr.muted, margin: 0, lineHeight: 1.7 }}>{selectedComplaint.details}</p>
                 </div>
               )}
+              {/* Tracking / Replies Section */}
+<div style={{ marginTop: 14 }}>
+  <div style={{ fontSize: 11, fontWeight: 700, color: clr.hint, marginBottom: 8 }}>
+    Tracking / Messages
+  </div>
 
+  {selectedComplaint?.replies?.length > 0 ? (
+    selectedComplaint.replies.map((r, idx) => (
+      <div
+        key={idx}
+        style={{
+          background: "#F8FAFC",
+          border: `1px solid ${clr.border}`,
+          borderRadius: 8,
+          padding: "8px 10px",
+          marginBottom: 8,
+          fontSize: 12,
+        }}
+      >
+        <div style={{ fontWeight: 600, color: clr.text }}>
+          {r.from || "MLA"}
+        </div>
+        <div style={{ color: clr.muted }}>{r.text}</div>
+        <div style={{ fontSize: 10, color: clr.hint }}>
+          {new Date(r.date).toLocaleString()}
+        </div>
+      </div>
+    ))
+  ) : (
+    <div style={{ fontSize: 12, color: clr.hint }}>
+      No tracking messages yet
+    </div>
+  )}
+</div>
+              {/* MLA Comment Box */}
+              <div style={{ marginBottom: 16 }}>
+                <label
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: clr.hint,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.4px",
+                    display: "block",
+                    marginBottom: 6,
+                  }}
+                >
+                  MLA Comment / Reason
+                </label>
+
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="Type reason, response, or action taken..."
+                  rows={4}
+                  style={{
+                    width: "100%",
+                    resize: "none",
+                    border: `1px solid ${clr.border}`,
+                    borderRadius: R.sm,
+                    padding: "10px 12px",
+                    fontSize: 13,
+                    fontFamily: "inherit",
+                    outline: "none",
+                    background: "#F8FAFC",
+                    color: clr.text,
+                    boxSizing: "border-box",
+                    lineHeight: 1.5,
+                  }}
+                />
+                <button
+                  disabled={actionLoading}
+                  onClick={sendMessage}
+                  style={{
+                    padding: "10px 0",
+                    borderRadius: R.sm,
+                    background: clr.primary,
+                    color: "#fff",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    border: "none",
+                    cursor: "pointer",
+                    opacity: actionLoading ? 0.7 : 1,
+                    marginBottom: 10,
+                  }}
+                >
+                  Send Message
+</button>
+              </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <button
                   disabled={actionLoading || selectedComplaint.status === "In Progress"}

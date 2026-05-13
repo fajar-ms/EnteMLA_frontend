@@ -175,6 +175,7 @@ export default function CitizenDashboard() {
     };
 
     fetchMyComplaints();
+    
   }, []);
 
   const handleDeleteComplaint = async (id) => {
@@ -227,7 +228,29 @@ export default function CitizenDashboard() {
       alert("Submission failed. Check backend connection.");
     }
   };
+  const fetchMyComplaints = async () => {
+  setLoading(true);
+  try {
+    const response = await fetch(
+      `http://localhost:3001/complaints/citizen/${user._id}`
+    );
+    const data = await response.json();
 
+    if (Array.isArray(data)) {
+      setComplaints(
+        data.map((c) => ({
+          ...c,
+          id: c._id,
+          date: new Date(c.createdAt).toLocaleDateString(),
+        }))
+      );
+    }
+  } catch (err) {
+    console.error("Failed to load complaints:", err);
+  } finally {
+    setLoading(false);
+  }
+};
   const filteredComplaints = complaints.filter(c =>
     ((c.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (c.id || "").toLowerCase().includes(searchQuery.toLowerCase()))
@@ -385,11 +408,48 @@ export default function CitizenDashboard() {
                       <UrgencyBadge level={selectedComplaint.urgency} />
                     </div>
                   </div>
-                  {selectedComplaint.details && (
+                 {selectedComplaint.details && (
                     <div style={{ marginTop: 12, padding: "10px 13px", background: "#fff", border: `1.5px solid ${clr.border}`, borderRadius: radius.sm }}>
-                      <p style={{ fontSize: 12, color: clr.muted, margin: 0, lineHeight: 1.7, fontWeight: 500 }}>{selectedComplaint.details}</p>
+                      <p style={{ fontSize: 12, color: clr.muted, margin: 0, lineHeight: 1.7, fontWeight: 500 }}>
+                        {selectedComplaint.details}
+                      </p>
                     </div>
                   )}
+                  {/* MLA / Updates Section */}
+                  <div style={{ marginTop: 14 }}>
+                    <div style={{
+                      fontSize: 9,
+                      fontWeight: 800,
+                      color: clr.hint,
+                      marginBottom: 6,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.6px"
+                    }}>
+                      Updates / MLA Replies
+                    </div>
+
+                    <div style={{ maxHeight: 140, overflowY: "auto" }}>
+                      {selectedComplaint.replies && selectedComplaint.replies.length > 0 ? (
+                        selectedComplaint.replies.map((r, i) => (
+                          <div key={i} style={{
+                            fontSize: 12,
+                            background: "#F8FAFF",
+                            border: `1px solid ${clr.border}`,
+                            borderRadius: 8,
+                            padding: "6px 10px",
+                            marginBottom: 6,
+                            fontWeight: 500
+                          }}>
+                            <strong style={{ color: clr.primary }}>{r.from}:</strong> {r.text}
+                          </div>
+                        ))
+                      ) : (
+                        <span style={{ fontSize: 11, color: clr.hint }}>
+                          No MLA replies yet
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div style={{ textAlign: "center" }}>
