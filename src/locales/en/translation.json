@@ -36,8 +36,27 @@
   "resolved": "Resolved",
   "in_progress": "In Progress",
   "avg_response": "Avg Response",
-  "file_complaint": "File Complaint"
+  "file_complaint": "File Complaint",
+  
+    "loading": "Loading statistics...",
+    "civicAnalytics": "Civic Analytics",
+    "publicTransparencyDashboard": "Public Transparency Dashboard",
+    "realTime": "Real-Time",
+    "impactMetrics": "Impact Metrics",
+    "description": "Track complaint resolutions, response efficiency, and ongoing civic actions across the platform through a transparent public dashboard.",
+    "totalComplaints": "Total Complaints",
+    "resolvedIssues": "Resolved Issues",
+    "inProgress": "In Progress",
+    "avgResponseDays": "Avg Response Days",
+    "platformOverview": "Platform Overview",
+    "platformOverviewText": "Citizens can publicly raise civic complaints, track resolution progress, and engage with authorities through transparent issue reporting.",
+    "liveComplaintStatus": "Live Complaint Status",
+    "liveStatus1": "Public complaints are monitored in real time",
+    "liveStatus2": "Resolved issues are verified and archived",
+    "liveStatus3": "Escalated complaints receive priority tracking",
+    "fileComplaint": "File Complaint"
+  }
 
 
 
-}
+

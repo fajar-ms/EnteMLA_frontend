@@ -15,9 +15,7 @@ const Home = () => {
       <Hero />
       <Stats/>
       <Trending />
-      <button onClick={() =>  navigate("/role")}>
-        Login / Get Started
-      </button>
+      
     </div>
   );
 };
