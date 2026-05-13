@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Navbar.css";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Navbar = () => {
   const [langOpen, setLangOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState("Translate");
   const [authOpen, setAuthOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
-
+const { t, i18n } = useTranslation();
   const loginRef = useRef();
   const registerRef = useRef();
   const langRef = useRef();
@@ -23,24 +24,30 @@ const Navbar = () => {
   }, []);
 
   const handleLanguageChange = (lang) => {
-    let label = lang === "en" ? "English" : lang === "ml" ? "Malayalam" : "Hindi";
-    setSelectedLang(label);
-    setLangOpen(false);
-  };
+  i18n.changeLanguage(lang);   // 🔥 THIS IS REQUIRED
 
+  let label =
+    lang === "en"
+      ? "English"
+      : "Malayalam"
+      ;
+
+  setSelectedLang(label);
+  setLangOpen(false);
+};
   return (
     <nav className="navbar">
       <div className="navbar-container">
         {/* LOGO */}
-        <div className="logo">Ente<span>MLA</span></div>
+        <div className="logo">{t("app_name_part1")}<span>{t("app_name_part2")}</span></div>
 
         {/* CENTER NAV LINKS */}
         <div className="nav-links">
-          <Link to="/" className="nav-item">Home</Link>
-          <Link to="/about" className="nav-item">About</Link>
-          <Link to="/complaint" className="nav-item">Complaints</Link>
-          <Link to="/qa" className="nav-item">Q/A</Link>
-          <Link to="/contact" className="nav-item">Contact</Link>
+          <Link to="/" className="nav-item">{t("home")}</Link>
+          <Link to="/about" className="nav-item">{t("about")}</Link>
+          <Link to="/complaint" className="nav-item">{t("complaints")}</Link>
+          <Link to="/qa" className="nav-item">{t("qa")}</Link>
+          <Link to="/contact" className="nav-item">{t("contact")}</Link>
         </div>
 
         {/* RIGHT ACTIONS */}
@@ -48,13 +55,13 @@ const Navbar = () => {
           {/* LANGUAGE SELECTOR */}
           <div className="dropdown-wrapper" ref={langRef}>
             <button className="secondary-btn" onClick={() => setLangOpen(!langOpen)}>
-              🌐 {selectedLang} <span className="arrow">▼</span>
+              {selectedLang} <span className="arrow">▼</span>
             </button>
             {langOpen && (
               <div className="dropdown-menu">
                 <div onClick={() => handleLanguageChange("en")}>English</div>
                 <div onClick={() => handleLanguageChange("ml")}>Malayalam</div>
-                <div onClick={() => handleLanguageChange("hi")}>Hindi</div>
+                
               </div>
             )}
           </div>
@@ -62,7 +69,7 @@ const Navbar = () => {
           {/* LOGIN */}
           <div className="dropdown-wrapper" ref={loginRef}>
             <button className="primary-btn" onClick={() => setAuthOpen(!authOpen)}>
-              Login <span className="arrow">▼</span>
+              {t("login")} <span className="arrow">▼</span>
             </button>
             {authOpen && (
               <div className="dropdown-menu">
@@ -76,7 +83,7 @@ const Navbar = () => {
           {/* REGISTER */}
           <div className="dropdown-wrapper" ref={registerRef}>
             <button className="outline-btn" onClick={() => setRegisterOpen(!registerOpen)}>
-              Register
+              {t("register")}
             </button>
             {registerOpen && (
               <div className="dropdown-menu">
@@ -90,5 +97,7 @@ const Navbar = () => {
     </nav>
   );
 };
+
+
 
 export default Navbar;

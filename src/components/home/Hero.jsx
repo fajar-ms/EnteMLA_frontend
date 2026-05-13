@@ -1,9 +1,11 @@
 import React from "react";
 import "./Hero.css";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Hero = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <div className="hero">
       <div className="hero-grid">
@@ -11,14 +13,13 @@ const Hero = () => {
         {/* TOP SECTION: HEADING & SUBTITLE */}
         <header className="hero-header">
           <div className="label-group">
-            <span className="gov-label">Digital Governance Initiative</span>
+            <span className="gov-label">{t("gov_label")}</span>
             <span className="division-line"></span>
-            <span className="constituency-label">Greenfield</span>
+            <span className="constituency-label">{t("Constituency")}</span>
           </div>
-          <h1>Your Voice. <span className="text-muted">Real Change.</span></h1>
+          <h1>{t("hero_title_main")} <span className="text-muted">{t("hero_title_sub")}</span></h1>
           <p className="description">
-            A transparent platform for infrastructure reporting, community project 
-            oversight, and direct citizen-representative engagement.
+            {t("hero_description")}
           </p>
         </header>
 
@@ -39,15 +40,15 @@ const Hero = () => {
             <div className="stats-grid">
               <div className="stat-block">
                 <span className="stat-number">320</span>
-                <span className="stat-caption">Active Projects</span>
+                <span className="stat-caption">{t("active_projects")}</span>
               </div>
               <div className="stat-block">
                 <span className="stat-number">12.5K</span>
-                <span className="stat-caption">Citizens Joined</span>
+                <span className="stat-caption">{t("citizens_joined")}</span>
               </div>
               <div className="stat-block">
                 <span className="stat-number">98%</span>
-                <span className="stat-caption">Issue Resolution</span>
+                <span className="stat-caption">{t("issue_resolution")}</span>
               </div>
             </div>
           </section>
@@ -55,23 +56,23 @@ const Hero = () => {
           {/* RIGHT: UPDATES & OFFICE INFO */}
           <aside className="side-brief">
             <div className="brief-section">
-              <h4>Constituency Office</h4>
-              <p>Greenfield Secretariat, Block A. <br />Available 09:00 — 17:00</p>
+              <h4>{t("office_title")}</h4>
+              <p>{t("office_desc")}</p>
             </div>
 
             <div className="brief-section">
-              <h4>Live Progress</h4>
+              <h4>{t("live_progress")}</h4>
               <ul className="bullet-list">
-                <li>Market Street roadwork finalized</li>
-                <li>East-Side Green Park inaugurated</li>
+                <li>{t("progress_1")}</li>
+                <li>{t("progress_2")}</li>
               </ul>
             </div>
 
             <div className="brief-section">
-              <h4>Recent Resolutions</h4>
+              <h4>{t("recent_resolutions")}</h4>
               <ul className="resolution-list">
-                <li><span className="dot pnd"></span> Street Light repair</li>
-                <li><span className="dot res"></span> Water Supply restoration</li>
+                <li><span className="dot pnd"></span> {t("res_1")}</li>
+                <li><span className="dot res"></span>{t("res_2")}</li>
               </ul>
             </div>
           </aside>
@@ -81,5 +82,4 @@ const Hero = () => {
     </div>
   );
 };
-
 export default Hero;
