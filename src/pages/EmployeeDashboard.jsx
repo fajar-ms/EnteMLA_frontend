@@ -87,6 +87,8 @@ export default function EmployeeComplaintDashboard() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [replies, setReplies] = useState({});
   const [sentStatus, setSentStatus] = useState({});
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     const role = localStorage.getItem("role");
@@ -100,7 +102,7 @@ export default function EmployeeComplaintDashboard() {
     const fetchData = async () => {
       try {
         // 1. Fetch all Citizens for the stat cards
-        const userRes = await fetch("http://localhost:3001/api/users");
+        const userRes = await fetch("http://localhost:3001/users/citizens");
         const userData = await userRes.json();
         setUsers(Array.isArray(userData) ? userData : []);
 
@@ -127,9 +129,62 @@ export default function EmployeeComplaintDashboard() {
     fetchData();
   }, []);
 
+  const updateStatus = async (newStatus) => {
+    if (!selectedComplaint) return;
+
+    setActionLoading(true);
+
+    try {
+      const res = await fetch(
+        `http://localhost:3001/complaints/${selectedComplaint.id}/status`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Status update failed");
+      }
+
+      // ✅ Update list
+      setComplaints((prev) =>
+        prev.map((c) =>
+          c.id === selectedComplaint.id
+            ? { ...c, status: newStatus }
+            : c
+        )
+      );
+
+      // ✅ Update selected complaint
+      setSelectedComplaint((prev) => ({
+        ...prev,
+        status: newStatus,
+      }));
+
+
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update status");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+
+
   const handleSort = (field) => {
     setSortOrder(sortBy === field && sortOrder === "asc" ? "desc" : "asc");
     setSortBy(field);
+  };
+
+  const refreshComplaints = async () => {
+    const res = await fetch("http://localhost:3001/complaints");
+    const data = await res.json();
+    setComplaints(data);
   };
 
   const countByUrgency = (l) => complaints.filter(c => c.urgency === l).length;
@@ -160,7 +215,7 @@ export default function EmployeeComplaintDashboard() {
     { key: "urgency", label: "Urgency" },
     { key: "status", label: "Status" },
     { key: "date", label: "Date" },
-    { key: "reply", label: "Reply" }
+    // { key: "reply", label: "Reply" }
   ];
   const handleReplyChange = (id, value) => {
     setReplies(prev => ({ ...prev, [id]: value }));
@@ -346,7 +401,7 @@ export default function EmployeeComplaintDashboard() {
             <col style={{ width: "11%" }} />
             <col style={{ width: "13%" }} />
             <col style={{ width: "12%" }} />
-            <col style={{ width: "18" }} />
+            {/* <col style={{ width: "18" }} /> */}
           </colgroup>
           <thead>
             <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #E2E8F0" }}>
@@ -378,10 +433,13 @@ export default function EmployeeComplaintDashboard() {
                 </td>
               </tr>
             ) : filtered.map((c, i) => (
-              <tr key={c.id}
+              <tr
+                key={c.id}
+                onClick={() => setSelectedComplaint(c)}
                 style={{
                   borderBottom: i < filtered.length - 1 ? "1px solid #F1F5F9" : "none",
                   transition: "background 0.1s",
+                  cursor: "pointer"
                 }}
                 onMouseEnter={e => e.currentTarget.style.background = "#F8FAFC"}
                 onMouseLeave={e => e.currentTarget.style.background = "transparent"}
@@ -423,7 +481,7 @@ export default function EmployeeComplaintDashboard() {
                   <span style={{ fontSize: 12, color: "#94A3B8", fontWeight: 500 }}>{c.date}</span>
                 </td>
                 {/* Reply */}
-                <td style={{ padding: "12px 16px" }}>
+                {/* <td style={{ padding: "12px 16px" }}>
                   <div style={{ display: "flex", gap: 6 }}>
                     <input
                       type="text"
@@ -443,7 +501,7 @@ export default function EmployeeComplaintDashboard() {
                       }}
                     />
                     <button
-                      onClick={() => handleSendReply(c.id)}   
+                      onClick={() => handleSendReply(c.id)}
                       style={{
                         padding: "6px 10px",
                         fontSize: 12,
@@ -457,17 +515,190 @@ export default function EmployeeComplaintDashboard() {
                       Send
                     </button>
                   </div>
-                  {/* 👇 ADD THIS HERE (THIS IS WHAT YOU ASKED) */}
+
                   {sentStatus[c.id] && (
                     <p style={{ fontSize: 11, color: "green", marginTop: 4 }}>
                       {sentStatus[c.id]}
                     </p>
                   )}
-                </td>
+                </td> */}
               </tr>
             ))}
           </tbody>
         </table>
+
+        {/* ── RIGHT: Update Panel ── */}
+        {selectedComplaint && (
+          <div style={{
+            position: "fixed",
+            top: 0,
+            right: 0,
+            width: "360px",
+            height: "100vh",
+            background: "#fff",
+            borderLeft: "1px solid #E2E8F0",
+            boxShadow: "-4px 0 20px rgba(0,0,0,0.08)",
+            padding: "18px",
+            zIndex: 999,
+            fontFamily: "'DM Sans','Segoe UI',sans-serif",
+            overflowY: "auto"
+          }}>
+
+            {/* Header */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#0F172A" }}>
+                Update Complaint
+              </div>
+              <div style={{ fontSize: 11, color: "#94A3B8" }}>
+                {selectedComplaint.id}
+              </div>
+            </div>
+
+            {/* Title */}
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>
+                {selectedComplaint.title}
+              </div>
+              <div style={{ fontSize: 11, color: "#94A3B8" }}>
+                {selectedComplaint.userName}
+              </div>
+            </div>
+
+            {/* Badges */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+              <Badge label={selectedComplaint.urgency} styleMap={urgencyStyle} />
+              <Badge label={selectedComplaint.status} styleMap={statusStyle} />
+            </div>
+
+            <div style={{ height: 1, background: "#E2E8F0", marginBottom: 14 }} />
+
+            {/* Details */}
+            <div style={{ fontSize: 12, color: "#64748B", marginBottom: 14 }}>
+              <p><b>Category:</b> {selectedComplaint.category}</p>
+              <p><b>Ward:</b> {selectedComplaint.ward}</p>
+              <p><b>Date:</b> {selectedComplaint.date}</p>
+            </div>
+
+            {/* Reply box */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ fontSize: 11, fontWeight: 700, color: "#94A3B8" }}>
+                Reply to Citizen
+              </label>
+
+              <textarea
+                value={replies[selectedComplaint.id] || ""}
+                onChange={(e) =>
+                  setReplies(prev => ({
+                    ...prev,
+                    [selectedComplaint.id]: e.target.value
+                  }))
+                }
+                rows={4}
+                placeholder="Type reply..."
+                style={{
+                  width: "100%",
+                  marginTop: 6,
+                  padding: "8px",
+                  border: "1px solid #E2E8F0",
+                  borderRadius: 8,
+                  fontSize: 12,
+                  outline: "none",
+                  background: "#F8FAFC"
+                }}
+              />
+            </div>
+
+            {/* Buttons */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+
+              <button
+                onClick={() => handleSendReply(selectedComplaint.id)}
+                style={{
+                  padding: "9px",
+                  borderRadius: 8,
+                  background: "#2563EB",
+                  color: "#fff",
+                  border: "none",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer"
+                }}
+              >
+                Send Reply
+              </button>
+
+              <button
+                disabled={actionLoading || selectedComplaint.status === "In Progress"}
+                onClick={() => updateStatus("In Progress")}
+                style={{
+                  padding: "9px",
+                  borderRadius: 8,
+                  background: "#FFF7ED",
+                  color: "#C2410C",
+                  border: "1px solid #FDE68A",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer"
+                }}
+              >
+                Mark In Progress
+              </button>
+
+              <button
+                disabled={actionLoading || selectedComplaint.status === "Resolved"}
+                onClick={() => updateStatus("Resolved")}
+                style={{
+                  padding: "9px",
+                  borderRadius: 8,
+                  background: "#F0FDF4",
+                  color: "#15803D",
+                  border: "1px solid #BBF7D0",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer"
+                }}
+              >
+                Mark Resolved
+              </button>
+
+              <button
+                onClick={() => updateStatus("Rejected")}
+                style={{
+                  padding: "9px",
+                  borderRadius: 8,
+                  background: "#FFF1F2",
+                  color: "#BE123C",
+                  border: "1px solid #FECDD3",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer"
+                }}
+              >
+                Reject Complaint
+              </button>
+
+            </div>
+
+            {/* Close */}
+            <button
+              onClick={() => setSelectedComplaint(null)}
+              style={{
+                marginTop: 16,
+                width: "100%",
+                padding: "8px",
+                background: "#F1F5F9",
+                border: "none",
+                borderRadius: 8,
+                cursor: "pointer",
+                fontSize: 12,
+                fontWeight: 600
+              }}
+            >
+              Close Panel
+            </button>
+
+          </div>
+        )}
 
         {/* Footer */}
         <div style={{

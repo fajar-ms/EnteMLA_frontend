@@ -50,15 +50,14 @@ export default function LoginPage() {
         <header style={styles.header}>
           <div style={styles.logoBadge}>Ente<span>MLA</span></div>
           <h1 style={styles.mainTitle}>Access Portal</h1>
-          <p style={styles.subText}>Enter your credentials to manage your constituency services</p>
+          {/* <p style={styles.subText}>Enter your credentials to manage your constituency services</p> */}
         </header>
 
         <form style={styles.form} onSubmit={handleLogin}>
           <div style={styles.inputGroup}>
-            <label style={styles.inputLabel}>Official Email Address</label>
+            <label style={styles.inputLabel}>Email Address</label>
             <input
               type="email"
-              placeholder="name@example.com"
               style={styles.textInput}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -67,10 +66,9 @@ export default function LoginPage() {
           </div>
 
           <div style={styles.inputGroup}>
-            <label style={styles.inputLabel}>Security Password</label>
+            <label style={styles.inputLabel}>Password</label>
             <input
               type="password"
-              placeholder="••••••••"
               style={styles.textInput}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -79,7 +77,7 @@ export default function LoginPage() {
           </div>
 
           <button type="submit" style={styles.submitBtn}>
-            Sign In to Portal
+            Sign In
           </button>
         </form>
 

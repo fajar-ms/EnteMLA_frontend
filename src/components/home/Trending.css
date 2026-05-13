@@ -343,3 +343,19 @@ body {
 
   background: #1d4ed8;
 }
+/* ===== REPOST ACTIVE ===== */
+
+.repost-btn.reposted {
+
+  background: #16a34a;
+  color: white;
+
+  box-shadow:
+    0 6px 16px rgba(22, 163, 74, 0.3);
+}
+
+/* Hover */
+.repost-btn.reposted:hover {
+
+  background: #15803d;
+}
