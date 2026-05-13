@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const clr = {
   bg: "#F8FAFC", card: "#FFFFFF", border: "#E2E8F0", text: "#0F172A",
@@ -79,6 +80,7 @@ const urgencyScore = (u) => u === "Urgent" ? 1 : u === "Medium" ? 2 : 3;
 
 // ── Main ───────────────────────────────────────────────────────
 export default function MlaComplaintDashboard() {
+  const navigate = useNavigate();
   const [complaints, setComplaints] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -128,6 +130,11 @@ export default function MlaComplaintDashboard() {
 
   const setFilter = (key, val) => setFilters(f => ({ ...f, [key]: val }));
   const activeFilters = Object.values(filters).filter(Boolean).length;
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
 
   // ── Derive unique filter options dynamically from real data ──
   const uniqueCategories = [...new Set(complaints.map(c => c.category).filter(Boolean))];
@@ -206,22 +213,129 @@ export default function MlaComplaintDashboard() {
     <div style={{ minHeight: "100vh", background: clr.bg, padding: "24px 28px", fontFamily: "'DM Sans','Segoe UI',sans-serif", fontSize: 14, color: clr.text }}>
 
       {/* ── Header ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
-        <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-            <div style={{ width: 7, height: 7, borderRadius: "50%", background: clr.primary, boxShadow: `0 0 0 3px ${clr.blue}` }} />
-            <span style={{ fontSize: 11, fontWeight: 700, color: clr.primary, letterSpacing: "0.8px", textTransform: "uppercase" }}>MLA Portal · Live</span>
-          </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, letterSpacing: "-0.4px" }}>Complaint Dashboard</h1>
-          <p style={{ fontSize: 12, color: clr.hint, margin: "3px 0 0" }}>
-            {users.length > 0 ? `${users.length} registered citizens · ` : ""}Sorted by urgency
-          </p>
-        </div>
-        <div style={{ fontSize: 12, color: clr.hint, background: clr.card, border: `1px solid ${clr.border}`, borderRadius: R.md, padding: "7px 14px", boxShadow: shadow }}>
-          {filteredComplaints.length} of {totalComplaints} complaints
-        </div>
-      </div>
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 24,
+  }}
+>
+  <div>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 3,
+      }}
+    >
+      <div
+        style={{
+          width: 7,
+          height: 7,
+          borderRadius: "50%",
+          background: clr.primary,
+          boxShadow: `0 0 0 3px ${clr.blue}`,
+        }}
+      />
+      <span
+        style={{
+          fontSize: 11,
+          fontWeight: 700,
+          color: clr.primary,
+          letterSpacing: "0.8px",
+          textTransform: "uppercase",
+        }}
+      >
+        MLA Portal · Live
+      </span>
+    </div>
 
+    <h1
+      style={{
+        fontSize: 24,
+        fontWeight: 700,
+        margin: 0,
+        letterSpacing: "-0.4px",
+      }}
+    >
+      Complaint Dashboard
+    </h1>
+
+    <p style={{ fontSize: 12, color: clr.hint, margin: "3px 0 0" }}>
+      {users.length > 0
+        ? `${users.length} registered citizens · `
+        : ""}
+      Sorted by urgency
+    </p>
+  </div>
+
+  {/* Right Side */}
+  <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+    
+    {/* Complaint Count */}
+    <div
+      style={{
+        fontSize: 12,
+        color: clr.hint,
+        background: clr.card,
+        border: `1px solid ${clr.border}`,
+        borderRadius: R.md,
+        padding: "7px 14px",
+        boxShadow: shadow,
+      }}
+    >
+      {filteredComplaints.length} of {totalComplaints} complaints
+    </div>
+
+    {/* Logout Button */}
+    <button
+      onClick={handleLogout}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        padding: "0 18px",
+        height: 42,
+        borderRadius: R.md,
+        border: `1.5px solid ${clr.border}`,
+        background: clr.card,
+        color: clr.danger,
+        fontSize: 12,
+        fontWeight: 700,
+        cursor: "pointer",
+        boxShadow: shadow,
+        transition: "all 0.2s",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = clr.dangerBg;
+        e.currentTarget.style.borderColor = "#FECDD3";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = clr.card;
+        e.currentTarget.style.borderColor = clr.border;
+      }}
+    >
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+        <polyline points="16 17 21 12 16 7" />
+        <line x1="21" y1="12" x2="9" y2="12" />
+      </svg>
+
+      Logout
+    </button>
+  </div>
+</div>
       {/* ── Stat Cards ── */}
       <div style={{ display: "flex", gap: 14, marginBottom: 20, flexWrap: "wrap" }}>
         <StatCard label="Total Complaints"   value={totalComplaints} color={clr.primary} icon="📋" />
