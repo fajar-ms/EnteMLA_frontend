@@ -2,6 +2,78 @@ import React, { useState } from "react";
 import "./Register.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+const constituencyMap = {
+  thiruvananthapuram: [
+    { value: "kovalam", label: "Kovalam" },
+    { value: "vattiyoorkavu", label: "Vattiyoorkavu" },
+    { value: "thiruvananthapuram", label: "Thiruvananthapuram" },
+  ],
+  kollam: [
+    { value: "chavara", label: "Chavara" },
+    { value: "kundara", label: "Kundara" },
+    { value: "kollam", label: "Kollam" },
+  ],
+  pathanamthitta: [
+    { value: "adoor", label: "Adoor" },
+    { value: "thiruvalla", label: "Thiruvalla" },
+    { value: "pathanamthitta", label: "Pathanamthitta" },
+  ],
+  alappuzha: [
+    { value: "cherthala", label: "Cherthala" },
+    { value: "alappuzha", label: "Alappuzha" },
+    { value: "ambalappuzha", label: "Ambalappuzha" },
+  ],
+  kottayam: [
+    { value: "pala", label: "Pala" },
+    { value: "kottayam", label: "Kottayam" },
+    { value: "changanacherry", label: "Changanacherry" },
+  ],
+  idukki: [
+    { value: "devikulam", label: "Devikulam" },
+    { value: "udumbanchola", label: "Udumbanchola" },
+    { value: "thodupuzha", label: "Thodupuzha" },
+  ],
+  ernakulam: [
+    { value: "aluva", label: "Aluva" },
+    { value: "ernakulam", label: "Ernakulam" },
+    { value: "thrippunithura", label: "Thrippunithura" },
+  ],
+  thrissur: [
+    { value: "guruvayur", label: "Guruvayur" },
+    { value: "thrissur", label: "Thrissur" },
+    { value: "manalur", label: "Manalur" },
+  ],
+  palakkad: [
+    { value: "mannarkkad", label: "Mannarkkad" },
+    { value: "palakkad", label: "Palakkad" },
+    { value: "ottapalam", label: "Ottapalam" },
+  ],
+  malappuram: [
+    { value: "tirur", label: "Tirur" },
+    { value: "malappuram", label: "Malappuram" },
+    { value: "mankada", label: "Mankada" },
+  ],
+  kozhikode: [
+    { value: "beypore", label: "Beypore" },
+    { value: "kozhikode_north", label: "Kozhikode North" },
+    { value: "kozhikode_south", label: "Kozhikode South" },
+  ],
+  wayanad: [
+    { value: "mananthavady", label: "Mananthavady" },
+    { value: "sulthan_bathery", label: "Sulthan Bathery" },
+    { value: "kalpetta", label: "Kalpetta" },
+  ],
+  kannur: [
+    { value: "thalassery", label: "Thalassery" },
+    { value: "kannur", label: "Kannur" },
+    { value: "dharmadom", label: "Dharmadom" },
+  ],
+  kasaragod: [
+    { value: "manjeshwar", label: "Manjeshwar" },
+    { value: "kasaragod", label: "Kasaragod" },
+    { value: "udma", label: "Udma" },
+  ],
+};
 
 const Register = () => {
   const navigate = useNavigate();
@@ -18,9 +90,15 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+ const handleChange = (e) => {
+  const { name, value } = e.target;
+  setForm(prev => ({
+    ...prev,
+    [name]: value,
+    ...(name === "district" ? { constituency: "" } : {})
+  }));
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,6 +157,38 @@ const Register = () => {
             <span>📧</span>
             <input type="email" name="email" placeholder="Email Address" onChange={handleChange} required />
           </div>
+          {/* District */}
+<div className="input-group">
+  <span>🗺️</span>
+  <select name="district" onChange={handleChange} required>
+    <option value="" disabled selected>Select District</option>
+    <option value="thiruvananthapuram">Thiruvananthapuram</option>
+    <option value="kollam">Kollam</option>
+    <option value="pathanamthitta">Pathanamthitta</option>
+    <option value="alappuzha">Alappuzha</option>
+    <option value="kottayam">Kottayam</option>
+    <option value="idukki">Idukki</option>
+    <option value="ernakulam">Ernakulam</option>
+    <option value="thrissur">Thrissur</option>
+    <option value="palakkad">Palakkad</option>
+    <option value="malappuram">Malappuram</option>
+    <option value="kozhikode">Kozhikode</option>
+    <option value="wayanad">Wayanad</option>
+    <option value="kannur">Kannur</option>
+    <option value="kasaragod">Kasaragod</option>
+  </select>
+</div>
+
+{/* Constituency */}
+<div className="input-group">
+  <span>🏛️</span>
+  <select name="constituency" onChange={handleChange} required>
+    <option value="" disabled selected>Select Constituency</option>
+    {form.district && constituencyMap[form.district]?.map((c) => (
+      <option key={c.value} value={c.value}>{c.label}</option>
+    ))}
+  </select>
+</div>
 
           {/* Place */}
           <div className="input-group">
