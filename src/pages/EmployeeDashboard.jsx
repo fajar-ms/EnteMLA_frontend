@@ -276,7 +276,7 @@ export default function EmployeeComplaintDashboard() {
         <div style={{ display: "flex", gap: 10 }}>
           {/* Home Button */}
           <a
-            href="/login"
+            href="/"
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -528,175 +528,143 @@ export default function EmployeeComplaintDashboard() {
         </table>
 
         {/* ── RIGHT: Update Panel ── */}
+        {/* ── RIGHT: Update Panel ── */}
         {selectedComplaint && (
           <div style={{
-            position: "fixed",
-            top: 0,
-            right: 0,
-            width: "360px",
-            height: "100vh",
-            background: "#fff",
-            borderLeft: "1px solid #E2E8F0",
-            boxShadow: "-4px 0 20px rgba(0,0,0,0.08)",
-            padding: "18px",
-            zIndex: 999,
-            fontFamily: "'DM Sans','Segoe UI',sans-serif",
-            overflowY: "auto"
+            position: "fixed", top: 0, right: 0, width: "360px", height: "100vh",
+            background: "#fff", borderLeft: "1px solid #E2E8F0",
+            boxShadow: "-4px 0 20px rgba(0,0,0,0.08)", padding: "18px",
+            zIndex: 999, fontFamily: "'DM Sans','Segoe UI',sans-serif", overflowY: "auto"
           }}>
+            {/* Status variable for easier checking */}
+            {/* Note: I'm adding a helper variable here */}
+            {(() => {
+              const isResolved = selectedComplaint.status === "Resolved";
+              const isRejected = selectedComplaint.status === "Rejected";
+              const isClosed = isResolved || isRejected;
 
-            {/* Header */}
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 16, fontWeight: 700, color: "#0F172A" }}>
-                Update Complaint
-              </div>
-              <div style={{ fontSize: 11, color: "#94A3B8" }}>
-                {selectedComplaint.id}
-              </div>
-            </div>
+              return (
+                <>
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: "#0F172A" }}>{selectedComplaint.title}</div>
+                    <div style={{ fontSize: 16, color: "#94A3B8" }}>{selectedComplaint.category}</div>
+                  </div>
 
-            {/* Title */}
-            <div style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 14, fontWeight: 700 }}>
-                {selectedComplaint.title}
-              </div>
-              <div style={{ fontSize: 11, color: "#94A3B8" }}>
-                {selectedComplaint.userName}
-              </div>
-            </div>
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700 }}>{selectedComplaint.details}</div>
+                  </div>
 
-            {/* Badges */}
-            <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
-              <Badge label={selectedComplaint.urgency} styleMap={urgencyStyle} />
-              <Badge label={selectedComplaint.status} styleMap={statusStyle} />
-            </div>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+                    <Badge label={selectedComplaint.urgency} styleMap={urgencyStyle} />
+                    <Badge label={selectedComplaint.status} styleMap={statusStyle} />
+                  </div>
 
-            <div style={{ height: 1, background: "#E2E8F0", marginBottom: 14 }} />
+                  {/* ❌ VISUAL HINT FOR RESOLVED ITEMS */}
+                  {isResolved && (
+                    <div style={{
+                      background: "#F0FDF4", border: "1px solid #BBF7D0", color: "#15803D",
+                      padding: "10px", borderRadius: 8, fontSize: 12, marginBottom: 14, fontWeight: 600
+                    }}>
+                      ✅ This complaint is resolved and closed for edits.
+                    </div>
+                  )}
 
-            {/* Details */}
-            <div style={{ fontSize: 12, color: "#64748B", marginBottom: 14 }}>
-              <p><b>Category:</b> {selectedComplaint.category}</p>
-              <p><b>Ward:</b> {selectedComplaint.ward}</p>
-              <p><b>Date:</b> {selectedComplaint.date}</p>
-            </div>
+                  <div style={{ height: 1, background: "#E2E8F0", marginBottom: 14 }} />
 
-            {/* Reply box */}
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 11, fontWeight: 700, color: "#94A3B8" }}>
-                Reply to Citizen
-              </label>
+                  <div style={{ fontSize: 14, color: "#000000", marginBottom: 14 }}>
+                    <p><b>ID:</b> {selectedComplaint.id}</p>
+                    <p><b>Citizen:</b> {selectedComplaint.userName}</p>
+                    <p><b>Date:</b> {selectedComplaint.date}</p>
+                  </div>
 
-              <textarea
-                value={replies[selectedComplaint.id] || ""}
-                onChange={(e) =>
-                  setReplies(prev => ({
-                    ...prev,
-                    [selectedComplaint.id]: e.target.value
-                  }))
-                }
-                rows={4}
-                placeholder="Type reply..."
-                style={{
-                  width: "100%",
-                  marginTop: 6,
-                  padding: "8px",
-                  border: "1px solid #E2E8F0",
-                  borderRadius: 8,
-                  fontSize: 12,
-                  outline: "none",
-                  background: "#F8FAFC"
-                }}
-              />
-            </div>
+                  {/* Reply box - Disabled if Resolved */}
+                  <div style={{ marginBottom: 14 }}>
+                    <label style={{ fontSize: 11, fontWeight: 700, color: isClosed ? "#CBD5E1" : "#94A3B8" }}>
+                      Reply to Citizen {isClosed && "(Disabled)"}
+                    </label>
+                    <textarea
+                      value={replies[selectedComplaint.id] || ""}
+                      readOnly={isClosed} // ✅ Makes it non-editable
+                      onChange={(e) => setReplies(prev => ({ ...prev, [selectedComplaint.id]: e.target.value }))}
+                      rows={4}
+                      placeholder={isClosed ? "No further replies allowed" : "Type reply..."}
+                      style={{
+                        width: "100%", marginTop: 6, padding: "8px", border: "1px solid #E2E8F0",
+                        borderRadius: 8, fontSize: 12, outline: "none",
+                        background: isClosed ? "#F1F5F9" : "#F8FAFC", // ✅ Gray background when disabled
+                        color: isClosed ? "#94A3B8" : "#000",
+                        cursor: isClosed ? "not-allowed" : "text"
+                      }}
+                    />
+                  </div>
 
-            {/* Buttons */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {/* Action Buttons - All disabled if Resolved */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    <button
+                      disabled={isClosed}
+                      onClick={() => handleSendReply(selectedComplaint.id)}
+                      style={{
+                        padding: "9px", borderRadius: 8, fontSize: 13, fontWeight: 700,
+                        background: isClosed ? "#E2E8F0" : "#2563EB",
+                        color: isClosed ? "#94A3B8" : "#fff",
+                        border: "none", cursor: isClosed ? "not-allowed" : "pointer"
+                      }}
+                    >
+                      Send Reply
+                    </button>
 
-              <button
-                onClick={() => handleSendReply(selectedComplaint.id)}
-                style={{
-                  padding: "9px",
-                  borderRadius: 8,
-                  background: "#2563EB",
-                  color: "#fff",
-                  border: "none",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: "pointer"
-                }}
-              >
-                Send Reply
-              </button>
+                    <button
+                      disabled={actionLoading || isClosed || selectedComplaint.status === "In Progress"}
+                      onClick={() => updateStatus("In Progress")}
+                      style={{
+                        padding: "9px", borderRadius: 8, fontSize: 13, fontWeight: 700,
+                        background: isClosed ? "#F1F5F9" : "#FFF7ED",
+                        color: isClosed ? "#CBD5E1" : "#C2410C",
+                        border: "1px solid #FDE68A", cursor: (isClosed || actionLoading) ? "not-allowed" : "pointer"
+                      }}
+                    >
+                      Mark In Progress
+                    </button>
 
-              <button
-                disabled={actionLoading || selectedComplaint.status === "In Progress"}
-                onClick={() => updateStatus("In Progress")}
-                style={{
-                  padding: "9px",
-                  borderRadius: 8,
-                  background: "#FFF7ED",
-                  color: "#C2410C",
-                  border: "1px solid #FDE68A",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: "pointer"
-                }}
-              >
-                Mark In Progress
-              </button>
+                    <button
+                      disabled={actionLoading || isClosed}
+                      onClick={() => updateStatus("Resolved")}
+                      style={{
+                        padding: "9px", borderRadius: 8, fontSize: 13, fontWeight: 700,
+                        background: isClosed ? "#F1F5F9" : "#F0FDF4",
+                        color: isClosed ? "#CBD5E1" : "#15803D",
+                        border: "1px solid #BBF7D0", cursor: (isClosed || actionLoading) ? "not-allowed" : "pointer"
+                      }}
+                    >
+                      Mark Resolved
+                    </button>
 
-              <button
-                disabled={actionLoading || selectedComplaint.status === "Resolved"}
-                onClick={() => updateStatus("Resolved")}
-                style={{
-                  padding: "9px",
-                  borderRadius: 8,
-                  background: "#F0FDF4",
-                  color: "#15803D",
-                  border: "1px solid #BBF7D0",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: "pointer"
-                }}
-              >
-                Mark Resolved
-              </button>
+                    <button
+                      disabled={actionLoading || isClosed}
+                      onClick={() => updateStatus("Rejected")}
+                      style={{
+                        padding: "9px", borderRadius: 8, fontSize: 13, fontWeight: 700,
+                        background: isClosed ? "#F1F5F9" : "#FFF1F2",
+                        color: isClosed ? "#CBD5E1" : "#BE123C",
+                        border: "1px solid #FECDD3", cursor: (isClosed || actionLoading) ? "not-allowed" : "pointer"
+                      }}
+                    >
+                      Reject Complaint
+                    </button>
+                  </div>
 
-              <button
-                onClick={() => updateStatus("Rejected")}
-                style={{
-                  padding: "9px",
-                  borderRadius: 8,
-                  background: "#FFF1F2",
-                  color: "#BE123C",
-                  border: "1px solid #FECDD3",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  cursor: "pointer"
-                }}
-              >
-                Reject Complaint
-              </button>
-
-            </div>
-
-            {/* Close */}
-            <button
-              onClick={() => setSelectedComplaint(null)}
-              style={{
-                marginTop: 16,
-                width: "100%",
-                padding: "8px",
-                background: "#F1F5F9",
-                border: "none",
-                borderRadius: 8,
-                cursor: "pointer",
-                fontSize: 12,
-                fontWeight: 600
-              }}
-            >
-              Close Panel
-            </button>
-
+                  <button
+                    onClick={() => setSelectedComplaint(null)}
+                    style={{
+                      marginTop: 16, width: "100%", padding: "8px", background: "#F1F5F9",
+                      border: "none", borderRadius: 8, cursor: "pointer", fontSize: 12, fontWeight: 600
+                    }}
+                  >
+                    Close Panel
+                  </button>
+                </>
+              );
+            })()}
           </div>
         )}
 

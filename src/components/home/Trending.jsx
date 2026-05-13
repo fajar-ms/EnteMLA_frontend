@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Trending.css";
 
 const Trending = () => {
 
+  const navigate = useNavigate();
+
   const [complaints, setComplaints] = useState([]);
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [commentText, setCommentText] = useState({});
   const [openCommentBox, setOpenCommentBox] = useState(null); // ✅ ADDED
   const [loading, setLoading] = useState(true);
@@ -139,216 +143,117 @@ const Trending = () => {
 
   // Comment Button
   // Comment Button
-const handleComment = async (complaintId, text) => {
+  const handleComment = async () => {
+    if (!user || !user._id) {
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+      navigate("/login");
+      return;
+    }
 
-  const user = JSON.parse(localStorage.getItem("user"));
+    if (!commentText.trim()) return;
 
-  // NOT LOGGED IN
-  if (!user || !user._id) {
-    alert("Please login to comment");
-    return;
-  }
-
-  // EMPTY COMMENT
-  if (!text || text.trim() === "") {
-    alert("Comment cannot be empty");
-    return;
-  }
-
-  try {
-
-    const res = await fetch(
-      `http://localhost:3001/complaints/${complaintId}/comment`,
-      {
+    try {
+      const res = await fetch(`http://localhost:3001/complaints/${selectedComplaint._id}/comment`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text,
-          userId: user._id,
-        }),
-      }
-    );
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: commentText, userId: user._id }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    console.log(data);
-
-    // UPDATE COMMENT COUNT IN UI
-    setComplaints((prev) =>
-      prev.map((item) =>
-        item._id === complaintId
-          ? {
-              ...item,
-              replies: [...(item.replies || []), data],
-            }
+      // Update Local State for Modal & Grid
+      const updatedComplaints = complaints.map((item) =>
+        item._id === selectedComplaint._id
+          ? { ...item, replies: [...(item.replies || []), data] }
           : item
-      )
-    );
+      );
+      
+      setComplaints(updatedComplaints);
+      setSelectedComplaint(updatedComplaints.find(c => c._id === selectedComplaint._id));
+      setCommentText(""); // Clear input
+    } catch (error) {
+      alert("Failed to add comment");
+    }
+  };
 
-    // CLEAR INPUT
-    setCommentText((prev) => ({
-      ...prev,
-      [complaintId]: "",
-    }));
-
-    // CLOSE COMMENT BOX
-    setOpenCommentBox(null);
-
-  } catch (error) {
-
-    console.log(error);
-    alert("Failed to add comment");
-
-  }
-};
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <h2 className="loading">Loading complaints...</h2>
-      </div>
-    );
-  }
+  if (loading) return <div className="loading-container"><h2>Loading...</h2></div>;
 
   return (
-
     <div className="trending-container">
-
-      {/* Header */}
+      {/* Feed Header */}
       <div className="section-header">
-
         <div>
           <p className="sub-heading">Community Civic Feed</p>
           <h2 className="heading">Trending Public Complaints</h2>
         </div>
-
-        <button className="filter-btn">Latest Issues</button>
-
       </div>
 
-      {/* Grid */}
+      {/* Main Grid */}
       <div className="complaint-grid">
-
         {complaints.map((complaint) => (
-
           <div className="complaint-card" key={complaint._id}>
-
-            {/* Image */}
-            <div className="image-container">
-
-              <img
-                src={
-                  complaint.evidence
-                    ? `http://localhost:3001/uploads/${complaint.evidence}`
-                    : "https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1200&auto=format&fit=crop"
-                }
-                alt={complaint.title}
-              />
-
-              <div className="overlay"></div>
-
-              <span className={`urgency-badge ${complaint.urgency.toLowerCase()}`}>
-                {complaint.urgency}
-              </span>
-
-              <span className="status-badge">{complaint.status}</span>
-
+            <div className="image-container" onClick={() => setSelectedComplaint(complaint)}>
+              <img src={complaint.evidence ? `http://localhost:3001/uploads/${complaint.evidence}` : "https://images.unsplash.com/photo-1521791136064-7986c2920216"} alt={complaint.title} />
+              <div className="card-overlay">
+                <div className="top-badges"><span className="category-badge">{complaint.category}</span></div>
+                <div className="bottom-metadata"><h3 className="card-title">{complaint.title}</h3></div>
+              </div>
             </div>
 
-            {/* Content */}
-            <div className="card-content">
-
-              <div className="card-top">
-                <p className="category">{complaint.category}</p>
-                <p className="date">
-                  {new Date(complaint.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-
-              <h3>{complaint.title}</h3>
-              <p className="details">{complaint.details}</p>
-
-              <div className="location-row">
-                <span className="location-icon">📍</span>
-                <p className="location">
-                  {complaint.location || "Location unavailable"}
-                </p>
-              </div>
-
-              {/* Footer */}
-              <div className="card-footer">
-
-                {/* LIKE */}
-                <button
-                  className={`action-btn like-btn ${JSON.parse(localStorage.getItem("likedComplaints"))?.includes(
-                    complaint._id
-                  )
-                      ? "liked"
-                      : ""
-                    }`}
-                  onClick={() => handleLike(complaint._id)}
-                >
-                  👍 <span>{complaint.likes || 0}</span>
-                </button>
-
-                {/* COMMENT BUTTON */}
-                {user && user._id && (
-                  <button
-                    className="action-btn"
-                    onClick={() =>
-                      setOpenCommentBox(
-                        openCommentBox === complaint._id ? null : complaint._id
-                      )
-                    }
-                  >
-                    💬 <span>{complaint.replies?.length || 0}</span>
-                  </button>
-                )}
-
-                {/* REPOST */}
-                <button
-                  className="action-btn"
-                  onClick={() => handleRepost(complaint._id)}
-                >
-                  🔁 <span>{complaint.reposts || 0}</span>
-                </button>
-
-              </div>
-
-              {/* ✅ COMMENT INPUT (ONLY WHEN OPEN) */}
-              {openCommentBox === complaint._id && (
-                <div style={{ marginTop: "10px" }}>
-                  <input
-                    type="text"
-                    placeholder="Write a comment..."
-                    value={commentText[complaint._id] || ""}
-                    onChange={(e) =>
-                      handleCommentChange(complaint._id, e.target.value)
-                    }
-                    className="comment-input"
-                  />
-
-                  <button
-                    onClick={() =>
-                      handleComment(
-                        complaint._id,
-                        commentText[complaint._id]
-                      )
-                    }
-                  >
-                    Send
-                  </button>
-                </div>
-              )}
-
+            <div className="card-actions">
+              <button className="action-btn" onClick={() => handleLike(complaint._id)}>👍 {complaint.likes || 0}</button>
+              {/* This now opens the separate tile */}
+              <button className="action-btn" onClick={() => setSelectedComplaint(complaint)}>💬 {complaint.replies?.length || 0}</button>
+              <button className="action-btn" onClick={() => handleRepost(complaint._id)}>🔁 {complaint.reposts || 0}</button>
             </div>
           </div>
         ))}
-
       </div>
 
+      {/* ✅ SEPARATE COMMENT TILE (MODAL) */}
+      {selectedComplaint && (
+        <div className="modal-overlay" onClick={() => setSelectedComplaint(null)}>
+          <div className="comment-modal-tile" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Discussion</h3>
+              <button className="close-btn" onClick={() => setSelectedComplaint(null)}>×</button>
+            </div>
+            
+            <div className="modal-content">
+              <div className="complaint-summary">
+                <strong>{selectedComplaint.title}</strong>
+                <p>{selectedComplaint.details}</p>
+              </div>
+
+              <div className="comments-list">
+                {selectedComplaint.replies?.length > 0 ? (
+                  selectedComplaint.replies.map((reply, i) => (
+                    <div key={i} className="single-comment">
+                      <div className="comment-avatar">{reply.username?.charAt(0) || "U"}</div>
+                      <div className="comment-body">
+                        <p className="comment-user">{reply.username || "Citizen"}</p>
+                        <p className="comment-text">{reply.text}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="no-comments">No comments yet.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <input 
+                type="text" 
+                placeholder="Write your comment..." 
+                value={commentText} 
+                onChange={(e) => setCommentText(e.target.value)} 
+              />
+              <button onClick={handleComment}>Send</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
