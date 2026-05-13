@@ -25,17 +25,34 @@ export default function LoginPage() {
       });
 
       if (response.status === 200 || response.status === 201) {
+
         const userData = response.data.user;
+
         if (userData) {
+
           localStorage.setItem("user", JSON.stringify(userData));
           localStorage.setItem("role", role);
-          
-          const routes = {
-            citizen: "/citizen",
-            mla: "/mla",
-            employee: "/employee",
-          };
-          navigate(routes[role] || "/");
+
+          // ✅ CHECK REDIRECT PAGE
+          const redirectAfterLogin =
+            localStorage.getItem("redirectAfterLogin");
+
+          if (redirectAfterLogin) {
+
+            localStorage.removeItem("redirectAfterLogin");
+
+            navigate(redirectAfterLogin);
+
+          } else {
+
+            const routes = {
+              citizen: "/citizen",
+              mla: "/mla",
+              employee: "/employee",
+            };
+
+            navigate(routes[role] || "/");
+          }
         }
       }
     } catch (error) {
