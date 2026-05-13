@@ -178,7 +178,38 @@ export default function CitizenDashboard() {
   // }, []); // Run only once when the dashboard mounts
 
   // Inside CitizenDashboard.jsx
-const handleAddComplaint = async (e) => {
+  const handleDeleteComplaint = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this complaint?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:3001/complaints/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        // Remove from UI
+        setComplaints((prev) => prev.filter((c) => c.id !== id));
+
+        // Clear selected complaint if deleted
+        if (selectedComplaint?.id === id) {
+          setSelectedComplaint(null);
+        }
+      } else {
+        alert("Failed to delete complaint");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Server error while deleting");
+    }
+  };
+  const handleAddComplaint = async (e) => {
   e.preventDefault();
   
   console.log("Current User State:", user);
@@ -489,9 +520,64 @@ const handleAddComplaint = async (e) => {
                 onMouseEnter={e => { if (selectedComplaint?.id !== c.id) e.currentTarget.style.borderColor = "#93C5FD"; }}
                 onMouseLeave={e => { if (selectedComplaint?.id !== c.id) e.currentTarget.style.borderColor = clr.border; }}
               >
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, flex: 1, paddingRight: 8, lineHeight: 1.3 }}>{c.title}</span>
-                  <UrgencyBadge level={c.urgency} />
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    marginBottom: 6,
+                  }}
+                >
+                  <div style={{ flex: 1, paddingRight: 8 }}>
+                    <span
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      {c.title}
+                    </span>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <UrgencyBadge level={c.urgency} />
+
+                    {/* Delete Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteComplaint(c.id);
+                      }}
+                      style={{
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        padding: 2,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                      title="Delete Complaint"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#EF4444"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6L18.1 19.5A2 2 0 0116.1 21H7.9A2 2 0 015.9 19.5L5 6" />
+                        <path d="M10 11V17" />
+                        <path d="M14 11V17" />
+                        <path d="M9 6V4A1 1 0 0110 3H14A1 1 0 0115 4V6" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
                 <div style={{ fontSize: 11, color: clr.hint, marginBottom: 10 }}>{c.category} · {c.date}</div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
