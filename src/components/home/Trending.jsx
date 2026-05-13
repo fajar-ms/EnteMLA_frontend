@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Trending.css";
+import { useTranslation } from "react-i18next";
 
 const Trending = () => {
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
 
@@ -176,15 +178,15 @@ const Trending = () => {
     }
   };
 
-  if (loading) return <div className="loading-container"><h2>Loading...</h2></div>;
+  if (loading) return <div className="loading-container"><h2>{t("loading")}</h2></div>;
 
   return (
     <div className="trending-container">
       {/* Feed Header */}
       <div className="section-header">
         <div>
-          <p className="sub-heading">Community Civic Feed</p>
-          <h2 className="heading">Trending Public Complaints</h2>
+          <p className="sub-heading">{t("communityCivicFeed")}</p>
+          <h2 className="heading">{t("trendingPublicComplaints")}</h2>
         </div>
       </div>
 
@@ -215,7 +217,7 @@ const Trending = () => {
         <div className="modal-overlay" onClick={() => setSelectedComplaint(null)}>
           <div className="comment-modal-tile" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>Discussion</h3>
+              <h3>{t("discussion")}</h3>
               <button className="close-btn" onClick={() => setSelectedComplaint(null)}>×</button>
             </div>
             
@@ -231,13 +233,13 @@ const Trending = () => {
                     <div key={i} className="single-comment">
                       <div className="comment-avatar">{reply.username?.charAt(0) || "U"}</div>
                       <div className="comment-body">
-                        <p className="comment-user">{reply.username || "Citizen"}</p>
+                        <p className="comment-user">{reply.username || t("citizen")}</p>
                         <p className="comment-text">{reply.text}</p>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="no-comments">No comments yet.</p>
+                  <p className="no-comments">{t("noComments")}</p>
                 )}
               </div>
             </div>
@@ -245,11 +247,11 @@ const Trending = () => {
             <div className="modal-footer">
               <input 
                 type="text" 
-                placeholder="Write your comment..." 
+                placeholder={t("writecomment")} 
                 value={commentText} 
                 onChange={(e) => setCommentText(e.target.value)} 
               />
-              <button onClick={handleComment}>Send</button>
+              <button onClick={handleComment}>{t("send")}</button>
             </div>
           </div>
         </div>
