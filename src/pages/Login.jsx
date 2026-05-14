@@ -6,6 +6,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const role = localStorage.getItem("role");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -67,6 +68,16 @@ export default function LoginPage() {
         <header style={styles.header}>
           <div style={styles.logoBadge}>Ente<span>MLA</span></div>
           <h1 style={styles.mainTitle}>Access Portal</h1>
+         <div style={{
+  marginTop: 6,
+  fontSize: "14px",
+  fontWeight: 600,
+  color: "#0a66c2"
+}}>
+  {role === "citizen" && "Citizen Login"}
+  {role === "mla" && "MLA Login"}
+  {role === "employee" && "Employee Login"}
+</div>
           {/* <p style={styles.subText}>Enter your credentials to manage your constituency services</p> */}
         </header>
 
