@@ -11,7 +11,7 @@ const Trending = () => {
 
   const [complaints, setComplaints] = useState([]);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
-  const [commentText, setCommentText] = useState({});
+  const [commentText, setCommentText] = useState(""); // Change {} to ""
   const [openCommentBox, setOpenCommentBox] = useState(null); // ✅ ADDED
   const [loading, setLoading] = useState(true);
   const user = JSON.parse(localStorage.getItem("user"));
@@ -146,34 +146,44 @@ const Trending = () => {
   // Comment Button
   // Comment Button
   const handleComment = async () => {
+    // 1. Auth Check
     if (!user || !user._id) {
       localStorage.setItem("redirectAfterLogin", window.location.pathname);
       navigate("/login");
       return;
     }
 
-    if (!commentText.trim()) return;
+    if (!commentText || !commentText.trim()) return;
 
     try {
       const res = await fetch(`http://localhost:3001/complaints/${selectedComplaint._id}/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: commentText, userId: user._id }),
+        body: JSON.stringify({
+          text: commentText.trim(),
+          userId: user._id,
+          userName: user.name || "Citizen", // ✅ Added: Match your new Schema
+          role: user.role || "Citizen"      // ✅ Added: Match your new Schema
+        }),
       });
+
+      if (!res.ok) throw new Error("Server error");
 
       const data = await res.json();
 
-      // Update Local State for Modal & Grid
+      // 3. Update Local State
       const updatedComplaints = complaints.map((item) =>
         item._id === selectedComplaint._id
           ? { ...item, replies: [...(item.replies || []), data] }
           : item
       );
-      
+
       setComplaints(updatedComplaints);
       setSelectedComplaint(updatedComplaints.find(c => c._id === selectedComplaint._id));
-      setCommentText(""); // Clear input
+      setCommentText("");
+
     } catch (error) {
+      console.error("Comment Error:", error);
       alert("Failed to add comment");
     }
   };
@@ -220,7 +230,7 @@ const Trending = () => {
               <h3>{t("discussion")}</h3>
               <button className="close-btn" onClick={() => setSelectedComplaint(null)}>×</button>
             </div>
-            
+
             <div className="modal-content">
               <div className="complaint-summary">
                 <strong>{selectedComplaint.title}</strong>
@@ -231,9 +241,16 @@ const Trending = () => {
                 {selectedComplaint.replies?.length > 0 ? (
                   selectedComplaint.replies.map((reply, i) => (
                     <div key={i} className="single-comment">
-                      <div className="comment-avatar">{reply.username?.charAt(0) || "U"}</div>
+                      {/* Use userName for the avatar initial */}
+                      <div className="comment-avatar">
+                        {reply.userName?.charAt(0) || "U"}
+                      </div>
                       <div className="comment-body">
-                        <p className="comment-user">{reply.username || t("citizen")}</p>
+                        <p className="comment-user">
+                          {reply.userName}
+                          {/* Optional: Add a badge if it's an official reply */}
+                          {reply.role === "MLA" && <span className="official-badge">⭐ MLA</span>}
+                        </p>
                         <p className="comment-text">{reply.text}</p>
                       </div>
                     </div>
@@ -245,11 +262,11 @@ const Trending = () => {
             </div>
 
             <div className="modal-footer">
-              <input 
-                type="text" 
-                placeholder={t("writecomment")} 
-                value={commentText} 
-                onChange={(e) => setCommentText(e.target.value)} 
+              <input
+                type="text"
+                placeholder={t("Write comment......")}
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
               />
               <button onClick={handleComment}>{t("send")}</button>
             </div>

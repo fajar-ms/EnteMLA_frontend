@@ -1,27 +1,58 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Navbar.css";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const Navbar = () => {
+  const [activeSection, setActiveSection] = useState("home");
+  const { t, i18n } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [langOpen, setLangOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState("Translate");
   const [authOpen, setAuthOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
-const { t, i18n } = useTranslation();
   const loginRef = useRef();
   const registerRef = useRef();
   const langRef = useRef();
 
+  // Scroll Spy Logic: Detects which section is on screen
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (loginRef.current && !loginRef.current.contains(event.target)) setAuthOpen(false);
-      if (registerRef.current && !registerRef.current.contains(event.target)) setRegisterOpen(false);
-      if (langRef.current && !langRef.current.contains(event.target)) setLangOpen(false);
+    if (location.pathname !== "/") return;
+
+    const handleScroll = () => {
+      const sections = ["home", "about", "complaints", "stats", "qa", "contact"];
+      const scrollPosition = window.scrollY + 100; // Offset for navbar height
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const offsetTop = element.offsetTop;
+          const height = element.offsetHeight;
+
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + height) {
+            setActiveSection(section);
+          }
+        }
+      }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [location]);
+
+  const handleNavClick = (e, id) => {
+    e.preventDefault();
+    if (location.pathname !== "/") {
+      navigate(`/#${id}`);
+    } else {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };  
 
   const handleLanguageChange = (lang) => {
   i18n.changeLanguage(lang);   // 🔥 THIS IS REQUIRED

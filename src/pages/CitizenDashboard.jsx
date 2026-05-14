@@ -175,7 +175,7 @@ export default function CitizenDashboard() {
     };
 
     fetchMyComplaints();
-    
+
   }, []);
 
   const handleDeleteComplaint = async (id) => {
@@ -229,31 +229,31 @@ export default function CitizenDashboard() {
     }
   };
   const fetchMyComplaints = async () => {
-  setLoading(true);
-  try {
-    const response = await fetch(
-      `http://localhost:3001/complaints/citizen/${user._id}`
-    );
-    const data = await response.json();
-
-    if (Array.isArray(data)) {
-      setComplaints(
-        data.map((c) => ({
-          ...c,
-          id: c._id,
-          date: new Date(c.createdAt).toLocaleDateString(),
-        }))
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:3001/complaints/citizen/${user._id}`
       );
+      const data = await response.json();
+
+      if (Array.isArray(data)) {
+        setComplaints(
+          data.map((c) => ({
+            ...c,
+            id: c._id,
+            date: new Date(c.createdAt).toLocaleDateString(),
+          }))
+        );
+      }
+    } catch (err) {
+      console.error("Failed to load complaints:", err);
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Failed to load complaints:", err);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
   const filteredComplaints = complaints.filter(c =>
-    ((c.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (c.id || "").toLowerCase().includes(searchQuery.toLowerCase()))
+  ((c.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (c.id || "").toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   if (!user) return (
@@ -303,7 +303,7 @@ export default function CitizenDashboard() {
           </div>
 
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-          
+
 
             {/* Logout */}
             <button
@@ -397,7 +397,35 @@ export default function CitizenDashboard() {
                   <div style={{ fontSize: 11, color: clr.hint, marginBottom: 12, fontWeight: 500 }}>
                     ID: <strong style={{ color: clr.accent1 }}>{selectedComplaint.id}</strong> · {selectedComplaint.category} · {selectedComplaint.date}
                   </div>
+
                   <div style={{ height: 1, background: clr.border, marginBottom: 12 }} />
+
+                  {/* 🔴 NEW: REJECTION HIGHLIGHT BOX */}
+                  {selectedComplaint.status === "Rejected" && selectedComplaint.rejectionReasons?.length > 0 && (
+                    <div style={{
+                      background: "#FFF1F2",
+                      border: "1.5px solid #FECDD3",
+                      borderRadius: radius.sm,
+                      padding: "12px 14px",
+                      marginBottom: "16px",
+                      borderLeft: "4px solid #E11D48",
+                      boxShadow: "0 2px 8px rgba(225, 29, 72, 0.05)"
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                        <span style={{ fontSize: "16px" }}>🚫</span>
+                        <span style={{ fontWeight: 800, fontSize: "10px", color: "#9F1239", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                          Rejection Reason
+                        </span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: "12px", color: "#BE123C", fontWeight: "600", lineHeight: "1.5" }}>
+                        {selectedComplaint.rejectionReasons[selectedComplaint.rejectionReasons.length - 1].text}
+                      </p>
+                      <div style={{ marginTop: "8px", fontSize: "10px", color: "#FB7185", fontWeight: 500 }}>
+                        By: {selectedComplaint.rejectionReasons[0].adminName} ({selectedComplaint.rejectionReasons[0].adminRole})
+                      </div>
+                    </div>
+                  )}
+
                   <div style={{ display: "flex", gap: 16 }}>
                     <div>
                       <div style={{ fontSize: 9, color: clr.hint, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 6 }}>Status</div>
@@ -408,7 +436,7 @@ export default function CitizenDashboard() {
                       <UrgencyBadge level={selectedComplaint.urgency} />
                     </div>
                   </div>
-                 {selectedComplaint.details && (
+                  {selectedComplaint.details && (
                     <div style={{ marginTop: 12, padding: "10px 13px", background: "#fff", border: `1.5px solid ${clr.border}`, borderRadius: radius.sm }}>
                       <p style={{ fontSize: 12, color: clr.muted, margin: 0, lineHeight: 1.7, fontWeight: 500 }}>
                         {selectedComplaint.details}
