@@ -16,7 +16,7 @@
   "register": "Register"
   ,
   "gov_label": "Digital Governance Initiative",
-  "constituency": "Greenfield",
+  "constituency": "Constituency",
   "hero_title_main": "Your Voice.",
   "hero_title_sub": "Real Change.",
   "hero_description": "A transparent platform for infrastructure reporting, community project oversight, and direct citizen-representative engagement.",
@@ -38,7 +38,6 @@
   "avg_response": "Avg Response",
   "file_complaint": "File Complaint",
   
-    "loading": "Loading statistics...",
     "civicAnalytics": "Civic Analytics",
     "publicTransparencyDashboard": "Public Transparency Dashboard",
     "realTime": "Real-Time",
@@ -54,7 +53,19 @@
     "liveStatus1": "Public complaints are monitored in real time",
     "liveStatus2": "Resolved issues are verified and archived",
     "liveStatus3": "Escalated complaints receive priority tracking",
-    "fileComplaint": "File Complaint"
+    "fileComplaint": "File Complaint",
+
+
+    "loading": "Loading...",
+    "communityCivicFeed": "Community Civic Feed",
+    "trendingPublicComplaints": "Trending Public Complaints",
+    "discussion": "Discussion",
+    "citizen": "Citizen",
+    "noComments": "No comments yet.",
+    "writeComment": "Write your comment...",
+    "send": "Send",
+    "failedToAddComment": "Failed to add comment"
+  
   }
 
 
