@@ -197,12 +197,6 @@ const Register = () => {
               ))}
             </select>
           </div>
-
-
-
-
-
-
           {/* Place */}
           <div className="input-group">
             <span>📍</span>
