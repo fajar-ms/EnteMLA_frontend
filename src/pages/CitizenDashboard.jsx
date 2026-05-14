@@ -160,6 +160,10 @@ export default function CitizenDashboard() {
       try {
         const response = await fetch(`http://localhost:3001/complaints/citizen/${userData._id}`);
         const data = await response.json();
+        console.log("Complaints API Response:", data);
+        console.log("Comments:", data[0]?.comments);
+console.log("Replies:", data[0]?.replies);
+console.log("First Reply Object:", data[0]?.replies?.[0]);
         if (Array.isArray(data)) {
           setComplaints(data.map(c => ({
             ...c,
@@ -672,24 +676,115 @@ export default function CitizenDashboard() {
                     <div style={{ fontSize: 11, color: clr.success, marginTop: 7, fontWeight: 600 }}>📎 {c.evidence}</div>
                   )}
 
-                  <div style={{ marginTop: 10 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, color: clr.hint, marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.6px" }}>Updates</div>
-                    <div style={{ maxHeight: 70, overflowY: "auto" }}>
-                      {c.replies && c.replies.length > 0 ? (
-                        c.replies.map((r, i) => (
-                          <div key={i} style={{
-                            fontSize: 11, background: "#F8FAFF",
-                            border: `1px solid ${clr.border}`, borderRadius: 7,
-                            padding: "5px 8px", marginBottom: 4, fontWeight: 500,
-                          }}>
-                            <strong style={{ color: clr.primary }}>{r.from}:</strong> {r.text}
-                          </div>
-                        ))
-                      ) : (
-                        <span style={{ fontSize: 10, color: clr.hint, fontWeight: 500 }}>No updates yet</span>
-                      )}
-                    </div>
-                  </div>
+                 {/* Replace every occurrence of c.replies / selectedComplaint.replies with this block.
+   This will show:
+   - MLA replies
+   - Employee replies
+   - Public comments from Home page discussion
+*/}
+
+<div style={{ marginTop: 10 }}>
+  <div
+    style={{
+      fontSize: 9,
+      fontWeight: 800,
+      color: clr.hint,
+      marginBottom: 5,
+      textTransform: "uppercase",
+      letterSpacing: "0.6px",
+    }}
+  >
+    Updates & Public Discussion
+  </div>
+
+  <div style={{ maxHeight: 160, overflowY: "auto" }}>
+    {(
+      c.comments || // public comments from home page
+      c.replies ||  // MLA/Employee replies
+      []
+    ).length > 0 ? (
+      (c.comments || c.replies || []).map((reply, i) => (
+        <div
+          key={i}
+          style={{
+            fontSize: 11,
+            background: "#F8FAFF",
+            border: `1px solid ${clr.border}`,
+            borderRadius: 7,
+            padding: "8px 10px",
+            marginBottom: 6,
+            fontWeight: 500,
+          }}
+        >
+          {/* Name + Role */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              marginBottom: 4,
+            }}
+          >
+            <strong style={{ color: clr.primary }}>
+              {reply.username || reply.from || "Anonymous"}
+            </strong>
+
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 700,
+                padding: "2px 6px",
+                borderRadius: 999,
+                background:
+                  (reply.role || "").toLowerCase() === "mla"
+                    ? "#EEF2FF"
+                    : (reply.role || "").toLowerCase() === "employee"
+                    ? "#ECFDF5"
+                    : "#FFF7ED",
+                color:
+                  (reply.role || "").toLowerCase() === "mla"
+                    ? "#4338CA"
+                    : (reply.role || "").toLowerCase() === "employee"
+                    ? "#065F46"
+                    : "#9A3412",
+              }}
+            >
+              {reply.role || "Citizen"}
+            </span>
+          </div>
+
+          {/* Comment Text */}
+          <div style={{ color: clr.text, lineHeight: 1.5 }}>
+            {reply.text}
+          </div>
+
+          {/* Date */}
+          {reply.createdAt && (
+            <div
+              style={{
+                fontSize: 9,
+                color: clr.hint,
+                marginTop: 4,
+              }}
+            >
+              {new Date(reply.createdAt).toLocaleString()}
+            </div>
+          )}
+        </div>
+      ))
+    ) : (
+      <span
+        style={{
+          fontSize: 10,
+          color: clr.hint,
+          fontWeight: 500,
+        }}
+      >
+        No updates yet
+      </span>
+    )}
+  </div>
+</div>
                 </div>
               ))}
             </div>

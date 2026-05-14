@@ -158,7 +158,8 @@ const Trending = () => {
       const res = await fetch(`http://localhost:3001/complaints/${selectedComplaint._id}/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: commentText, userId: user._id }),
+        body: JSON.stringify({ text: commentText, userId: user._id ,username: user.name || user.username,
+  role: user.role,}),
       });
 
       const data = await res.json();
@@ -233,7 +234,9 @@ const Trending = () => {
                     <div key={i} className="single-comment">
                       <div className="comment-avatar">{reply.username?.charAt(0) || "U"}</div>
                       <div className="comment-body">
-                        <p className="comment-user">{reply.username || t("citizen")}</p>
+                        <p className="comment-user">
+  {reply.username || t("citizen")} ({reply.role || t("citizen")})
+</p>
                         <p className="comment-text">{reply.text}</p>
                       </div>
                     </div>
