@@ -15,7 +15,7 @@ const Hero = () => {
           <div className="label-group">
             <span className="gov-label">{t("gov_label")}</span>
             <span className="division-line"></span>
-            <span className="constituency-label">{t("Constituency")}</span>
+            <span className="constituency-label">{t("constituency")}</span>
           </div>
           <h1>{t("hero_title_main")} <span className="text-muted">{t("hero_title_sub")}</span></h1>
           <p className="description">

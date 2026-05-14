@@ -1,159 +1,221 @@
-:root {
-  --primary: #0a66c2;
-  --primary-dark: #004182;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --bg-white: #ffffff;
-  --border-light: #e2e8f0;
-}
-
+/* Navbar.css */
 .navbar {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border-light);
   position: sticky;
   top: 0;
-  z-index: 1000;
-  padding: 0 40px;
+  z-index: 1100;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
 .navbar-container {
-  max-width: 1200px;
+  max-width: 1480px;
   margin: 0 auto;
-  height: 72px;
+  padding: 0 5%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  height: 85px;
 }
 
-/* LOGO */
+/* Logo */
 .logo {
-  font-size: 24px;
+  font-size: 1.65rem;
   font-weight: 800;
-  color: var(--primary);
+  color: #3d4a5b;
   letter-spacing: -0.5px;
+  cursor: pointer;
 }
 
 .logo span {
-  color: #16a34a; /* Distinctive color for the "MLA" part */
+  background: linear-gradient(90deg, #14b8a6, #0f766e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* CENTER LINKS */
+/* Center Navigation */
 .nav-links {
   display: flex;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 2.2rem;
 }
 
 .nav-item {
+  color: #475569;
   text-decoration: none;
-  color: var(--text-muted);
-  font-size: 14px;
   font-weight: 600;
-  padding: 8px 16px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-
-.nav-item:hover {
-  color: var(--primary);
-  background: rgba(10, 102, 194, 0.05);
-}
-
-/* BUTTONS & DROPDOWNS */
-.right-section {
-  display: flex;
-  gap: 12px;
-}
-
-.dropdown-wrapper {
+  font-size: 1.05rem;
+  transition: all 0.3s ease;
   position: relative;
 }
 
-.arrow {
-  font-size: 9px;
-  margin-left: 4px;
-  vertical-align: middle;
-  opacity: 0.7;
+.nav-item:hover {
+  color: #0f766e;
 }
 
-/* Professional Button Styles */
-.primary-btn, .secondary-btn, .outline-btn {
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
+.nav-item::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2.5px;
+  bottom: -6px;
+  left: 0;
+  background: linear-gradient(to right, #14b8a6, #22d3ee);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.nav-item:hover::after {
+  width: 100%;
+}
+
+/* Right Section */
+.right-section {
   display: flex;
   align-items: center;
-  height: 38px;
+  gap: 12px;
 }
 
-.primary-btn {
-  background: var(--primary);
-  color: white;
-}
-
-.primary-btn:hover {
-  background: var(--primary-dark);
-  box-shadow: 0 4px 12px rgba(10, 102, 194, 0.2);
+/* Buttons */
+.secondary-btn,
+.primary-btn,
+.outline-btn {
+  padding: 10px 22px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
 }
 
 .secondary-btn {
-  background: transparent;
-  color: var(--text-main);
-  border: 1px solid var(--border-light);
+  background: #f1f5f9;
+  color: #475569;
 }
 
 .secondary-btn:hover {
-  background: #f8fafc;
+  background: #e0f2fe;
+  color: #0f766e;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #14b8a6, #0f766e);
+  color: white;
+  box-shadow: 0 6px 15px rgba(20, 184, 166, 0.3);
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(20, 184, 166, 0.4);
 }
 
 .outline-btn {
   background: transparent;
-  color: var(--primary);
-  border: 1px solid var(--primary);
+  color: #0f766e;
+  border: 2px solid #14b8a6;
 }
 
 .outline-btn:hover {
-  background: rgba(10, 102, 194, 0.05);
+  background: #14b8a6;
+  color: white;
 }
 
-/* DROPDOWN MENU */
+/* Dropdowns */
+.dropdown-wrapper {
+  position: relative;
+}
+
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: 100%;
   right: 0;
-  background: var(--bg-white);
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  min-width: 180px;
+  margin-top: 12px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+  min-width: 200px;
   overflow: hidden;
-  animation: slideIn 0.2s ease-out;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  animation: dropdownFade 0.3s ease forwards;
+  z-index: 1200;
 }
 
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.dropdown-menu div, .dropdown-menu a {
-  padding: 12px 16px;
-  font-size: 14px;
-  color: var(--text-main);
+.dropdown-menu div,
+.dropdown-menu a {
+  padding: 14px 24px;
+  color: #334155;
   text-decoration: none;
   display: block;
-  cursor: pointer;
-  transition: 0.2s;
+  font-weight: 500;
+  transition: all 0.2s;
 }
 
-.dropdown-menu div:hover, .dropdown-menu a:hover {
-  background: #f1f5f9;
-  color: var(--primary);
+.dropdown-menu div:hover,
+.dropdown-menu a:hover {
+  background: #f0fdfa;
+  color: #0f766e;
+  padding-left: 28px;
 }
 
-.dropdown-menu a:not(:last-child), .dropdown-menu div:not(:last-child) {
-  border-bottom: 1px solid #f1f5f9;
+/* Arrow */
+.arrow {
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-wrapper:hover .arrow,
+.secondary-btn[aria-expanded="true"] .arrow,
+.primary-btn[aria-expanded="true"] .arrow {
+  transform: rotate(180deg);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .nav-links {
+    gap: 1.8rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 868px) {
+  .navbar-container {
+    height: 78px;
+  }
+
+  .nav-links {
+    display: none; /* You can add a hamburger menu later */
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .right-section {
+    gap: 8px;
+  }
+
+  .secondary-btn,
+  .primary-btn,
+  .outline-btn {
+    padding: 9px 16px;
+    font-size: 0.95rem;
+  }
 }

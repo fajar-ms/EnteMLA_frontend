@@ -50,7 +50,7 @@ const Contact = () => {
 
         {/* LEFT SIDEBAR */}
         <div className="constituency-sidebar">
-
+          <div class="sidebar-header">
           <h2>Constituencies</h2>
           <input
             type="text"
@@ -61,6 +61,7 @@ const Contact = () => {
             }
             className="search-input"
           />
+          </div>
           {filteredConstituencies.map((item) => (
 
             <div

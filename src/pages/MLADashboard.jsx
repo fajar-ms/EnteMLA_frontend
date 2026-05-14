@@ -1,340 +1,643 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+// ── Design Tokens ──────────────────────────────────────────────
 const clr = {
-  bg: "#F8FAFC", card: "#FFFFFF", border: "#E2E8F0", text: "#0F172A",
-  muted: "#64748B", hint: "#94A3B8", primary: "#2563EB",
-  danger: "#EF4444", dangerBg: "#FEF2F2", dangerText: "#B91C1C",
-  warning: "#F59E0B", warningBg: "#FFFBEB", warningText: "#92400E",
-  success: "#22C55E", successBg: "#F0FDF4", successText: "#166534",
-  blue: "#EFF6FF", blueText: "#1D4ED8",
-  inProgress: "#FFF7ED", inProgressText: "#C2410C",
+  bg: "#F5F0E8",
+  paper: "#FDFAF4",
+  card: "#FFFFFF",
+  border: "#E8DFD0",
+  borderLight: "#F0E9DC",
+  text: "#1A1410",
+  textMid: "#4A3F35",
+  muted: "#8C7B6B",
+  hint: "#B5A595",
+  primary: "#1A4A8C",
+  primaryLight: "#EEF3FA",
+  accent: "#C4401C",
+  accentLight: "#FDF1EE",
+  gold: "#B8860B",
+  goldLight: "#FDF8EE",
+  success: "#1A6B3C",
+  successLight: "#EEF7F2",
+  warning: "#C47A1C",
+  warningLight: "#FDF5EE",
+  inProgress: "#5B3A8C",
+  inProgressLight: "#F5F0FB",
 };
-const shadow = "0 1px 4px rgba(0,0,0,0.06)";
-const R = { sm: 8, md: 12, lg: 16 };
+
+const font = {
+  display: "'Playfair Display', Georgia, serif",
+  body: "'DM Sans', 'Segoe UI', sans-serif",
+  mono: "'JetBrains Mono', monospace",
+};
 
 // ── Atoms ──────────────────────────────────────────────────────
 const UrgencyBadge = ({ level }) => {
   const map = {
-    Urgent: { bg: clr.dangerBg, color: clr.dangerText, dot: clr.danger },
-    Medium: { bg: clr.warningBg, color: clr.warningText, dot: clr.warning },
-    Normal: { bg: clr.successBg, color: clr.successText, dot: clr.success },
+    Urgent: { bg: clr.accentLight, color: clr.accent, label: "● Urgent" },
+    Medium: { bg: clr.warningLight, color: clr.warning, label: "● Medium" },
+    Normal: { bg: clr.successLight, color: clr.success, label: "● Normal" },
   };
+
   const s = map[level] || map.Normal;
+
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 5, background: s.bg, color: s.color, fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", padding: "3px 9px", borderRadius: 99 }}>
-      <span style={{ width: 6, height: 6, borderRadius: "50%", background: s.dot, flexShrink: 0 }} />
-      {level || "Normal"}
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        background: s.bg,
+        color: s.color,
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: "0.8px",
+        padding: "3px 9px",
+        borderRadius: 3,
+        fontFamily: font.body,
+        textTransform: "uppercase",
+      }}
+    >
+      {s.label}
     </span>
   );
 };
 
 const StatusBadge = ({ status }) => {
   const map = {
-    Pending: { bg: clr.blue, color: clr.blueText },
-    "In Progress": { bg: clr.inProgress, color: clr.inProgressText },
-    Resolved: { bg: clr.successBg, color: clr.successText },
-    Rejected: { bg: clr.dangerBg, color: clr.dangerText },
+    Pending: { bg: clr.primaryLight, color: clr.primary },
+    "In Progress": {
+      bg: clr.inProgressLight,
+      color: clr.inProgress,
+    },
+    Resolved: {
+      bg: clr.successLight,
+      color: clr.success,
+    },
+    Rejected: {
+      bg: clr.accentLight,
+      color: clr.accent,
+    },
+    Forwarded: {
+      bg: clr.goldLight,
+      color: clr.gold,
+    },
   };
-  const s = map[status] || { bg: "#F1F5F9", color: clr.muted };
+
+  const s = map[status] || {
+    bg: "#F1EDE5",
+    color: clr.muted,
+  };
+
   return (
-    <span style={{ display: "inline-block", background: s.bg, color: s.color, fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", padding: "3px 9px", borderRadius: 99 }}>
+    <span
+      style={{
+        display: "inline-block",
+        background: s.bg,
+        color: s.color,
+        fontSize: 10,
+        fontWeight: 700,
+        letterSpacing: "0.8px",
+        padding: "3px 9px",
+        borderRadius: 3,
+        fontFamily: font.body,
+        textTransform: "uppercase",
+      }}
+    >
       {status || "Pending"}
     </span>
   );
 };
 
-const StatCard = ({ label, value, color, icon }) => (
-  <div style={{ background: clr.card, border: `1px solid ${clr.border}`, borderRadius: R.lg, padding: "16px 20px", boxShadow: shadow, display: "flex", alignItems: "center", gap: 14, flex: 1, minWidth: 200 }}>
-    <div style={{ width: 42, height: 42, borderRadius: R.md, background: color + "18", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>{icon}</div>
-    <div>
-      <div style={{ fontSize: 11, color: clr.hint, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 3 }}>{label}</div>
-      <div style={{ fontSize: 24, fontWeight: 700, color, lineHeight: 1 }}>{value}</div>
+const AvatarCircle = ({ name }) => {
+  const initials = (name || "?")
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const hue =
+    (name || "")
+      .split("")
+      .reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
+
+  return (
+    <div
+      style={{
+        width: 32,
+        height: 32,
+        borderRadius: "50%",
+        flexShrink: 0,
+        background: `hsl(${hue},30%,88%)`,
+        color: `hsl(${hue},40%,30%)`,
+        fontSize: 11,
+        fontWeight: 700,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: font.body,
+        border: `1.5px solid hsl(${hue},20%,80%)`,
+      }}
+    >
+      {initials}
     </div>
+  );
+};
+
+const StatCard = ({ label, value, color, icon, sub }) => (
+  <div
+    style={{
+      background: clr.paper,
+      border: `1px solid ${clr.border}`,
+      borderTop: `3px solid ${color}`,
+      borderRadius: 6,
+      padding: "18px 20px",
+      flex: 1,
+      minWidth: 0,
+      position: "relative",
+      overflow: "hidden",
+    }}
+  >
+    <div
+      style={{
+        position: "absolute",
+        top: 12,
+        right: 16,
+        fontSize: 28,
+        opacity: 0.08,
+        lineHeight: 1,
+      }}
+    >
+      {icon}
+    </div>
+
+    <div
+      style={{
+        fontSize: 10,
+        fontFamily: font.body,
+        fontWeight: 700,
+        color: clr.muted,
+        letterSpacing: "1.2px",
+        textTransform: "uppercase",
+        marginBottom: 8,
+      }}
+    >
+      {label}
+    </div>
+
+    <div
+      style={{
+        fontSize: 36,
+        fontFamily: font.display,
+        fontWeight: 700,
+        color,
+        lineHeight: 1,
+        marginBottom: 4,
+      }}
+    >
+      {value}
+    </div>
+
+    {sub && (
+      <div
+        style={{
+          fontSize: 11,
+          color: clr.hint,
+          fontFamily: font.body,
+        }}
+      >
+        {sub}
+      </div>
+    )}
   </div>
 );
 
-// ── Main Dashboard ─────────────────────────────────────────────
+const selectSt = {
+  width: "100%",
+  padding: "8px 10px",
+  fontSize: 12,
+  color: clr.text,
+  background: clr.paper,
+  border: `1px solid ${clr.border}`,
+  borderRadius: 4,
+  outline: "none",
+  fontFamily: font.body,
+  cursor: "pointer",
+  letterSpacing: "0.3px",
+};
+
+const labelSt = {
+  fontSize: 9,
+  fontWeight: 700,
+  color: clr.hint,
+  letterSpacing: "1.4px",
+  textTransform: "uppercase",
+  display: "block",
+  marginBottom: 6,
+  fontFamily: font.body,
+};
+
+const urgencyScore = (u) =>
+  u === "Urgent" ? 1 : u === "Medium" ? 2 : 3;
+
+// ── Main Component ─────────────────────────────────────────────
 export default function MlaComplaintDashboard() {
   const navigate = useNavigate();
-  const [complaints, setComplaints] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedComplaint, setSelectedComplaint] = useState(null);
-  const [actionLoading, setActionLoading] = useState(false);
-  const [filters, setFilters] = useState({ urgency: "", category: "", ward: "", status: "" });
-  
-  // Rejection Logic States
-  const [rejectionReason, setRejectionReason] = useState("");
-  const [isRejecting, setIsRejecting] = useState(false);
 
-  const [replies, setReplies] = useState({});
+  const [complaints, setComplaints] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [selectedComplaint, setSelectedComplaint] =
+    useState(null);
+
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const [comment, setComment] = useState("");
+
+  const [filters, setFilters] = useState({
+    urgency: "",
+    category: "",
+    ward: "",
+    status: "",
+  });
 
   useEffect(() => {
-    fetchData();
+    const link = document.createElement("link");
+
+    link.href =
+      "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap";
+
+    link.rel = "stylesheet";
+
+    document.head.appendChild(link);
   }, []);
 
-  const fetchData = () => {
+  useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:3001/complaints")
-      .then(r => r.json())
-      .then((data) => {
-        const formatted = Array.isArray(data) ? data.map(c => ({
-          ...c,
-          id: c._id,
-          userName: c.citizenId?.name || "Unknown Citizen",
-          date: new Date(c.createdAt).toLocaleDateString(),
-        })) : [];
-        setComplaints(formatted);
+
+    Promise.all([
+      fetch("http://localhost:3001/complaints").then((r) => {
+        if (!r.ok)
+          throw new Error("Failed to fetch complaints");
+
+        return r.json();
+      }),
+
+      fetch("http://localhost:3001/api/users")
+        .then((r) => r.json())
+        .catch(() => []),
+    ])
+      .then(([complaintsData, usersData]) => {
+        const formattedComplaints = Array.isArray(
+          complaintsData
+        )
+          ? complaintsData.map((c) => ({
+              ...c,
+              id: c._id,
+              userName:
+                c.citizenId?.name || "Unknown Citizen",
+              date: new Date(
+                c.createdAt
+              ).toLocaleDateString(),
+              ward: c.ward || "General",
+            }))
+          : [];
+
+        setComplaints(formattedComplaints);
+
+        setUsers(
+          Array.isArray(usersData) ? usersData : []
+        );
+
+        if (formattedComplaints.length > 0) {
+          setSelectedComplaint(
+            formattedComplaints[0]
+          );
+        }
+
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setError(
+          "Could not connect to the server. Please ensure the NestJS backend is running on port 3001."
+        );
+
+        setLoading(false);
+      });
+  }, []);
+
+  const setFilter = (key, val) =>
+    setFilters((f) => ({
+      ...f,
+      [key]: val,
+    }));
+
+  const activeFilters =
+    Object.values(filters).filter(Boolean).length;
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
   };
 
-  const updateStatus = async (newStatus, reason = "") => {
+  const uniqueCategories = [
+    ...new Set(
+      complaints
+        .map((c) => c.category)
+        .filter(Boolean)
+    ),
+  ];
+
+  const uniqueWards = [
+    ...new Set(
+      complaints.map((c) => c.ward).filter(Boolean)
+    ),
+  ];
+
+  const uniqueStatuses = [
+    ...new Set(
+      complaints
+        .map((c) => c.status)
+        .filter(Boolean)
+    ),
+  ];
+
+  const filteredComplaints = useMemo(
+    () =>
+      complaints
+        .filter(
+          (c) =>
+            !filters.urgency ||
+            c.urgency === filters.urgency
+        )
+        .filter(
+          (c) =>
+            !filters.category ||
+            c.category === filters.category
+        )
+        .filter(
+          (c) =>
+            !filters.ward ||
+            c.ward === filters.ward
+        )
+        .filter(
+          (c) =>
+            !filters.status ||
+            c.status === filters.status
+        )
+        .sort(
+          (a, b) =>
+            urgencyScore(a.urgency) -
+            urgencyScore(b.urgency)
+        ),
+    [complaints, filters]
+  );
+
+  const totalComplaints = complaints.length;
+
+  const urgentIssues = complaints.filter(
+    (c) => c.urgency === "Urgent"
+  ).length;
+
+  const pendingCount = complaints.filter(
+    (c) => c.status === "Pending"
+  ).length;
+
+  const resolvedCount = complaints.filter(
+    (c) => c.status === "Resolved"
+  ).length;
+
+  const updateStatus = async (newStatus) => {
     if (!selectedComplaint) return;
-    if (newStatus === "Rejected" && !reason.trim()) return alert("Reason required");
 
     setActionLoading(true);
+
     try {
-      const response = await fetch(`http://localhost:3001/complaints/${selectedComplaint.id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          status: newStatus, 
-          rejectionReason: reason, 
-          adminName: "MLA Rajesh", 
-          adminRole: "MLA" 
-        }),
-      });
+      const response = await fetch(
+        `http://localhost:3001/complaints/${selectedComplaint.id}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: newStatus,
+            comment,
+            userId:
+              selectedComplaint.citizenId?._id ||
+              selectedComplaint.citizenId,
+          }),
+        }
+      );
 
       if (response.ok) {
-        fetchData(); // Refresh list
-        setSelectedComplaint(null); // Close panel
-        setIsRejecting(false);
-        setRejectionReason("");
+        setComplaints((prev) =>
+          prev.map((c) =>
+            c.id === selectedComplaint.id
+              ? {
+                  ...c,
+                  status: newStatus,
+                  comment,
+                }
+              : c
+          )
+        );
+
+        setSelectedComplaint((prev) => ({
+          ...prev,
+          status: newStatus,
+          comment,
+        }));
+      } else {
+        alert("Failed to update status.");
       }
-    } catch (err) {
-      alert("Error updating status");
+    } catch {
+      alert("Network error.");
     } finally {
       setActionLoading(false);
     }
   };
-
-  const handleSendReply = async (complaintId) => {
-    const text = replies[complaintId];
-    if (!text?.trim()) return alert("Type a message");
-    setActionLoading(true);
-    try {
-      const response = await fetch(`http://localhost:3001/complaints/${complaintId}/message`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ comment: text }),
-      });
-      if (response.ok) {
-        setReplies(prev => ({ ...prev, [complaintId]: "" }));
-        fetchData();
-        alert("Sent");
-      }
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const filteredComplaints = useMemo(() => {
-    return complaints.filter(c =>
-      (!filters.urgency || c.urgency === filters.urgency) &&
-      (!filters.status || c.status === filters.status)
-    );
-  }, [complaints, filters]);
-
-  if (loading) return <div style={{ padding: 50, textAlign: "center" }}>Loading...</div>;
 
   return (
-    <div style={{ minHeight: "100vh", background: clr.bg, padding: "24px 28px", fontFamily: "'DM Sans', sans-serif" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: clr.bg,
+        fontFamily: font.body,
+      }}
+    >
+      <header
+        style={{
+          background: clr.paper,
+          borderBottom: `1px solid ${clr.border}`,
+          padding: "0 32px",
+        }}
+      >
+        {/* Top strip */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "10px 0",
+            borderBottom: `1px solid ${clr.borderLight}`,
+          }}
+        >
+          <span>
+            Government of Kerala · MLA Dashboard
+          </span>
 
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24 }}>
-        <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>MLA Complaint Dashboard</h1>
-          <p style={{ color: clr.hint, fontSize: 12 }}>{filteredComplaints.length} complaints active</p>
+          <div
+            style={{
+              display: "flex",
+              gap: 20,
+              alignItems: "center",
+            }}
+          >
+            {users.length > 0 && (
+              <span>
+                {users.length} citizens registered
+              </span>
+            )}
+
+            <span>
+              {filteredComplaints.length} /{" "}
+              {totalComplaints} shown
+            </span>
+          </div>
         </div>
-        <button onClick={() => navigate("/")} style={{ padding: "8px 16px", borderRadius: 8, border: `1px solid ${clr.border}`, background: "#fff", cursor: "pointer", fontWeight: 600 }}>Logout</button>
-      </div>
 
-      <div style={{ display: "flex", gap: 14, marginBottom: 24 }}>
-        <StatCard label="Total" value={complaints.length} color={clr.primary} icon="📋" />
-        <StatCard label="Pending" value={complaints.filter(c => c.status === "Pending").length} color={clr.warning} icon="⏳" />
-        <StatCard label="Resolved" value={complaints.filter(c => c.status === "Resolved").length} color={clr.success} icon="✅" />
-      </div>
+        {/* Main Header */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "18px 0",
+          }}
+        >
+          <div>
+            <h1
+              style={{
+                fontFamily: font.display,
+                fontSize: 30,
+                margin: 0,
+              }}
+            >
+              Complaint Registry
+            </h1>
 
-      <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: 20 }}>
-        <div style={{ background: "#fff", padding: 18, borderRadius: R.lg, border: `1px solid ${clr.border}`, height: "fit-content" }}>
-          <p style={{ fontSize: 11, fontWeight: 700, color: clr.hint, textTransform: "uppercase", marginBottom: 15 }}>Filters</p>
-          <select style={{ width: "100%", padding: 8, marginBottom: 10, borderRadius: 6, border: `1px solid ${clr.border}` }} onChange={e => setFilters({ ...filters, urgency: e.target.value })}>
-            <option value="">All Urgency</option>
-            <option value="Urgent">Urgent</option>
-            <option value="Normal">Normal</option>
-          </select>
-          <select style={{ width: "100%", padding: 8, borderRadius: 6, border: `1px solid ${clr.border}` }} onChange={e => setFilters({ ...filters, status: e.target.value })}>
-            <option value="">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Resolved">Resolved</option>
-          </select>
+            <p
+              style={{
+                margin: "4px 0 0",
+                fontSize: 12,
+                color: clr.muted,
+              }}
+            >
+              Constituency management
+            </p>
+          </div>
+
+          <button onClick={handleLogout}>
+            Sign Out
+          </button>
+        </div>
+      </header>
+
+      <main style={{ padding: "24px 32px" }}>
+        {/* Stats */}
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            marginBottom: 24,
+          }}
+        >
+          <StatCard
+            label="Total Complaints"
+            value={totalComplaints}
+            color={clr.primary}
+            icon="📋"
+          />
+
+          <StatCard
+            label="Urgent Issues"
+            value={urgentIssues}
+            color={clr.accent}
+            icon="🔴"
+          />
+
+          <StatCard
+            label="Pending"
+            value={pendingCount}
+            color={clr.warning}
+            icon="⏳"
+          />
+
+          <StatCard
+            label="Resolved"
+            value={resolvedCount}
+            color={clr.success}
+            icon="✅"
+          />
         </div>
 
-        <div style={{ background: "#fff", borderRadius: R.lg, border: `1px solid ${clr.border}`, overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        {/* Complaints Table */}
+        <div
+          style={{
+            background: clr.paper,
+            border: `1px solid ${clr.border}`,
+            borderRadius: 6,
+            overflow: "hidden",
+          }}
+        >
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+            }}
+          >
             <thead>
-              <tr style={{ background: "#F8FAFC", textAlign: "left", borderBottom: `1px solid ${clr.border}` }}>
-                <th style={{ padding: 14, fontSize: 11, color: clr.hint }}>CITIZEN</th>
-                <th style={{ padding: 14, fontSize: 11, color: clr.hint }}>COMPLAINT</th>
-                <th style={{ padding: 14, fontSize: 11, color: clr.hint }}>URGENCY</th>
-                <th style={{ padding: 14, fontSize: 11, color: clr.hint }}>STATUS</th>
+              <tr>
+                <th>Citizen</th>
+                <th>Complaint</th>
+                <th>Category</th>
+                <th>Urgency</th>
+                <th>Status</th>
               </tr>
             </thead>
+
             <tbody>
-              {filteredComplaints.map(c => (
-                <tr key={c.id} onClick={() => { setSelectedComplaint(c); setIsRejecting(false); }} style={{ borderBottom: "1px solid #F1F5F9", cursor: "pointer", background: selectedComplaint?.id === c.id ? clr.blue : "transparent" }}>
-                  <td style={{ padding: 14 }}>{c.userName}</td>
-                  <td style={{ padding: 14, fontWeight: 600 }}>{c.title}</td>
-                  <td style={{ padding: 14 }}><UrgencyBadge level={c.urgency} /></td>
-                  <td style={{ padding: 14 }}><StatusBadge status={c.status} /></td>
+              {filteredComplaints.map((c) => (
+                <tr
+                  key={c.id}
+                  onClick={() =>
+                    setSelectedComplaint(c)
+                  }
+                >
+                  <td>{c.userName}</td>
+                  <td>{c.title}</td>
+                  <td>{c.category}</td>
+                  <td>
+                    <UrgencyBadge
+                      level={c.urgency}
+                    />
+                  </td>
+                  <td>
+                    <StatusBadge
+                      status={c.status}
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
-
-      {/* ── RIGHT PANEL ── */}
-      {selectedComplaint && (
-        <div style={{
-          position: "fixed", top: 0, right: 0, width: "380px", height: "100vh",
-          background: "#fff", borderLeft: "1px solid #E2E8F0",
-          boxShadow: "-4px 0 20px rgba(0,0,0,0.08)", padding: "24px",
-          zIndex: 999, overflowY: "auto", display: "flex", flexDirection: "column"
-        }}>
-          {(() => {
-            const isResolved = selectedComplaint.status === "Resolved";
-            const isRejected = selectedComplaint.status === "Rejected";
-            const isClosed = isResolved || isRejected;
-
-            return (
-              <>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
-                  <div style={{ fontSize: 20, fontWeight: 700 }}>{selectedComplaint.title}</div>
-                  <button onClick={() => setSelectedComplaint(null)} style={{ border: "none", background: "none", cursor: "pointer", fontSize: 18 }}>✕</button>
-                </div>
-
-                <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-                  <UrgencyBadge level={selectedComplaint.urgency} />
-                  <StatusBadge status={selectedComplaint.status} />
-                </div>
-
-                {/* 🟢 REJECTION HIGHLIGHT BOX */}
-                {selectedComplaint.status === "Rejected" && selectedComplaint.rejectionReasons?.length > 0 && (
-                  <div style={{
-                    background: "#FFF1F2",
-                    border: "1px solid #FECDD3",
-                    borderRadius: "12px",
-                    padding: "16px",
-                    marginBottom: "20px",
-                    borderLeft: "5px solid #E11D48"
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                      <span style={{ fontSize: "20px" }}>🚫</span>
-                      <span style={{ fontWeight: 800, fontSize: "12px", color: "#9F1239", textTransform: "uppercase" }}>
-                        Official Rejection Notice
-                      </span>
-                    </div>
-                    <p style={{ margin: 0, fontSize: "14px", color: "#BE123C", fontWeight: "600", lineHeight: "1.5" }}>
-                      {selectedComplaint.rejectionReasons[selectedComplaint.rejectionReasons.length - 1].text}
-                    </p>
-                    <div style={{ marginTop: "12px", fontSize: "11px", color: "#FB7185" }}>
-                      Rejected by: <b>{selectedComplaint.rejectionReasons[0].adminName} ({selectedComplaint.rejectionReasons[0].adminRole})</b> 
-                      • {new Date(selectedComplaint.rejectionReasons[0].date).toLocaleDateString()}
-                    </div>
-                  </div>
-                )}
-
-                {isClosed && (
-                  <div style={{ background: isResolved ? "#F0FDF4" : "#FFF1F2", border: `1px solid ${isResolved ? "#BBF7D0" : "#FECDD3"}`, color: isResolved ? "#15803D" : "#BE123C", padding: 12, borderRadius: 8, fontSize: 12, marginBottom: 20, fontWeight: 600 }}>
-                    {isResolved ? "✅ Resolved: This case is closed." : "🚫 Rejected: No further action."}
-                  </div>
-                )}
-
-                <div style={{ fontSize: 14, color: "#475569", background: "#F8FAFC", padding: 15, borderRadius: 8, marginBottom: 20 }}>
-                  <p style={{ margin: "0 0 10px 0" }}><b>Description:</b> {selectedComplaint.details}</p>
-                  <p style={{ margin: 2, fontSize: 12 }}><b>Citizen:</b> {selectedComplaint.userName}</p>
-                  <p style={{ margin: 2, fontSize: 12 }}><b>Date:</b> {selectedComplaint.date}</p>
-                </div>
-
-                <div style={{ marginBottom: 20 }}>
-                  <label style={{ fontSize: 11, fontWeight: 700, color: isClosed ? "#CBD5E1" : "#94A3B8" }}>Reply to Citizen {isClosed && "(Disabled)"}</label>
-                  <textarea
-                    value={replies[selectedComplaint.id] || ""}
-                    readOnly={isClosed}
-                    onChange={(e) => setReplies(prev => ({ ...prev, [selectedComplaint.id]: e.target.value }))}
-                    rows={4}
-                    placeholder={isClosed ? "Replies are disabled for closed cases" : "Type official response..."}
-                    style={{ width: "100%", marginTop: 8, padding: 12, border: "1px solid #E2E8F0", borderRadius: 8, fontSize: 13, background: isClosed ? "#F1F5F9" : "#fff", outline: "none" }}
-                  />
-                </div>
-
-                {/* ── Action Buttons Logic ── */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {!isRejecting ? (
-                    <>
-                      <button disabled={isClosed || actionLoading} onClick={() => handleSendReply(selectedComplaint.id)} style={{ padding: 12, borderRadius: 8, background: isClosed ? "#E2E8F0" : "#2563EB", color: "#fff", border: "none", fontWeight: 700, cursor: isClosed ? "not-allowed" : "pointer" }}>Send Reply</button>
-                      
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                        <button disabled={isClosed || actionLoading || selectedComplaint.status === "In Progress"} onClick={() => updateStatus("In Progress")} style={{ padding: 10, borderRadius: 8, background: "#FFF7ED", color: "#C2410C", border: "1px solid #FDE68A", fontWeight: 600 }}>In Progress</button>
-                        <button disabled={isClosed || actionLoading} onClick={() => updateStatus("Resolved")} style={{ padding: 10, borderRadius: 8, background: "#F0FDF4", color: "#15803D", border: "1px solid #BBF7D0", fontWeight: 600 }}>Resolve</button>
-                      </div>
-
-                      <button 
-                        disabled={isClosed || actionLoading} 
-                        onClick={() => setIsRejecting(true)} 
-                        style={{ padding: 12, borderRadius: 8, background: "#FFF1F2", color: "#BE123C", border: "1px solid #FECDD3", fontWeight: 600, cursor: isClosed ? "not-allowed" : "pointer" }}
-                      >
-                        Reject Complaint
-                      </button>
-                    </>
-                  ) : (
-                    /* ── Rejection Reason Input View ── */
-                    <div style={{ background: "#FFF1F2", padding: 15, borderRadius: 8, border: "1px solid #FECDD3" }}>
-                      <label style={{ fontSize: 11, fontWeight: 700, color: "#BE123C" }}>PROVIDE REJECTION REASON</label>
-                      <textarea
-                        value={rejectionReason}
-                        onChange={(e) => setRejectionReason(e.target.value)}
-                        placeholder="Why is this being rejected?"
-                        style={{ width: "100%", marginTop: 8, padding: 10, border: "1px solid #FECDD3", borderRadius: 6, fontSize: 13, outline: "none" }}
-                        rows={3}
-                      />
-                      <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
-                        <button 
-                          onClick={() => updateStatus("Rejected", rejectionReason)}
-                          style={{ flex: 1, padding: 10, background: "#BE123C", color: "#fff", border: "none", borderRadius: 6, fontWeight: 700, cursor: "pointer" }}
-                        >
-                          Confirm
-                        </button>
-                        <button 
-                          onClick={() => { setIsRejecting(false); setRejectionReason(""); }}
-                          style={{ flex: 1, padding: 10, background: "#fff", border: "1px solid #CBD5E1", borderRadius: 6, cursor: "pointer" }}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <button onClick={() => setSelectedComplaint(null)} style={{ marginTop: 20, padding: 12, background: "#F1F5F9", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 }}>Close Panel</button>
-              </>
-            );
-          })()}
-        </div>
-      )}
+      </main>
     </div>
   );
 }
