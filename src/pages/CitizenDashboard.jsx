@@ -2,33 +2,41 @@ import React, { useState, useEffect } from "react";
 import axios from 'axios';
 
 const clr = {
-  bg: "#F0F4FF",
+  bg: "#F8F5EF",
   card: "#FFFFFF",
-  border: "#E0E7FF",
-  text: "#1E1B4B",
-  muted: "#6366F1",
-  hint: "#A5B4FC",
-  primary: "#4F46E5",
-  primaryLight: "#EEF2FF",
-  danger: "#F43F5E",
-  dangerBg: "#FFF1F2",
-  dangerText: "#BE123C",
-  warning: "#F59E0B",
-  warningBg: "#FFFBEB",
-  warningText: "#92400E",
-  success: "#10B981",
-  successBg: "#ECFDF5",
-  successText: "#065F46",
-  blue: "#EEF2FF",
-  blueText: "#4338CA",
-  accent1: "#818CF8",
-  accent2: "#C7D2FE",
-  gradientStart: "#EEF2FF",
-  gradientEnd: "#F0FDF4",
+  border: "#E7DED2",
+
+  text: "#3E2F24",
+  muted: "#7A6858",
+  hint: "#B09B88",
+
+  primary: "#B08968",
+  primaryLight: "#F3E8DC",
+
+  danger: "#D9534F",
+  dangerBg: "#FFF1F0",
+  dangerText: "#A94442",
+
+  warning: "#D4A373",
+  warningBg: "#FFF7ED",
+  warningText: "#9C6644",
+
+  success: "#6B8E23",
+  successBg: "#F1F8E9",
+  successText: "#4E6E1E",
+
+  blue: "#F5ECE3",
+  blueText: "#7C5C46",
+
+  accent1: "#C4A484",
+  accent2: "#E6D5C3",
+
+  gradientStart: "#FAF6F0",
+  gradientEnd: "#F5EFE6",
 };
 
-const shadow = "0 2px 12px rgba(79,70,229,0.07)";
-const shadowHover = "0 6px 24px rgba(79,70,229,0.13)";
+const shadow = "0 2px 12px rgba(120, 90, 60, 0.08)";
+const shadowHover = "0 6px 24px rgba(120, 90, 60, 0.14)";
 const radius = { sm: 10, md: 14, lg: 20, xl: 28 };
 
 // Inline style for the global font
@@ -99,11 +107,22 @@ const FieldError = ({ msg }) =>
   msg ? <div style={{ fontSize: 11, color: clr.danger, marginTop: 4, fontWeight: 500 }}>{msg}</div> : null;
 
 const inputBase = (hasError) => ({
-  width: "100%", boxSizing: "border-box", padding: "10px 14px",
-  fontSize: 13, color: clr.text, background: "#F8FAFF",
-  border: `1.5px solid ${hasError ? clr.danger : clr.border}`,
-  borderRadius: radius.sm, outline: "none", fontFamily: "inherit",
-  transition: "border-color 0.2s, box-shadow 0.2s",
+  width: "100%",
+  boxSizing: "border-box",
+  padding: "10px 14px",
+  fontSize: 13,
+  color: clr.text,
+
+  background: "#FFFDF9",
+  border: `1.5px solid ${hasError ? clr.danger : "#E6D5C3"}`,
+
+  borderRadius: radius.sm,
+  outline: "none",
+  fontFamily: "inherit",
+
+  transition: "all 0.2s ease",
+
+  boxShadow: "0 1px 3px rgba(120,90,60,0.04)",
 });
 
 const labelSt = {
@@ -162,8 +181,8 @@ export default function CitizenDashboard() {
         const data = await response.json();
         console.log("Complaints API Response:", data);
         console.log("Comments:", data[0]?.comments);
-console.log("Replies:", data[0]?.replies);
-console.log("First Reply Object:", data[0]?.replies?.[0]);
+        console.log("Replies:", data[0]?.replies);
+        console.log("First Reply Object:", data[0]?.replies?.[0]);
         if (Array.isArray(data)) {
           setComplaints(data.map(c => ({
             ...c,
@@ -271,10 +290,20 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
 
   return (
     <>
-      <style>{fontStyle}</style>
+      <style>{`
+      ${fontStyle}
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: #C4A484 !important;
+        box-shadow: 0 0 0 3px rgba(196,164,132,0.15) !important;
+        background: #FFFFFF !important;
+      }
+    `}</style>
       <div style={{
         minHeight: "100vh",
-        background: `radial-gradient(ellipse at 20% 0%, #DDE4FF 0%, transparent 55%), radial-gradient(ellipse at 80% 100%, #D1FAE5 0%, transparent 50%), ${clr.bg}`,
+        background: "linear-gradient(145deg, #FAF6F0 0%, #F5EFE6 50%, #EFE6DA 100%)",
         padding: "28px 32px",
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontSize: 14,
@@ -287,9 +316,9 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
             {/* Logo mark */}
             <div style={{
               width: 44, height: 44, borderRadius: radius.md,
-              background: `linear-gradient(135deg, ${clr.primary}, #818CF8)`,
+              background: `linear-gradient(135deg, #B08968 0%, #D4A373 100%)`,
               display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 4px 16px rgba(79,70,229,0.35)",
+              boxShadow: "0 4px 16px rgba(233, 233, 237, 0.35)",
             }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
@@ -334,13 +363,21 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
         </div>
 
         {/* ── ROW 1: Profile | Track Details ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+       <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 16,
+          marginBottom: 16,
+          alignItems: "start", // prevents equal height stretching
+        }}
+      >
 
           {/* Profile Card */}
           <div style={{
             ...cardStyle,
-            background: "linear-gradient(135deg, #FFFFFF 60%, #EEF2FF 100%)",
-            position: "relative", overflow: "hidden",
+            
+            position: "relative", overflow: "hidden",background: "linear-gradient(135deg, #FFFFFF 60%, #f6f5f5 100%)",
           }}>
             {/* Decorative circle */}
             <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "radial-gradient(circle, #EEF2FF, transparent 70%)", pointerEvents: "none" }} />
@@ -352,7 +389,7 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
                 <span style={{
                   display: "inline-flex", marginTop: 6, alignItems: "center", gap: 5,
                   fontSize: 10, fontWeight: 700, color: clr.blueText,
-                  background: clr.blue, padding: "3px 10px", borderRadius: 99,
+                  background: "#F5ECE3", padding: "3px 10px", borderRadius: 99,
                   border: `1px solid ${clr.accent2}`,
                 }}>
                   <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="12" cy="12" r="9" /></svg>
@@ -364,6 +401,9 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
               {[
                 { icon: "✉️", val: user.email },
                 { icon: "📞", val: user.phone },
+                { icon: "🗺️", val: user.district },
+                { icon: "🏛️", val: user.constituency },
+                { icon: "📍", val: user.place }
               ].map((item, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <span style={{ fontSize: 14 }}>{item.icon}</span>
@@ -376,10 +416,10 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
           {/* Track Details Card */}
           <div style={{
             ...cardStyle,
-            background: "linear-gradient(135deg, #FFFFFF 60%, #ECFDF5 100%)",
+            background: "linear-gradient(135deg, #FFFFFF 60%, #fdfbf9 100%)",
             display: "flex", flexDirection: "column", position: "relative", overflow: "hidden",
           }}>
-            <div style={{ position: "absolute", bottom: -20, left: -20, width: 100, height: 100, borderRadius: "50%", background: "radial-gradient(circle, #D1FAE5, transparent 70%)", pointerEvents: "none" }} />
+            <div style={{ position: "absolute", bottom: -20, left: -20, width: 100, height: 100, borderRadius: "50%", background: "#FFFFFF", pointerEvents: "none" }} />
             <p style={labelSt}>Track Complaint</p>
             <div style={{ position: "relative", margin: "14px 0 12px" }}>
               <svg width="14" height="14" viewBox="0 0 15 15" fill="none" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
@@ -387,7 +427,7 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
                 <path d="M10.5 10.5L13.5 13.5" stroke={clr.hint} strokeWidth="1.5" strokeLinecap="round" />
               </svg>
               <input type="text" placeholder="Search by ID or title…" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                style={{ ...inputBase(false), paddingLeft: 36, background: "#F8FAFF" }} />
+                style={{ ...inputBase(false), paddingLeft: 36, background: "#FFFDF9" }} />
             </div>
             <div style={{
               flex: 1, background: "rgba(238,242,255,0.4)", backdropFilter: "blur(4px)",
@@ -397,8 +437,30 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
             }}>
               {selectedComplaint ? (
                 <div>
-                  <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 4, color: clr.text }}>{selectedComplaint.title}</div>
-                  <div style={{ fontSize: 11, color: clr.hint, marginBottom: 12, fontWeight: 500 }}>
+                 <div
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 800,
+                    marginBottom: 4,
+                    color: clr.text,
+
+                    overflowWrap: "break-word",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {selectedComplaint.title}
+                </div> 
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: clr.hint,
+                      marginBottom: 12,
+                      fontWeight: 500,
+
+                      overflowWrap: "break-word",
+                      wordBreak: "break-word",
+                    }}
+                  >
                     ID: <strong style={{ color: clr.accent1 }}>{selectedComplaint.id}</strong> · {selectedComplaint.category} · {selectedComplaint.date}
                   </div>
 
@@ -430,7 +492,13 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
                     </div>
                   )}
 
-                  <div style={{ display: "flex", gap: 16 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 16,
+                      flexWrap: "wrap",
+                    }}
+                  >
                     <div>
                       <div style={{ fontSize: 9, color: clr.hint, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 6 }}>Status</div>
                       <StatusBadge status={selectedComplaint.status} />
@@ -442,7 +510,19 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
                   </div>
                   {selectedComplaint.details && (
                     <div style={{ marginTop: 12, padding: "10px 13px", background: "#fff", border: `1.5px solid ${clr.border}`, borderRadius: radius.sm }}>
-                      <p style={{ fontSize: 12, color: clr.muted, margin: 0, lineHeight: 1.7, fontWeight: 500 }}>
+                      <p
+                        style={{
+                          fontSize: 12,
+                          color: clr.muted,
+                          margin: 0,
+                          lineHeight: 1.8,
+                          fontWeight: 500,
+
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                          overflowWrap: "break-word",
+                        }}
+                      >
                         {selectedComplaint.details}
                       </p>
                     </div>
@@ -465,7 +545,7 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
                         selectedComplaint.replies.map((r, i) => (
                           <div key={i} style={{
                             fontSize: 12,
-                            background: "#F8FAFF",
+                            background: "#FFFDF9",
                             border: `1px solid ${clr.border}`,
                             borderRadius: 8,
                             padding: "6px 10px",
@@ -485,7 +565,7 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
                 </div>
               ) : (
                 <div style={{ textAlign: "center" }}>
-                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: clr.blue, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#F5ECE3", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={clr.accent1} strokeWidth="1.8">
                       <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                     </svg>
@@ -501,12 +581,11 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
         <div style={{
           ...cardStyle,
           marginBottom: 16,
-          background: "linear-gradient(160deg, #FFFFFF 70%, #EEF2FF 100%)",
+          background: "linear-gradient(160deg, #FFFFFF 70%, #faf7f3 100%)",
           position: "relative", overflow: "hidden",
         }}>
           {/* Decorative top strip */}
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${clr.primary}, #818CF8, #10B981)`, borderRadius: `${radius.lg}px ${radius.lg}px 0 0` }} />
-          <div style={{ position: "absolute", top: -50, right: -50, width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(circle, #E0E7FF, transparent 70%)", pointerEvents: "none" }} />
+        
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
             <div>
@@ -580,7 +659,7 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
                 display: "inline-flex", alignItems: "center", gap: 8,
                 fontSize: 12, color: clr.muted, fontWeight: 600,
                 border: `1.5px dashed ${clr.accent2}`, borderRadius: radius.sm,
-                padding: "8px 16px", cursor: "pointer", background: clr.blue,
+                padding: "8px 16px", cursor: "pointer", background: "#F5ECE3",
                 transition: "all 0.2s",
               }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={clr.accent1} strokeWidth="2">
@@ -607,7 +686,7 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
               <button type="submit" style={{
                 display: "inline-flex", alignItems: "center", gap: 9, padding: "10px 26px",
                 borderRadius: radius.sm,
-                background: `linear-gradient(135deg, ${clr.primary}, #818CF8)`,
+                background: `linear-gradient(135deg, ${clr.primary})`,
                 color: "#fff", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer",
                 boxShadow: "0 4px 16px rgba(79,70,229,0.35)",
                 transition: "all 0.2s",
@@ -625,17 +704,15 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
         {/* ── ROW 3: My Complaints ── */}
         <div style={{
           ...cardStyle,
-          background: "linear-gradient(160deg, #FFFFFF 80%, #ECFDF5 100%)",
+          background: " #FFFFFF",
           position: "relative", overflow: "hidden",
         }}>
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, #10B981, #818CF8, ${clr.primary})`, borderRadius: `${radius.lg}px ${radius.lg}px 0 0` }} />
-
+         
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
             <div>
               <p style={labelSt}>My Complaints</p>
               <p style={{ fontSize: 11, color: clr.hint, margin: "3px 0 0", fontWeight: 500 }}>{filteredComplaints.length} complaint{filteredComplaints.length !== 1 ? "s" : ""} found</p>
             </div>
-            <button style={{ fontSize: 12, fontWeight: 700, color: clr.primary, background: clr.blue, border: `1px solid ${clr.accent2}`, borderRadius: radius.sm, padding: "5px 14px", cursor: "pointer" }}>View All →</button>
           </div>
 
           {loading ? (
@@ -645,7 +722,7 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
             </div>
           ) : filteredComplaints.length === 0 ? (
             <div style={{ padding: "40px 0", textAlign: "center" }}>
-              <div style={{ width: 56, height: 56, borderRadius: "50%", background: clr.blue, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
+              <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#F5ECE3", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={clr.accent1} strokeWidth="1.8">
                   <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" />
                 </svg>
@@ -661,7 +738,7 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
                     border: `1.5px solid ${selectedComplaint?.id === c.id ? clr.primary : clr.border}`,
                     borderRadius: radius.md,
                     background: selectedComplaint?.id === c.id
-                      ? "linear-gradient(135deg, #EEF2FF, #E0E7FF)"
+                      ? "linear-gradient(135deg, #F5ECE3, #EFE1D1)"
                       : "#FAFBFF",
                     cursor: "pointer",
                     transition: "all 0.18s",
@@ -670,12 +747,50 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
                   onMouseEnter={e => { if (selectedComplaint?.id !== c.id) { e.currentTarget.style.borderColor = clr.accent1; e.currentTarget.style.boxShadow = shadowHover; } }}
                   onMouseLeave={e => { if (selectedComplaint?.id !== c.id) { e.currentTarget.style.borderColor = clr.border; e.currentTarget.style.boxShadow = "none"; } }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 7 }}>
-                    <div style={{ flex: 1, paddingRight: 8 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.4, color: clr.text }}>{c.title}</span>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      gap: 8,
+                      marginBottom: 7,
+                    }}
+                  >
+                    {/* LEFT SIDE */}
+                    <div
+                      style={{
+                        flex: 1,
+                        minWidth: 0,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 700,
+                          lineHeight: 1.4,
+                          color: clr.text,
+
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {c.title}
+                      </span>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                      <UrgencyBadge level={c.urgency} />
+
+                    {/* RIGHT SIDE */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 7,
+                        flexShrink: 0,
+                      }}
+                    >
+                  <UrgencyBadge level={c.urgency} />
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDeleteComplaint(c.id); }}
                         style={{ border: "none", background: "transparent", cursor: "pointer", padding: 3, display: "flex", alignItems: "center", borderRadius: 6, transition: "background 0.15s" }}
@@ -693,7 +808,20 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
                     </div>
                   </div>
 
-                  <div style={{ fontSize: 10, color: clr.hint, marginBottom: 10, fontWeight: 600 }}>{c.category} · {c.date}</div>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: clr.hint,
+                      marginBottom: 10,
+                      fontWeight: 600,
+
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {c.category} · {c.date}
+                  </div>
 
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <StatusBadge status={c.status} />
@@ -736,7 +864,7 @@ console.log("First Reply Object:", data[0]?.replies?.[0]);
           key={i}
           style={{
             fontSize: 11,
-            background: "#F8FAFF",
+            background: "#FFFDF9",
             border: `1px solid ${clr.border}`,
             borderRadius: 7,
             padding: "8px 10px",

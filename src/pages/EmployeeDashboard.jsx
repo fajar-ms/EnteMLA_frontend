@@ -122,12 +122,8 @@ export default function EmployeeComplaintDashboard() {
             ...c,
             id: c._id || c.id,
 
-            // If citizenId is populated by NestJS, we use c.citizenId.name
-            userName:
-  typeof c.citizenId === "object"
-    ? c.citizenId?.name
-    : c.citizenId || "Unknown Citizen",
-            
+            userName: c.citizenId?.name || c.userName || "Unknown Citizen",
+
             urgency: c.urgency || "Normal",
             status: c.status || "Pending",
             date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "-",
@@ -208,21 +204,13 @@ export default function EmployeeComplaintDashboard() {
     if (!replyText) return;
     try {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
-const role = localStorage.getItem("role"); // "employee", "mla", "citizen"
+      const role = localStorage.getItem("role"); // "employee", "mla", "citizen"
       const response = await fetch(`http://localhost:3001/complaints/${id}/reply`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
 
-        body: JSON.stringify({
-          text: replyText,
-          
-             role: role,   
-          
-          
-          
-            username: user.name ||"Employee",
-             // Or pull the employee name from state
-        }),
+
+        body: JSON.stringify({ text: replyText, from: "Employee" }),
 
       });
       if (response.ok) {
@@ -245,9 +233,7 @@ const role = localStorage.getItem("role"); // "employee", "mla", "citizen"
       date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "-",
     })));
   }
-        setTimeout(() => {
-          setSentStatus(prev => ({ ...prev, [id]: "" }));
-        }, 2000);
+        setTimeout(() => setSentStatus(prev => ({ ...prev, [id]: "" })), 2000);
 
       }
     } catch (err) {
@@ -505,17 +491,42 @@ const role = localStorage.getItem("role"); // "employee", "mla", "citizen"
                 </td>
                 {/* Title */}
                 <td style={{ padding: "13px 18px" }}>
-                  <span style={{ fontSize: 13, color: "#4A4540", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block", fontWeight: 500 }} title={c.title}>
-                    {c.title}
-                  </span>
-                </td>
+                <div
+                  title={c.title}
+                  style={{
+                    fontSize: 13,
+                    color: "#4A4540",
+                    fontWeight: 500,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: "100%",
+                    display: "block",
+                  }}
+                >
+                  {c.title}
+                </div>
+              </td>
                 {/* Category */}
                 <td style={{ padding: "13px 18px" }}>
-                  <span style={{
-                    fontSize: 11.5, color: "#7A7468", fontWeight: 600,
-                    background: "#F5F0E8", padding: "3px 9px", borderRadius: 6,
+                <div
+                  title={c.category}
+                  style={{
+                    fontSize: 11.5,
+                    color: "#7A7468",
+                    fontWeight: 600,
+                    background: "#F5F0E8",
+                    padding: "4px 9px",
+                    borderRadius: 6,
                     display: "inline-block",
-                  }}>{c.category}</span>
+                    maxWidth: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {c.category}
+                </div>
                 </td>
                 {/* Urgency */}
                 <td style={{ padding: "13px 18px" }}>
@@ -565,10 +576,10 @@ const role = localStorage.getItem("role"); // "employee", "mla", "citizen"
                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.65)", fontWeight: 600, letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: 8 }}>
                       Complaint Detail
                     </div>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", lineHeight: 1.3, fontFamily: "'Playfair Display', Georgia, serif", marginBottom: 8 }}>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", lineHeight: 1.8, fontFamily: "'Playfair Display', Georgia, serif", marginBottom: 8,whiteSpace: "pre-wrap", wordBreak: "break-word",overflowWrap: "break-word", maxWidth: "100%", }}>
                       {selectedComplaint.title}
                     </div>
-                    <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>
+                    <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.7)", fontWeight: 500, whiteSpace: "pre-wrap", wordBreak: "break-word",overflowWrap: "break-word", maxWidth: "100%", }}>
                       {selectedComplaint.category}
                     </div>
                     <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
@@ -606,11 +617,23 @@ const role = localStorage.getItem("role"); // "employee", "mla", "citizen"
                       padding: "14px 16px", marginBottom: 16,
                     }}>
                       {selectedComplaint.details && (
-                        <p style={{ fontSize: 13, color: "#4A4540", lineHeight: 1.6, margin: "0 0 12px", fontWeight: 500 }}>
-                          {selectedComplaint.details}
-                        </p>
-                      )}
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 0", fontSize: 12 }}>
+                      <div
+                        style={{
+                          fontSize: 13,
+                          color: "#4A4540",
+                          lineHeight: 1.8,
+                          margin: "0 0 12px",
+                          fontWeight: 500,
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                          overflowWrap: "break-word",
+                          maxWidth: "100%",
+                        }}
+                      >
+                        {selectedComplaint.details}
+                      </div>
+                    )}
+                      <div style={{ display: "grid", gridTemplateColumns: "0.6fr 1fr", gap: "10px 0", fontSize: 12 }}>
                         {[
                           ["ID", selectedComplaint.id],
                           ["Citizen", selectedComplaint.userName],
@@ -750,7 +773,7 @@ const role = localStorage.getItem("role"); // "employee", "mla", "citizen"
           display: "flex", justifyContent: "space-between", alignItems: "center",
           background: "#FAF8F5",
         }}>
-          <span style={{ fontSize: 12, color: "#A09A90" }}>
+          <span style={{ fontSize: 12, color: "#c8e0dc" }}>
             Showing <strong style={{ color: "#3D3730" }}>{filtered.length}</strong> complaint{filtered.length !== 1 ? "s" : ""}
           </span>
           <span style={{ fontSize: 11, color: "#C8C2B8", fontWeight: 500 }}>MLA Complaint Portal · Employee View</span>

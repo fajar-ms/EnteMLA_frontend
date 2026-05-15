@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 const constituencyMap = {
   thiruvananthapuram: [
-    { value: "kovalam", label: "Kovalam" },
+    { value: "Kovalam", label: "Kovalam" },
     { value: "vattiyoorkavu", label: "Vattiyoorkavu" },
     { value: "thiruvananthapuram", label: "Thiruvananthapuram" },
   ],
@@ -139,6 +139,9 @@ const Register = () => {
     <div className="register-container">
       <div className="register-card">
         <h2>Create Account</h2>
+        <div className="role-badge">
+            <h3>👤 Citizen Login</h3>
+          </div>
         {/* <p>Direct registration enabled (OTP skipped)</p> */}
 
         <form onSubmit={handleSubmit}>

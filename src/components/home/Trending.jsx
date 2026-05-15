@@ -319,19 +319,9 @@ const handleRepost = async (id) => {
                       <div className="comment-body">
                         <p className="comment-user">
 
- 
-
                           {reply.userName}
                           {/* Optional: Add a badge if it's an official reply */}
-                          {reply.role === "mla" && (
-  <span className="official-badge">👤 MLA</span>
-)}
-                          {reply.role === "employee" && (
-  <span className="employee-badge"> 👤Employee</span>
-)}
-{reply.role === "citizen" && (
-  <span className="citizen-badge">👤 Citizen</span>
-)}
+                          {reply.role === "MLA" && <span className="official-badge">⭐ MLA</span>}
                         </p>
 
                         <p className="comment-text">{reply.text}</p>
