@@ -159,17 +159,14 @@ const Trending = () => {
       const res = await fetch(`http://localhost:3001/complaints/${selectedComplaint._id}/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-<<<<<<< HEAD
-        body: JSON.stringify({ text: commentText, userId: user._id ,username: user.name || user.username,
-  role: user.role,}),
-=======
+
         body: JSON.stringify({
           text: commentText.trim(),
           userId: user._id,
           userName: user.name || "Citizen", // ✅ Added: Match your new Schema
           role: user.role || "Citizen"      // ✅ Added: Match your new Schema
         }),
->>>>>>> 68fc078ab3ad0d071ca61930ba27e2236caf3590
+
       });
 
       if (!res.ok) throw new Error("Server error");
@@ -252,15 +249,22 @@ const Trending = () => {
                       </div>
                       <div className="comment-body">
                         <p className="comment-user">
-<<<<<<< HEAD
-  {reply.username || t("citizen")} ({reply.role || t("citizen")})
-</p>
-=======
+
+ 
+
                           {reply.userName}
                           {/* Optional: Add a badge if it's an official reply */}
-                          {reply.role === "MLA" && <span className="official-badge">⭐ MLA</span>}
+                          {reply.role === "mla" && (
+  <span className="official-badge">👤 MLA</span>
+)}
+                          {reply.role === "employee" && (
+  <span className="employee-badge"> 👤Employee</span>
+)}
+{reply.role === "citizen" && (
+  <span className="citizen-badge">👤 Citizen</span>
+)}
                         </p>
->>>>>>> 68fc078ab3ad0d071ca61930ba27e2236caf3590
+
                         <p className="comment-text">{reply.text}</p>
                       </div>
                     </div>
