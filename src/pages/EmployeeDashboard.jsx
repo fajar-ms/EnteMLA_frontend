@@ -121,13 +121,7 @@ export default function EmployeeComplaintDashboard() {
           setComplaints(complaintData.map(c => ({
             ...c,
             id: c._id || c.id,
-/*
-            // If citizenId is populated by NestJS, we use c.citizenId.name
-            userName:
-  typeof c.citizenId === "object"
-    ? c.citizenId?.name
-    : c.citizenId || "Unknown Citizen",
-*/
+
             userName: c.citizenId?.name || c.userName || "Unknown Citizen",
 
             urgency: c.urgency || "Normal",
@@ -214,18 +208,8 @@ export default function EmployeeComplaintDashboard() {
       const response = await fetch(`http://localhost:3001/complaints/${id}/reply`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-/*
-        body: JSON.stringify({
-          text: replyText,
-          
-             role: role,   
-          
-          
-          
-            username: user.name ||"Employee",
-             // Or pull the employee name from state
-        }),
-*/
+
+
         body: JSON.stringify({ text: replyText, from: "Employee" }),
 
       });
@@ -248,11 +232,7 @@ export default function EmployeeComplaintDashboard() {
       status: c.status || "Pending",
       date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "-",
     })));
-  }/*
-        setTimeout(() => {
-          setSentStatus(prev => ({ ...prev, [id]: "" }));
-        }, 2000);*/
-
+  }
         setTimeout(() => setSentStatus(prev => ({ ...prev, [id]: "" })), 2000);
 
       }
