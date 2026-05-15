@@ -159,12 +159,14 @@ const Trending = () => {
       const res = await fetch(`http://localhost:3001/complaints/${selectedComplaint._id}/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+
         body: JSON.stringify({
           text: commentText.trim(),
           userId: user._id,
           userName: user.name || "Citizen", // ✅ Added: Match your new Schema
           role: user.role || "Citizen"      // ✅ Added: Match your new Schema
         }),
+
       });
 
       if (!res.ok) throw new Error("Server error");
@@ -247,10 +249,12 @@ const Trending = () => {
                       </div>
                       <div className="comment-body">
                         <p className="comment-user">
+
                           {reply.userName}
                           {/* Optional: Add a badge if it's an official reply */}
                           {reply.role === "MLA" && <span className="official-badge">⭐ MLA</span>}
                         </p>
+
                         <p className="comment-text">{reply.text}</p>
                       </div>
                     </div>

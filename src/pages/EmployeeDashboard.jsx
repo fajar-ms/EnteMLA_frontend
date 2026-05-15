@@ -121,7 +121,15 @@ export default function EmployeeComplaintDashboard() {
           setComplaints(complaintData.map(c => ({
             ...c,
             id: c._id || c.id,
+/*
+            // If citizenId is populated by NestJS, we use c.citizenId.name
+            userName:
+  typeof c.citizenId === "object"
+    ? c.citizenId?.name
+    : c.citizenId || "Unknown Citizen",
+*/
             userName: c.citizenId?.name || c.userName || "Unknown Citizen",
+
             urgency: c.urgency || "Normal",
             status: c.status || "Pending",
             date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "-",
@@ -201,15 +209,52 @@ export default function EmployeeComplaintDashboard() {
     const replyText = replies[id];
     if (!replyText) return;
     try {
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
+      const role = localStorage.getItem("role"); // "employee", "mla", "citizen"
       const response = await fetch(`http://localhost:3001/complaints/${id}/reply`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+/*
+        body: JSON.stringify({
+          text: replyText,
+          
+             role: role,   
+          
+          
+          
+            username: user.name ||"Employee",
+             // Or pull the employee name from state
+        }),
+*/
         body: JSON.stringify({ text: replyText, from: "Employee" }),
+
       });
       if (response.ok) {
         setSentStatus(prev => ({ ...prev, [id]: "Sent successfully ✅" }));
         setReplies(prev => ({ ...prev, [id]: "" }));
+
+
+        // 3. Optional: Refresh complaints to show local updates
+        // (The Citizen will see this next time they refresh their dashboard)
+
+        const res = await fetch("http://localhost:3001/complaints");
+  const data = await res.json();
+  if (Array.isArray(data)) {
+    setComplaints(data.map(c => ({
+      ...c,
+      id: c._id || c.id,
+      userName: typeof c.citizenId === "object" ? c.citizenId?.name : c.citizenId || "Unknown Citizen",
+      urgency: c.urgency || "Normal",
+      status: c.status || "Pending",
+      date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "-",
+    })));
+  }/*
+        setTimeout(() => {
+          setSentStatus(prev => ({ ...prev, [id]: "" }));
+        }, 2000);*/
+
         setTimeout(() => setSentStatus(prev => ({ ...prev, [id]: "" })), 2000);
+
       }
     } catch (err) {
       alert("Failed to send reply to database.");
