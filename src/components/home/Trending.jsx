@@ -14,6 +14,8 @@ const Trending = () => {
   const [commentText, setCommentText] = useState(""); // Change {} to ""
   const [openCommentBox, setOpenCommentBox] = useState(null); // ✅ ADDED
   const [loading, setLoading] = useState(true);
+  const [popupMessage, setPopupMessage] = useState("");
+const [showPopup, setShowPopup] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
 
   // Fetch Public Complaints
@@ -33,13 +35,22 @@ const Trending = () => {
 
     } catch (error) {
 
-      console.log(error);
+     console.error("Error fetching complaints:", error);
 
     } finally {
 
       setLoading(false);
     }
   };
+  const showCustomPopup = (message) => {
+  setPopupMessage(message);
+  setShowPopup(true);
+
+  setTimeout(() => {
+    setShowPopup(false);
+    setPopupMessage("");
+  }, 2500);
+};
 
   const handleCommentChange = (id, value) => {
     setCommentText((prev) => ({
@@ -50,99 +61,112 @@ const Trending = () => {
 
   // Like Complaint
   const handleLike = async (id) => {
-
-    const likedComplaints =
-      JSON.parse(
-        localStorage.getItem(
-          "likedComplaints"
-        )
-      ) || [];
-
-    const alreadyLiked =
-      likedComplaints.includes(id);
-
-    try {
-
-      await axios.patch(
-        `http://localhost:3001/complaints/${id}/like`
+  try {
+    // Redirect to login if user is not logged in
+    if (!user || !user._id) {
+      localStorage.setItem(
+        "redirectAfterLogin",
+        window.location.pathname
       );
-
-      setComplaints((prev) =>
-        prev.map((item) => {
-
-          if (item._id === id) {
-
-            return {
-
-              ...item,
-
-              likes: alreadyLiked
-                ? Math.max(
-                  (item.likes || 1) - 1,
-                  0
-                )
-                : (item.likes || 0) + 1,
-            };
-          }
-
-          return item;
-        })
-      );
-
-      if (alreadyLiked) {
-
-        const updatedLikes =
-          likedComplaints.filter(
-            (likedId) => likedId !== id
-          );
-
-        localStorage.setItem(
-          "likedComplaints",
-          JSON.stringify(updatedLikes)
-        );
-      }
-
-      else {
-
-        localStorage.setItem(
-          "likedComplaints",
-          JSON.stringify([
-            ...likedComplaints,
-            id,
-          ])
-        );
-      }
-
-    } catch (error) {
-      console.log(error);
+      navigate("/login");
+      return;
     }
-  };
 
-  // Repost Complaint
-  const handleRepost = async (id) => {
+    const response = await axios.patch(
+      `http://localhost:3001/complaints/${id}/like`,
+      {
+        userId: user._id,
+      }
+    );
 
-    try {
+    // Show backend message
+showCustomPopup(response.data.message);
 
-      await axios.patch(
-        `http://localhost:3001/complaints/${id}/repost`
-      );
-
-      setComplaints((prev) =>
-        prev.map((item) =>
-          item._id === id
-            ? {
-              ...item,
-              reposts: (item.reposts || 0) + 1,
+    // Update UI immediately
+    setComplaints((prev) =>
+      prev.map((complaint) =>
+        complaint._id === id
+          ? {
+              ...complaint,
+              likes: response.data.likes,
+              likedBy:
+                response.data.likedBy || complaint.likedBy,
             }
-            : item
-        )
-      );
+          : complaint
+      )
+    );
 
-    } catch (error) {
-      console.log(error);
+    // Update selected complaint if modal is open
+    if (selectedComplaint?._id === id) {
+      setSelectedComplaint((prev) => ({
+        ...prev,
+        likes: response.data.likes,
+        likedBy:
+          response.data.likedBy || prev.likedBy,
+      }));
     }
-  };
+  } catch (error) {
+    console.error("Error liking complaint:", error);
 
+   showCustomPopup(
+  error.response?.data?.message ||
+    "Failed to like complaint."
+);
+  }
+};
+// Replace your current handleRepost function with this one
+
+const handleRepost = async (id) => {
+  try {
+    // If user is not logged in, go to login page
+    if (!user || !user._id) {
+      localStorage.setItem(
+        "redirectAfterLogin",
+        window.location.pathname
+      );
+      navigate("/login");
+      return;
+    }
+
+    const response = await axios.patch(
+      `http://localhost:3001/complaints/${id}/repost`,
+      {
+        userId: user._id,
+      }
+    );
+
+    // Show backend message
+    showCustomPopup(response.data.message);
+
+    // Update complaint list immediately in UI
+    setComplaints((prev) =>
+      prev.map((complaint) =>
+        complaint._id === id
+          ? {
+              ...complaint,
+              repostedBy: response.data.repostedBy || complaint.repostedBy,
+            }
+          : complaint
+      )
+    );
+
+    // Also update selected complaint if modal is open
+    if (selectedComplaint?._id === id) {
+      setSelectedComplaint((prev) => ({
+        ...prev,
+        repostedBy:
+          response.data.repostedBy || prev.repostedBy,
+      }));
+    }
+  } catch (error) {
+    console.error("Error reposting complaint:", error);
+
+    showCustomPopup(
+  error.response?.data?.message ||
+    "Failed to repost complaint."
+);
+  }
+};
   // Comment Button
   // Comment Button
   const handleComment = async () => {
@@ -194,6 +218,11 @@ const Trending = () => {
 
   return (
     <div className="trending-container">
+    {showPopup && (
+  <div className="custom-popup">
+    {popupMessage}
+  </div>
+)}
       {/* Feed Header */}
       <div className="section-header">
         <div>
@@ -201,28 +230,68 @@ const Trending = () => {
           <h2 className="heading">{t("trendingPublicComplaints")}</h2>
         </div>
       </div>
+<div className="complaint-grid">
+  {complaints.map((complaint) => {
+    const hasReposted = complaint.repostedBy?.some(
+      (id) => id.toString() === user?._id
+    );
 
-      {/* Main Grid */}
-      <div className="complaint-grid">
-        {complaints.map((complaint) => (
-          <div className="complaint-card" key={complaint._id}>
-            <div className="image-container" onClick={() => setSelectedComplaint(complaint)}>
-              <img src={complaint.evidence ? `http://localhost:3001/uploads/${complaint.evidence}` : "https://images.unsplash.com/photo-1521791136064-7986c2920216"} alt={complaint.title} />
-              <div className="card-overlay">
-                <div className="top-badges"><span className="category-badge">{complaint.category}</span></div>
-                <div className="bottom-metadata"><h3 className="card-title">{complaint.title}</h3></div>
-              </div>
+    return (
+      <div className="complaint-card" key={complaint._id}>
+        <div
+          className="image-container"
+          onClick={() => setSelectedComplaint(complaint)}
+        >
+          <img
+            src={
+              complaint.evidence
+                ? `http://localhost:3001/uploads/${complaint.evidence}`
+                : "https://images.unsplash.com/photo-1521791136064-7986c2920216"
+            }
+            alt={complaint.title}
+          />
+          <div className="card-overlay">
+            <div className="top-badges">
+              <span className="category-badge">
+                {complaint.category}
+              </span>
             </div>
-
-            <div className="card-actions">
-              <button className="action-btn" onClick={() => handleLike(complaint._id)}>👍 {complaint.likes || 0}</button>
-              {/* This now opens the separate tile */}
-              <button className="action-btn" onClick={() => setSelectedComplaint(complaint)}>💬 {complaint.replies?.length || 0}</button>
-              <button className="action-btn" onClick={() => handleRepost(complaint._id)}>🔁 {complaint.reposts || 0}</button>
+            <div className="bottom-metadata">
+              <h3 className="card-title">
+                {complaint.title}
+              </h3>
             </div>
           </div>
-        ))}
+        </div>
+
+        <div className="card-actions">
+          <button
+            className="action-btn"
+            onClick={() => handleLike(complaint._id)}
+          >
+            👍 {complaint.likes || 0}
+          </button>
+
+          <button
+            className="action-btn"
+            onClick={() => setSelectedComplaint(complaint)}
+          >
+            💬 {complaint.replies?.length || 0}
+          </button>
+
+          <button
+            className="action-btn"
+            onClick={() => handleRepost(complaint._id)}
+         
+          >
+            🔁 {complaint.repostedBy?.length || 0}
+            {hasReposted ? " Reposted" : ""}
+          </button>
+        </div>
       </div>
+    );
+  })}
+</div>
 
       {/* ✅ SEPARATE COMMENT TILE (MODAL) */}
       {selectedComplaint && (
