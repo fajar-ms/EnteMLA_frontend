@@ -1,138 +1,75 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Navbar.css";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
-  const [activeSection, setActiveSection] = useState("home");
-  const { t, i18n } = useTranslation();
-  const location = useLocation();
-  const navigate = useNavigate();
-
   const [langOpen, setLangOpen] = useState(false);
-  const [selectedLang, setSelectedLang] = useState("Translate");
+  const [selectedLang, setSelectedLang] = useState(localStorage.getItem("userLanguage") || "English");
   const [authOpen, setAuthOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
+
   const loginRef = useRef();
   const registerRef = useRef();
   const langRef = useRef();
 
-  // Scroll Spy Logic: Detects which section is on screen
   useEffect(() => {
-    if (location.pathname !== "/") return;
-
     const handleClickOutside = (event) => {
-    // Language dropdown
-    if (
-      langRef.current &&
-      !langRef.current.contains(event.target)
-    ) {
-      setLangOpen(false);
-    }
-
-    // Login dropdown
-    if (
-      loginRef.current &&
-      !loginRef.current.contains(event.target)
-    ) {
-      setAuthOpen(false);
-    }
-
-    // Register dropdown
-    if (
-      registerRef.current &&
-      !registerRef.current.contains(event.target)
-    ) {
-      setRegisterOpen(false);
-    }
-  };
-
-  document.addEventListener("mousedown", handleClickOutside);
-
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-  
-    const handleScroll = () => {
-      const sections = ["home", "about", "complaints", "stats", "qa", "contact"];
-      const scrollPosition = window.scrollY + 100; // Offset for navbar height
-
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const offsetTop = element.offsetTop;
-          const height = element.offsetHeight;
-
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + height) {
-            setActiveSection(section);
-          }
-        }
-      }
+      if (loginRef.current && !loginRef.current.contains(event.target)) setAuthOpen(false);
+      if (registerRef.current && !registerRef.current.contains(event.target)) setRegisterOpen(false);
+      if (langRef.current && !langRef.current.contains(event.target)) setLangOpen(false);
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [location]);
+  const handleLanguageChange = (langCode) => {
+    const langMap = {
+      en: "English",
+      ml: "Malayalam",
+      hi: "Hindi"
+    };
+    const label = langMap[langCode] || "English";
+    setSelectedLang(label);
 
-  const handleNavClick = (e, id) => {
-    e.preventDefault();
-    if (location.pathname !== "/") {
-      navigate(`/#${id}`);
-    } else {
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };  
+    // Save to localStorage
+    localStorage.setItem("userLanguage", label);
 
-  const handleLanguageChange = (lang) => {
-  i18n.changeLanguage(lang);   // 🔥 THIS IS REQUIRED
+    // ✅ FIX: Dispatch custom event so QA.jsx (same tab) picks up the change
+    window.dispatchEvent(new Event("languageChanged"));
 
-  let label =
-    lang === "en"
-      ? "English"
-      : "Malayalam"
-      ;
+    setLangOpen(false);
+  };
 
-  setSelectedLang(label);
-  setLangOpen(false);
-};
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        {/* LOGO */}
-        <div className="logo">{t("app_name_part1")}<span>{t("app_name_part2")}</span></div>
+        <div className="logo">Ente<span>MLA</span></div>
 
-        {/* CENTER NAV LINKS */}
         <div className="nav-links">
-          <Link to="/" className="nav-item">{t("home")}</Link>
-          <Link to="/about" className="nav-item">{t("about")}</Link>
-          <Link to="/complaint" className="nav-item">{t("complaints")}</Link>
-          <Link to="/qa" className="nav-item">{t("qa")}</Link>
-          <Link to="/contact" className="nav-item">{t("contact")}</Link>
+          <Link to="/" className="nav-item">Home</Link>
+          <Link to="/about" className="nav-item">About</Link>
+          <Link to="/complaint" className="nav-item">Complaints</Link>
+          <Link to="/qa" className="nav-item">Q/A</Link>
+          <Link to="/contact" className="nav-item">Contact</Link>
         </div>
 
-        {/* RIGHT ACTIONS */}
         <div className="right-section">
           {/* LANGUAGE SELECTOR */}
           <div className="dropdown-wrapper" ref={langRef}>
             <button className="secondary-btn" onClick={() => setLangOpen(!langOpen)}>
-              {selectedLang} <span className="arrow">▼</span>
+              🌐 {selectedLang} <span className="arrow">▼</span>
             </button>
             {langOpen && (
               <div className="dropdown-menu">
                 <div onClick={() => handleLanguageChange("en")}>English</div>
                 <div onClick={() => handleLanguageChange("ml")}>Malayalam</div>
-                
               </div>
             )}
           </div>
 
-          {/* LOGIN */}
           <div className="dropdown-wrapper" ref={loginRef}>
             <button className="primary-btn" onClick={() => setAuthOpen(!authOpen)}>
-              {t("login")} <span className="arrow">▼</span>
+              Login <span className="arrow">▼</span>
             </button>
             {authOpen && (
               <div className="dropdown-menu">
@@ -142,25 +79,10 @@ const Navbar = () => {
               </div>
             )}
           </div>
-
-          {/* REGISTER */}
-          <div className="dropdown-wrapper" ref={registerRef}>
-            <button className="outline-btn" onClick={() => setRegisterOpen(!registerOpen)}>
-              {t("register")}
-            </button>
-            {registerOpen && (
-              <div className="dropdown-menu">
-                <Link to="/Register">Citizen Sign Up</Link>
-                <Link to="/RegisterEmp">Employee Sign Up</Link>
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </nav>
   );
 };
 
-
-
-export default Navbar;
+export default Navbar;   

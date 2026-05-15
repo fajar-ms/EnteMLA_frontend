@@ -232,4 +232,4 @@ const QA = () => {
   );
 };
 
-export default QA;   
+export default QA; 
