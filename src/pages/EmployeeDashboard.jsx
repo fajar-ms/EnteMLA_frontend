@@ -491,17 +491,42 @@ export default function EmployeeComplaintDashboard() {
                 </td>
                 {/* Title */}
                 <td style={{ padding: "13px 18px" }}>
-                  <span style={{ fontSize: 13, color: "#4A4540", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block", fontWeight: 500 }} title={c.title}>
-                    {c.title}
-                  </span>
-                </td>
+                <div
+                  title={c.title}
+                  style={{
+                    fontSize: 13,
+                    color: "#4A4540",
+                    fontWeight: 500,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    maxWidth: "100%",
+                    display: "block",
+                  }}
+                >
+                  {c.title}
+                </div>
+              </td>
                 {/* Category */}
                 <td style={{ padding: "13px 18px" }}>
-                  <span style={{
-                    fontSize: 11.5, color: "#7A7468", fontWeight: 600,
-                    background: "#F5F0E8", padding: "3px 9px", borderRadius: 6,
+                <div
+                  title={c.category}
+                  style={{
+                    fontSize: 11.5,
+                    color: "#7A7468",
+                    fontWeight: 600,
+                    background: "#F5F0E8",
+                    padding: "4px 9px",
+                    borderRadius: 6,
                     display: "inline-block",
-                  }}>{c.category}</span>
+                    maxWidth: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {c.category}
+                </div>
                 </td>
                 {/* Urgency */}
                 <td style={{ padding: "13px 18px" }}>
@@ -551,10 +576,10 @@ export default function EmployeeComplaintDashboard() {
                     <div style={{ fontSize: 11, color: "rgba(255,255,255,0.65)", fontWeight: 600, letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: 8 }}>
                       Complaint Detail
                     </div>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", lineHeight: 1.3, fontFamily: "'Playfair Display', Georgia, serif", marginBottom: 8 }}>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", lineHeight: 1.8, fontFamily: "'Playfair Display', Georgia, serif", marginBottom: 8,whiteSpace: "pre-wrap", wordBreak: "break-word",overflowWrap: "break-word", maxWidth: "100%", }}>
                       {selectedComplaint.title}
                     </div>
-                    <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>
+                    <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.7)", fontWeight: 500, whiteSpace: "pre-wrap", wordBreak: "break-word",overflowWrap: "break-word", maxWidth: "100%", }}>
                       {selectedComplaint.category}
                     </div>
                     <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
@@ -592,11 +617,23 @@ export default function EmployeeComplaintDashboard() {
                       padding: "14px 16px", marginBottom: 16,
                     }}>
                       {selectedComplaint.details && (
-                        <p style={{ fontSize: 13, color: "#4A4540", lineHeight: 1.6, margin: "0 0 12px", fontWeight: 500 }}>
-                          {selectedComplaint.details}
-                        </p>
-                      )}
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 0", fontSize: 12 }}>
+                      <div
+                        style={{
+                          fontSize: 13,
+                          color: "#4A4540",
+                          lineHeight: 1.8,
+                          margin: "0 0 12px",
+                          fontWeight: 500,
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                          overflowWrap: "break-word",
+                          maxWidth: "100%",
+                        }}
+                      >
+                        {selectedComplaint.details}
+                      </div>
+                    )}
+                      <div style={{ display: "grid", gridTemplateColumns: "0.6fr 1fr", gap: "10px 0", fontSize: 12 }}>
                         {[
                           ["ID", selectedComplaint.id],
                           ["Citizen", selectedComplaint.userName],
