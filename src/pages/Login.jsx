@@ -37,6 +37,7 @@ export default function LoginPage() {
         const userData = response.data.user;
 
         if (userData) {
+          console.log(response.data.user);
           localStorage.setItem("user", JSON.stringify(userData));
           localStorage.setItem("role", selectedRole);
 

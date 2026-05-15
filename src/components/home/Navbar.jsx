@@ -21,6 +21,38 @@ const Navbar = () => {
   useEffect(() => {
     if (location.pathname !== "/") return;
 
+    const handleClickOutside = (event) => {
+    // Language dropdown
+    if (
+      langRef.current &&
+      !langRef.current.contains(event.target)
+    ) {
+      setLangOpen(false);
+    }
+
+    // Login dropdown
+    if (
+      loginRef.current &&
+      !loginRef.current.contains(event.target)
+    ) {
+      setAuthOpen(false);
+    }
+
+    // Register dropdown
+    if (
+      registerRef.current &&
+      !registerRef.current.contains(event.target)
+    ) {
+      setRegisterOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+  
     const handleScroll = () => {
       const sections = ["home", "about", "complaints", "stats", "qa", "contact"];
       const scrollPosition = window.scrollY + 100; // Offset for navbar height

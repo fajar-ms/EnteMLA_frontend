@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 const constituencyMap = {
   thiruvananthapuram: [
-    { value: "kovalam", label: "Kovalam" },
+    { value: "Kovalam", label: "Kovalam" },
     { value: "vattiyoorkavu", label: "Vattiyoorkavu" },
     { value: "thiruvananthapuram", label: "Thiruvananthapuram" },
   ],
