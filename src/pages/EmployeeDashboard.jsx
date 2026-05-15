@@ -711,7 +711,7 @@ export default function EmployeeComplaintDashboard() {
           display: "flex", justifyContent: "space-between", alignItems: "center",
           background: "#FAF8F5",
         }}>
-          <span style={{ fontSize: 12, color: "#A09A90" }}>
+          <span style={{ fontSize: 12, color: "#c8e0dc" }}>
             Showing <strong style={{ color: "#3D3730" }}>{filtered.length}</strong> complaint{filtered.length !== 1 ? "s" : ""}
           </span>
           <span style={{ fontSize: 11, color: "#C8C2B8", fontWeight: 500 }}>MLA Complaint Portal · Employee View</span>

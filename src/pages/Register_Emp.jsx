@@ -142,7 +142,9 @@ const Register = () => {
       <div className="register-card">
         <h2>Create Account</h2>
         {/* <p>Direct registration enabled (OTP skipped)</p> */}
-
+        <div className="role-badge">
+            <h3>👤 Citizen Login</h3>
+          </div>
         <form onSubmit={handleSubmit}>
           {/* Name */}
           <div className="input-group">

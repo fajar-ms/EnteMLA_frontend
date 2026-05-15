@@ -47,6 +47,19 @@
   z-index: 2;
   transition: all 0.4s ease;
 }
+.role-badge {
+  margin-top: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 100px;
+  background: linear-gradient(90deg, #e0f2fe, #d1fae5);
+  color: #0f766e;
+  padding: 10px 135px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.15);
+}
 
 .register-card:hover {
   box-shadow: 0 25px 60px rgba(20, 184, 166, 0.15);
@@ -56,7 +69,7 @@
 .register-card h2 {
   text-align: center;
   font-size: 2.1rem;
-  margin-bottom: 1.8rem;
+  margin-bottom: 1.1rem;
   background: linear-gradient(90deg, #1e2937, #0f766e);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -65,9 +78,10 @@
 
 /* Input Groups */
 .input-group {
+  margin-top: 1.5rem;
   position: relative;
   gap: 10px;
-  margin-bottom: 1.4rem;
+  margin-bottom:1rem;
   display: flex;
   align-items: center;
   background: rgba(248, 250, 252, 0.9);

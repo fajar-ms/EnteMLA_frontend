@@ -270,7 +270,7 @@ export default function CitizenDashboard() {
       <style>{fontStyle}</style>
       <div style={{
         minHeight: "100vh",
-        background: `radial-gradient(ellipse at 20% 0%, #DDE4FF 0%, transparent 55%), radial-gradient(ellipse at 80% 100%, #D1FAE5 0%, transparent 50%), ${clr.bg}`,
+        background: "linear-gradient(145deg, #FAF8F4 0%, #F5F1EB 50%, #F8F5EF 100%)",
         padding: "28px 32px",
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontSize: 14,
@@ -283,7 +283,7 @@ export default function CitizenDashboard() {
             {/* Logo mark */}
             <div style={{
               width: 44, height: 44, borderRadius: radius.md,
-              background: `linear-gradient(135deg, ${clr.primary}, #818CF8)`,
+              background: `linear-gradient(135deg, #2D4EAF 0%, #4F46E5 100%)`,
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 4px 16px rgba(79,70,229,0.35)",
             }}>
@@ -330,7 +330,15 @@ export default function CitizenDashboard() {
         </div>
 
         {/* ── ROW 1: Profile | Track Details ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+       <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 16,
+          marginBottom: 16,
+          alignItems: "start", // prevents equal height stretching
+        }}
+      >
 
           {/* Profile Card */}
           <div style={{
@@ -360,6 +368,9 @@ export default function CitizenDashboard() {
               {[
                 { icon: "✉️", val: user.email },
                 { icon: "📞", val: user.phone },
+                { icon: "🗺️", val: user.district },
+                { icon: "🏛️", val: user.constituency },
+                { icon: "📍", val: user.place }
               ].map((item, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <span style={{ fontSize: 14 }}>{item.icon}</span>
@@ -372,10 +383,10 @@ export default function CitizenDashboard() {
           {/* Track Details Card */}
           <div style={{
             ...cardStyle,
-            background: "linear-gradient(135deg, #FFFFFF 60%, #ECFDF5 100%)",
+            background: "linear-gradient(135deg, #FFFFFF 60%, #EEF2FF 100%)",
             display: "flex", flexDirection: "column", position: "relative", overflow: "hidden",
           }}>
-            <div style={{ position: "absolute", bottom: -20, left: -20, width: 100, height: 100, borderRadius: "50%", background: "radial-gradient(circle, #D1FAE5, transparent 70%)", pointerEvents: "none" }} />
+            <div style={{ position: "absolute", bottom: -20, left: -20, width: 100, height: 100, borderRadius: "50%", background: "#FFFFFF", pointerEvents: "none" }} />
             <p style={labelSt}>Track Complaint</p>
             <div style={{ position: "relative", margin: "14px 0 12px" }}>
               <svg width="14" height="14" viewBox="0 0 15 15" fill="none" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
@@ -393,8 +404,30 @@ export default function CitizenDashboard() {
             }}>
               {selectedComplaint ? (
                 <div>
-                  <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 4, color: clr.text }}>{selectedComplaint.title}</div>
-                  <div style={{ fontSize: 11, color: clr.hint, marginBottom: 12, fontWeight: 500 }}>
+                 <div
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 800,
+                    marginBottom: 4,
+                    color: clr.text,
+
+                    overflowWrap: "break-word",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {selectedComplaint.title}
+                </div> 
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: clr.hint,
+                      marginBottom: 12,
+                      fontWeight: 500,
+
+                      overflowWrap: "break-word",
+                      wordBreak: "break-word",
+                    }}
+                  >
                     ID: <strong style={{ color: clr.accent1 }}>{selectedComplaint.id}</strong> · {selectedComplaint.category} · {selectedComplaint.date}
                   </div>
 
@@ -426,7 +459,13 @@ export default function CitizenDashboard() {
                     </div>
                   )}
 
-                  <div style={{ display: "flex", gap: 16 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 16,
+                      flexWrap: "wrap",
+                    }}
+                  >
                     <div>
                       <div style={{ fontSize: 9, color: clr.hint, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 6 }}>Status</div>
                       <StatusBadge status={selectedComplaint.status} />
@@ -438,7 +477,19 @@ export default function CitizenDashboard() {
                   </div>
                   {selectedComplaint.details && (
                     <div style={{ marginTop: 12, padding: "10px 13px", background: "#fff", border: `1.5px solid ${clr.border}`, borderRadius: radius.sm }}>
-                      <p style={{ fontSize: 12, color: clr.muted, margin: 0, lineHeight: 1.7, fontWeight: 500 }}>
+                      <p
+                        style={{
+                          fontSize: 12,
+                          color: clr.muted,
+                          margin: 0,
+                          lineHeight: 1.8,
+                          fontWeight: 500,
+
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                          overflowWrap: "break-word",
+                        }}
+                      >
                         {selectedComplaint.details}
                       </p>
                     </div>
@@ -502,7 +553,7 @@ export default function CitizenDashboard() {
         }}>
           {/* Decorative top strip */}
           <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${clr.primary}, #818CF8, #10B981)`, borderRadius: `${radius.lg}px ${radius.lg}px 0 0` }} />
-          <div style={{ position: "absolute", top: -50, right: -50, width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(circle, #E0E7FF, transparent 70%)", pointerEvents: "none" }} />
+          
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
             <div>
@@ -603,7 +654,7 @@ export default function CitizenDashboard() {
               <button type="submit" style={{
                 display: "inline-flex", alignItems: "center", gap: 9, padding: "10px 26px",
                 borderRadius: radius.sm,
-                background: `linear-gradient(135deg, ${clr.primary}, #818CF8)`,
+                background: `linear-gradient(135deg, ${clr.primary})`,
                 color: "#fff", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer",
                 boxShadow: "0 4px 16px rgba(79,70,229,0.35)",
                 transition: "all 0.2s",
@@ -621,17 +672,16 @@ export default function CitizenDashboard() {
         {/* ── ROW 3: My Complaints ── */}
         <div style={{
           ...cardStyle,
-          background: "linear-gradient(160deg, #FFFFFF 80%, #ECFDF5 100%)",
+          background: " #FFFFFF",
           position: "relative", overflow: "hidden",
         }}>
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, #10B981, #818CF8, ${clr.primary})`, borderRadius: `${radius.lg}px ${radius.lg}px 0 0` }} />
+          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, #818CF8, ${clr.primary})`, borderRadius: `${radius.lg}px ${radius.lg}px 0 0` }} />
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
             <div>
               <p style={labelSt}>My Complaints</p>
               <p style={{ fontSize: 11, color: clr.hint, margin: "3px 0 0", fontWeight: 500 }}>{filteredComplaints.length} complaint{filteredComplaints.length !== 1 ? "s" : ""} found</p>
             </div>
-            <button style={{ fontSize: 12, fontWeight: 700, color: clr.primary, background: clr.blue, border: `1px solid ${clr.accent2}`, borderRadius: radius.sm, padding: "5px 14px", cursor: "pointer" }}>View All →</button>
           </div>
 
           {loading ? (
@@ -666,12 +716,50 @@ export default function CitizenDashboard() {
                   onMouseEnter={e => { if (selectedComplaint?.id !== c.id) { e.currentTarget.style.borderColor = clr.accent1; e.currentTarget.style.boxShadow = shadowHover; } }}
                   onMouseLeave={e => { if (selectedComplaint?.id !== c.id) { e.currentTarget.style.borderColor = clr.border; e.currentTarget.style.boxShadow = "none"; } }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 7 }}>
-                    <div style={{ flex: 1, paddingRight: 8 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.4, color: clr.text }}>{c.title}</span>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      gap: 8,
+                      marginBottom: 7,
+                    }}
+                  >
+                    {/* LEFT SIDE */}
+                    <div
+                      style={{
+                        flex: 1,
+                        minWidth: 0,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 700,
+                          lineHeight: 1.4,
+                          color: clr.text,
+
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {c.title}
+                      </span>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                      <UrgencyBadge level={c.urgency} />
+
+                    {/* RIGHT SIDE */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 7,
+                        flexShrink: 0,
+                      }}
+                    >
+                  <UrgencyBadge level={c.urgency} />
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDeleteComplaint(c.id); }}
                         style={{ border: "none", background: "transparent", cursor: "pointer", padding: 3, display: "flex", alignItems: "center", borderRadius: 6, transition: "background 0.15s" }}
@@ -689,7 +777,20 @@ export default function CitizenDashboard() {
                     </div>
                   </div>
 
-                  <div style={{ fontSize: 10, color: clr.hint, marginBottom: 10, fontWeight: 600 }}>{c.category} · {c.date}</div>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: clr.hint,
+                      marginBottom: 10,
+                      fontWeight: 600,
+
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {c.category} · {c.date}
+                  </div>
 
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <StatusBadge status={c.status} />
