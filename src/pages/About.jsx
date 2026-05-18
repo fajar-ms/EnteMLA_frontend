@@ -2,8 +2,10 @@ import React from "react";
 import "./About.css";
 import Navbar from "../components/home/Navbar";
 import bgImage from "../assets/bg2.png";
+import { useTranslation } from "react-i18next";
 
 const About = () => {
+  const { t } = useTranslation();
   return (
     <div className="about-page">
 
@@ -11,13 +13,9 @@ const About = () => {
 
       {/* HERO SECTION */}
       <div className="about-hero">
-        <h1>About EnteMLA</h1>
+        <h1>{t("title")}</h1>
 
-        <p>
-          Empowering citizens through transparent governance,
-          digital grievance tracking, and direct communication
-          with elected representatives.
-        </p>
+        <p>{t("hero_desc")}</p>
       </div>
 
       {/* MAIN CONTENT */}

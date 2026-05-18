@@ -124,7 +124,7 @@ const Register = () => {
       };
 
       // 3. API Call to NestJS
-      const response = await axios.post("http://localhost:3001/auth/register", payload);
+      const response = await axios.post("http://13.204.0.224:5000/auth/register", payload);
 
       if (response.status === 201 || response.status === 200) {
         setShowPopup(true);

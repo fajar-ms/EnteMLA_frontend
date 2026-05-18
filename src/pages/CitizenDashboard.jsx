@@ -177,7 +177,7 @@ export default function CitizenDashboard() {
     const fetchMyComplaints = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`http://localhost:3001/complaints/citizen/${userData._id}`);
+        const response = await fetch(`http://13.204.0.224:5000/complaints/citizen/${userData._id}`);
         const data = await response.json();
         console.log("Complaints API Response:", data);
         console.log("Comments:", data[0]?.comments);
@@ -205,7 +205,7 @@ export default function CitizenDashboard() {
     const confirmDelete = window.confirm("Are you sure you want to delete this complaint?");
     if (!confirmDelete) return;
     try {
-      const response = await fetch(`http://localhost:3001/complaints/${id}`, { method: "DELETE" });
+      const response = await fetch(`http://13.204.0.224:5000/complaints/${id}`, { method: "DELETE" });
       if (response.ok) {
         setComplaints((prev) => prev.filter((c) => c.id !== id));
         if (selectedComplaint?.id === id) setSelectedComplaint(null);
@@ -235,7 +235,7 @@ export default function CitizenDashboard() {
     };
     console.log("Sending Payload:", complaintPayload);
     try {
-      const response = await fetch("http://localhost:3001/complaints", {
+      const response = await fetch("http://13.204.0.224:5000/complaints", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(complaintPayload),
@@ -255,7 +255,7 @@ export default function CitizenDashboard() {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:3001/complaints/citizen/${user._id}`
+        `http://13.204.0.224:5000/complaints/citizen/${user._id}`
       );
       const data = await response.json();
 

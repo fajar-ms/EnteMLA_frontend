@@ -280,14 +280,14 @@ export default function MlaComplaintDashboard() {
     setLoading(true);
 
     Promise.all([
-      fetch("http://localhost:3001/complaints").then((r) => {
+      fetch("http://13.204.0.224:5000/complaints").then((r) => {
         if (!r.ok)
           throw new Error("Failed to fetch complaints");
 
         return r.json();
       }),
 
-      fetch("http://localhost:3001/api/users")
+      fetch("http://13.204.0.224:5000/api/users")
         .then((r) => r.json())
         .catch(() => []),
     ])
@@ -418,7 +418,7 @@ export default function MlaComplaintDashboard() {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/complaints/${selectedComplaint.id}/status`,
+        `http://13.204.0.224:5000/complaints/${selectedComplaint.id}/status`,
         {
           method: "PATCH",
           headers: {

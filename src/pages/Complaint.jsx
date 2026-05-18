@@ -21,7 +21,7 @@ const ComplaintsList = () => {
     const fetchComplaints = async () => {
       try {
         // Change this URL to your specific 'my complaints' endpoint if necessary
-        const response = await axios.get("http://localhost:3001/complaints");
+        const response = await axios.get("http://13.204.0.224:5000/complaints");
         setComplaints(response.data);
       } catch (error) {
         console.error("Error fetching complaints:", error);
@@ -36,7 +36,7 @@ const ComplaintsList = () => {
 
   const handleLike = async (id) => {
     try {
-      await axios.patch(`http://localhost:3001/complaints/${id}/like`);
+      await axios.patch(`http://13.204.0.224:5000/complaints/${id}/like`);
       setComplaints((prev) =>
         prev.map((item) =>
           item._id === id ? { ...item, likes: (item.likes || 0) + 1 } : item
@@ -49,7 +49,7 @@ const ComplaintsList = () => {
 
   const handleRepost = async (id) => {
     try {
-      await axios.patch(`http://localhost:3001/complaints/${id}/repost`);
+      await axios.patch(`http://13.204.0.224:5000/complaints/${id}/repost`);
       setComplaints((prev) =>
         prev.map((item) =>
           item._id === id ? { ...item, reposts: (item.reposts || 0) + 1 } : item
@@ -65,7 +65,7 @@ const ComplaintsList = () => {
     if (!commentText.trim()) return;
 
     try {
-      const res = await axios.post(`http://localhost:3001/complaints/${selectedForModal._id}/comment`, {
+      const res = await axios.post(`http://13.204.0.224:5000/complaints/${selectedForModal._id}/comment`, {
         text: commentText.trim(),
         userId: user._id
       });

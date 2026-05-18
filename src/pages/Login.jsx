@@ -25,7 +25,7 @@ export default function LoginPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/auth/login",
+        "http://13.204.0.224:5000/auth/login",
         {
           email,
           password,

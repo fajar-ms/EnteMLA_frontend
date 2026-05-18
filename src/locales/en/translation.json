@@ -69,5 +69,7 @@
   "complaintQueue": "Complaint Queue",
   "caseFile": "Case File",
   "discussion": "Discussion",
-  "rejected": "Rejected"
+  "rejected": "Rejected",
+  "title": "About EnteMLA",
+  "hero_desc": "Empowering citizens through transparent governance..."
 }

@@ -53,35 +53,64 @@ const SortIcon = ({ active, direction }) => (
   </svg>
 );
 
-const StatCard = ({ label, value, color, icon, sub }) => (
-  <div style={{
-    background: "#fff",
-    border: "1px solid #EAE8E3",
-    borderRadius: 16,
-    padding: "20px 22px",
-    display: "flex", alignItems: "center", gap: 15,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-    flex: 1, minWidth: 140,
-    position: "relative", overflow: "hidden",
-    transition: "transform 0.15s, box-shadow 0.15s",
-  }}
-    onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.08)"; }}
-    onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)"; }}
+const StatCard = ({ label, value, color, icon }) => (
+  <div
+    style={{
+      background: "#FFFCF7",
+      border: "1px solid #E6DCCB",
+      borderTop: `3px solid ${color}`,
+      borderRadius: 8,
+      padding: "20px 24px",
+      flex: 1,
+      minWidth: 180,
+      minHeight: 128,
+      position: "relative",
+      overflow: "hidden",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+    }}
   >
-    {/* decorative blob */}
-    <div style={{
-      position: "absolute", top: -14, right: -14, width: 70, height: 70, borderRadius: "50%",
-      background: color + "12", pointerEvents: "none",
-    }} />
-    <div style={{
-      width: 46, height: 46, borderRadius: 13, flexShrink: 0,
-      background: color + "18",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      fontSize: 22, border: `1px solid ${color}30`,
-    }}>{icon}</div>
-    <div>
-      <div style={{ fontSize: 11, color: "#A09A90", fontWeight: 600, marginBottom: 3, letterSpacing: "0.5px", textTransform: "uppercase" }}>{label}</div>
-      <div style={{ fontSize: 26, fontWeight: 800, color: "#1C1917", lineHeight: 1, fontFamily: "'Playfair Display', Georgia, serif" }}>{value}</div>
+    {/* faded icon */}
+    <div
+      style={{
+        position: "absolute",
+        top: 16,
+        right: 18,
+        fontSize: 34,
+        opacity: 0.08,
+        lineHeight: 1,
+      }}
+    >
+      {icon}
+    </div>
+
+    {/* label */}
+    <div
+      style={{
+        fontSize: 12,
+        fontWeight: 700,
+        letterSpacing: "2px",
+        textTransform: "uppercase",
+        color: "#8B7355",
+        marginBottom: 16,
+        fontFamily: "'DM Sans', sans-serif",
+      }}
+    >
+      {label}
+    </div>
+
+    {/* number */}
+    <div
+      style={{
+        fontSize: 54,
+        fontWeight: 700,
+        lineHeight: 1,
+        color,
+        fontFamily: "'Playfair Display', serif",
+      }}
+    >
+      {value}
     </div>
   </div>
 );
@@ -112,10 +141,10 @@ export default function EmployeeComplaintDashboard() {
     }
     const fetchData = async () => {
       try {
-        const userRes = await fetch("http://localhost:3001/users/citizens");
+        const userRes = await fetch("http://13.204.0.224:5000/users/citizens");
         const userData = await userRes.json();
         setUsers(Array.isArray(userData) ? userData : []);
-        const complaintRes = await fetch("http://localhost:3001/complaints");
+        const complaintRes = await fetch("http://13.204.0.224:5000/complaints");
         const complaintData = await complaintRes.json();
         if (Array.isArray(complaintData)) {
           setComplaints(complaintData.map(c => ({
@@ -140,7 +169,7 @@ export default function EmployeeComplaintDashboard() {
     if (!selectedComplaint) return;
     setActionLoading(true);
     try {
-      const res = await fetch(`http://localhost:3001/complaints/${selectedComplaint.id}/status`, {
+      const res = await fetch(`http://13.204.0.224:5000/complaints/${selectedComplaint.id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -163,7 +192,7 @@ export default function EmployeeComplaintDashboard() {
   };
 
   const refreshComplaints = async () => {
-    const res = await fetch("http://localhost:3001/complaints");
+    const res = await fetch("http://13.204.0.224:5000/complaints");
     const data = await res.json();
     setComplaints(data);
   };
@@ -205,7 +234,7 @@ export default function EmployeeComplaintDashboard() {
     try {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
       const role = localStorage.getItem("role"); // "employee", "mla", "citizen"
-      const response = await fetch(`http://localhost:3001/complaints/${id}/reply`, {
+      const response = await fetch(`http://13.204.0.224:5000/complaints/${id}/reply`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
 
@@ -221,7 +250,7 @@ export default function EmployeeComplaintDashboard() {
         // 3. Optional: Refresh complaints to show local updates
         // (The Citizen will see this next time they refresh their dashboard)
 
-        const res = await fetch("http://localhost:3001/complaints");
+        const res = await fetch("http://13.204.0.224:5000/complaints");
   const data = await res.json();
   if (Array.isArray(data)) {
     setComplaints(data.map(c => ({
@@ -294,7 +323,7 @@ export default function EmployeeComplaintDashboard() {
                 fontSize: 22, fontWeight: 800, color: "#1C1917", margin: 0,
                 fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: "-0.5px",
               }}>
-                Complaint Management
+                Complaint Registry
               </h1>
               <span style={{
                 fontSize: 10, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase",
@@ -351,12 +380,33 @@ export default function EmployeeComplaintDashboard() {
 
       {/* ── STAT CARDS ── */}
       <div className="card-anim" style={{ display: "flex", gap: 12, marginBottom: 26, flexWrap: "wrap" }}>
-        <StatCard label="Total Citizens"    value={users.length}             color="#6366F1" icon="👥" />
-        <StatCard label="Total Complaints"  value={complaints.length}        color="#2563EB" icon="📋" />
-        <StatCard label="Urgent"            value={countByUrgency("Urgent")} color="#EF4444" icon="🔴" />
-        <StatCard label="Medium"            value={countByUrgency("Medium")} color="#F59E0B" icon="🟡" />
-        <StatCard label="Normal"            value={countByUrgency("Normal")} color="#22C55E" icon="🟢" />
-      </div>
+       <StatCard
+  label="Total Complaints"
+  value={complaints.length}
+  color="#1D4ED8"
+  icon="📋"
+/>
+
+<StatCard
+  label="Urgent Issues"
+  value={countByUrgency("Urgent")}
+  color="#DC2626"
+  icon="🔴"
+/>
+
+<StatCard
+  label="Pending"
+  value={complaints.filter(c => c.status === "Pending").length}
+  color="#D97706"
+  icon="⏳"
+/>
+
+<StatCard
+  label="Resolved"
+  value={complaints.filter(c => c.status === "Resolved").length}
+  color="#15803D"
+  icon="✅"
+/></div>
 
       {/* ── FILTERS ── */}
       <div style={{

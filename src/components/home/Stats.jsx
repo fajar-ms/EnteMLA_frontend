@@ -24,7 +24,7 @@ const Stats = () => {
   const fetchStats = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:3001/complaints/stats"
+        "http://13.204.0.224:5000/complaints/stats"
       );
       setStats(response.data);
     } catch (error) {
