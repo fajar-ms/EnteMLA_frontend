@@ -140,8 +140,8 @@ const Register = () => {
       <div className="register-card">
         <h2>Create Account</h2>
         <div className="role-badge">
-            <h3>👤 Citizen Login</h3>
-          </div>
+          <h3>👤 Citizen Login</h3>
+        </div>
         {/* <p>Direct registration enabled (OTP skipped)</p> */}
 
         <form onSubmit={handleSubmit}>
@@ -166,23 +166,9 @@ const Register = () => {
           <div className="input-group">
             <span>🗺️</span>
             <select name="district" value={form.district} onChange={handleChange} required>
-              <option value="" disabled selected>Select District</option>
+              <option value="" disabled>Select District</option>
 
-              <option value="thiruvananthapuram">Thiruvananthapuram</option>
-              <option value="kollam">Kollam</option>
-              <option value="pathanamthitta">Pathanamthitta</option>
-              <option value="alappuzha">Alappuzha</option>
-              <option value="kottayam">Kottayam</option>
-              <option value="idukki">Idukki</option>
-              <option value="ernakulam">Ernakulam</option>
-              <option value="thrissur">Thrissur</option>
-              <option value="palakkad">Palakkad</option>
-              <option value="malappuram">Malappuram</option>
-              <option value="kozhikode">Kozhikode</option>
-              <option value="wayanad">Wayanad</option>
-              <option value="kannur">Kannur</option>
-              <option value="kasaragod">Kasaragod</option>
-              {Object.keys(constituencyMap).map(dist => (
+              {Object.keys(constituencyMap).map((dist) => (
                 <option key={dist} value={dist}>
                   {dist.charAt(0).toUpperCase() + dist.slice(1)}
                 </option>
@@ -193,8 +179,16 @@ const Register = () => {
           {/* Constituency */}
           <div className="input-group">
             <span>🏛️</span>
-            <select name="constituency" value={form.constituency} onChange={handleChange} required>
-              <option value="" disabled selected>Select Constituency</option>
+            <select
+              name="constituency"
+              value={form.constituency}
+              onChange={handleChange}
+              required
+              disabled={!form.district}
+            >
+              <option value="" disabled>
+                Select Constituency
+              </option>
               {form.district && constituencyMap[form.district]?.map((c) => (
                 <option key={c.value} value={c.value}>{c.label}</option>
               ))}

@@ -73,7 +73,7 @@ const Navbar = () => {
           {/* LANGUAGE SELECTOR */}
           <div className="dropdown-wrapper" ref={langRef}>
             <button className="secondary-btn" onClick={() => setLangOpen(!langOpen)}>
-              🌐 {selectedLang} <span className="arrow">▼</span>
+              {selectedLang} <span className="arrow">▼</span>
             </button>
             {langOpen && (
               <div className="dropdown-menu">
@@ -83,15 +83,39 @@ const Navbar = () => {
             )}
           </div>
 
+          {/* LOGIN DROPDOWN */}
           <div className="dropdown-wrapper" ref={loginRef}>
             <button className="primary-btn" onClick={() => setAuthOpen(!authOpen)}>
               Login <span className="arrow">▼</span>
             </button>
             {authOpen && (
               <div className="dropdown-menu">
-                <Link to="/login" onClick={() => localStorage.setItem("role", "citizen")}>Citizen User</Link>
-                <Link to="/login" onClick={() => localStorage.setItem("role", "mla")}>MLA Portal</Link>
-                <Link to="/login" onClick={() => localStorage.setItem("role", "employee")}>Employee Access</Link>
+                <Link to="/login" onClick={() => localStorage.setItem("role", "citizen")}>
+                  Citizen
+                </Link>
+                <Link to="/login" onClick={() => localStorage.setItem("role", "mla")}>
+                  MLA
+                </Link>
+                <Link to="/login" onClick={() => localStorage.setItem("role", "employee")}>
+                  Employee
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* REGISTER DROPDOWN */}
+          <div className="dropdown-wrapper" ref={registerRef}>
+            <button className="primary-btn" onClick={() => setRegisterOpen(!registerOpen)}>
+              Register <span className="arrow">▼</span>
+            </button>
+            {registerOpen && (
+              <div className="dropdown-menu">
+                <Link to="/register" onClick={() => localStorage.setItem("role", "citizen")}>
+                  Citizen
+                </Link>
+                <Link to="/register" onClick={() => localStorage.setItem("role", "employee")}>
+                  Employee
+                </Link>
               </div>
             )}
           </div>

@@ -146,7 +146,7 @@ const QA = () => {
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/chat/ask`, {
+      const res = await fetch(`${API_BASE_URL}/ai/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question, lang: selectedLanguage }),

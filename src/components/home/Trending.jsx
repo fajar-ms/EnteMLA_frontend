@@ -246,7 +246,7 @@ const handleRepost = async (id) => {
             src={
               complaint.evidence
                 ? `http://localhost:3001/uploads/${complaint.evidence}`
-                : "https://images.unsplash.com/photo-1521791136064-7986c2920216"
+                : "https://images.news18.com/ibnlive/uploads/2023/06/public-grievance-168568115816x9.jpg"
             }
             alt={complaint.title}
           />

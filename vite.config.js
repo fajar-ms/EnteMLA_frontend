@@ -8,4 +8,7 @@ export default defineConfig({
     react(),
     tailwindcss(), // 2. Add it to your plugins array
   ],
+  server: {
+    port: 5173,
+  },
 })
