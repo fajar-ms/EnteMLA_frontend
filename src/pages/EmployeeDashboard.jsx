@@ -112,10 +112,10 @@ export default function EmployeeComplaintDashboard() {
     }
     const fetchData = async () => {
       try {
-        const userRes = await fetch("http://localhost:3001/users/citizens");
+        const userRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/citizens`);
         const userData = await userRes.json();
         setUsers(Array.isArray(userData) ? userData : []);
-        const complaintRes = await fetch("http://localhost:3001/complaints");
+        const complaintRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`);
         const complaintData = await complaintRes.json();
         if (Array.isArray(complaintData)) {
           setComplaints(complaintData.map(c => ({
@@ -140,7 +140,7 @@ export default function EmployeeComplaintDashboard() {
     if (!selectedComplaint) return;
     setActionLoading(true);
     try {
-      const res = await fetch(`http://localhost:3001/complaints/${selectedComplaint.id}/status`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints/${selectedComplaint.id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -163,7 +163,7 @@ export default function EmployeeComplaintDashboard() {
   };
 
   const refreshComplaints = async () => {
-    const res = await fetch("http://localhost:3001/complaints");
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`);
     const data = await res.json();
     setComplaints(data);
   };
@@ -205,7 +205,7 @@ export default function EmployeeComplaintDashboard() {
     try {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
       const role = localStorage.getItem("role"); // "employee", "mla", "citizen"
-      const response = await fetch(`http://localhost:3001/complaints/${id}/reply`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/reply`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
 
@@ -221,7 +221,7 @@ export default function EmployeeComplaintDashboard() {
         // 3. Optional: Refresh complaints to show local updates
         // (The Citizen will see this next time they refresh their dashboard)
 
-        const res = await fetch("http://localhost:3001/complaints");
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`);
   const data = await res.json();
   if (Array.isArray(data)) {
     setComplaints(data.map(c => ({
