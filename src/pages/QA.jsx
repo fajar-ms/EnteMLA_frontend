@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import "./QA.css";
 import Navbar from "../components/home/Navbar";
 
-const API_BASE_URL = "http://13.204.0.224:5000";
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}`;
 
 const TRANSLATED_FAQS = {
   English: [

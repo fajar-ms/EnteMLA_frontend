@@ -28,7 +28,7 @@ const [showPopup, setShowPopup] = useState(false);
     try {
 
       const response = await axios.get(
-        "http://13.204.0.224:5000/complaints/public"
+        `${import.meta.env.VITE_API_BASE_URL}/complaints/public`
       );
 
       setComplaints(response.data);
@@ -73,7 +73,7 @@ const [showPopup, setShowPopup] = useState(false);
     }
 
     const response = await axios.patch(
-      `http://13.204.0.224:5000/complaints/${id}/like`,
+      `${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/like`,
       {
         userId: user._id,
       }
@@ -129,7 +129,7 @@ const handleRepost = async (id) => {
     }
 
     const response = await axios.patch(
-      `port/complaints/${id}/repost`,
+      `${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/repost`,
       {
         userId: user._id,
       }
@@ -180,7 +180,7 @@ const handleRepost = async (id) => {
     if (!commentText || !commentText.trim()) return;
 
     try {
-      const res = await fetch(`http://13.204.0.224:5000/complaints/${selectedComplaint._id}/comment`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints/${selectedComplaint._id}/comment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
 
@@ -245,7 +245,7 @@ const handleRepost = async (id) => {
           <img
             src={
               complaint.evidence
-                ? `http://13.204.0.224:5000/uploads/${complaint.evidence}`
+                ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${complaint.evidence}`
                 : "https://images.news18.com/ibnlive/uploads/2023/06/public-grievance-168568115816x9.jpg"
             }
             alt={complaint.title}

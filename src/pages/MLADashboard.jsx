@@ -280,14 +280,14 @@ export default function MlaComplaintDashboard() {
     setLoading(true);
 
     Promise.all([
-      fetch("http://13.204.0.224:5000/complaints").then((r) => {
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`).then((r) => {
         if (!r.ok)
           throw new Error("Failed to fetch complaints");
 
         return r.json();
       }),
 
-      fetch("http://13.204.0.224:5000/api/users")
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`)
         .then((r) => r.json())
         .catch(() => []),
     ])
@@ -418,7 +418,7 @@ export default function MlaComplaintDashboard() {
 
     try {
       const response = await fetch(
-        `http://13.204.0.224:5000/complaints/${selectedComplaint.id}/status`,
+        `${import.meta.env.VITE_API_BASE_URL}/complaints/${selectedComplaint.id}/status`,
         {
           method: "PATCH",
           headers: {
