@@ -71,5 +71,76 @@
   "discussion": "Discussion",
   "rejected": "Rejected",
   "title": "About EnteMLA",
-  "hero_desc": "Empowering citizens through transparent governance..."
+  "hero_desc": "Empowering citizens through transparent governance...",
+   "about": {
+    "hero_title": "About EnteMLA",
+    "hero_desc": "Empowering citizens through transparent governance, digital complaint tracking, and direct communication with elected representatives.",
+
+    "what_is_heading": "What is EnteMLA?",
+    "what_is_p1": "EnteMLA is a modern digital civic grievance management platform that connects citizens and their elected representatives through a unified system.",
+    "what_is_p2": "Citizens can easily register complaints, track their progress in real-time, and receive official responses and updates.",
+    "what_is_p3": "The primary goal is to improve transparency and accountability in governance.",
+
+    "why_heading": "Why We Built This Platform",
+    "why_intro": "Traditional complaint systems are often slow, unclear, and difficult for citizens to access efficiently.",
+    "why_points_title": "Major challenges faced by citizens:",
+    "why_points": [
+      "Unnecessary delays in complaint resolution",
+      "Lack of status updates and transparency",
+      "No direct communication with authorities",
+      "Difficulty tracking complaints",
+      "Lack of accountability"
+    ],
+    "why_outro": "EnteMLA was designed as a digital solution to address these governance challenges.",
+
+    "features_heading": "Key Features",
+
+    "feature_1_title": "📌 Complaint Registration",
+    "feature_1_desc": "Citizens can submit complaints with categories, urgency levels, and detailed descriptions.",
+
+    "feature_2_title": "📊 Real-Time Tracking",
+    "feature_2_desc": "Track complaint progress and updates instantly.",
+
+    "feature_3_title": "💬 Direct Responses",
+    "feature_3_desc": "Receive official replies and updates directly from authorities.",
+
+    "feature_4_title": "🔒 Secure Access",
+    "feature_4_desc": "Separate and secure access for citizens, employees, and MLAs.",
+
+    "feature_5_title": "⚡ Priority Handling",
+    "feature_5_desc": "Urgent complaints are prioritized for faster resolution.",
+
+    "feature_6_title": "🌐 Public Discussion System",
+    "feature_6_desc": "Citizens can participate in transparent discussions about local issues.",
+
+    "how_heading": "How EnteMLA Works",
+
+    "step1_title": "Register & Login",
+    "step1_desc": "Citizens securely create accounts and access the platform.",
+
+    "step2_title": "Submit Complaint",
+    "step2_desc": "Users submit complaints with categories and detailed information.",
+
+    "step3_title": "Authority Review",
+    "step3_desc": "Complaints are reviewed and forwarded to the responsible department.",
+
+    "step4_title": "Track & Resolve",
+    "step4_desc": "Citizens receive updates until the complaint is fully resolved.",
+
+    "roles_heading": "User Roles",
+    "role_citizen": "Citizen: Submit and track complaints.",
+    "role_employee": "Employee: Manage and resolve complaints.",
+    "role_mla": "MLA: Monitor and oversee the overall system.",
+
+    "vision_heading": "Our Vision",
+    "vision_p1": "Our vision is to create a transparent governance system where every citizen’s voice is heard and addressed efficiently.",
+    "vision_p2": "We aim to strengthen trust between citizens and governance through technology and innovation.",
+
+    "future_heading": "Future Enhancements",
+    "future_1": "AI-powered complaint categorization",
+    "future_2": "Multilingual platform support",
+    "future_3": "Mobile application integration",
+    "future_4": "Analytics dashboard for governance insights",
+    "future_5": "Smart notification and escalation systems"
+  }
 }

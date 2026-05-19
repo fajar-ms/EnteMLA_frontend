@@ -49,13 +49,8 @@ export default function LoginPage() {
             localStorage.removeItem("redirectAfterLogin");
             navigate(redirectAfterLogin);
           } else {
-            const routes = {
-              citizen: "/citizen",
-              mla: "/mla",
-              employee: "/employee",
-            };
-
-            navigate(routes[selectedRole] || "/");
+            navigate("/");
+            window.location.reload();
           }
         }
       }

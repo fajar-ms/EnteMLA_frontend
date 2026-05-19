@@ -15,7 +15,7 @@ const Trending = () => {
   const [openCommentBox, setOpenCommentBox] = useState(null); // ✅ ADDED
   const [loading, setLoading] = useState(true);
   const [popupMessage, setPopupMessage] = useState("");
-const [showPopup, setShowPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
 
   // Fetch Public Complaints

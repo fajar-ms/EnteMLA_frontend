@@ -6,16 +6,16 @@ import { useTranslation } from "react-i18next";
 
 const About = () => {
   const { t } = useTranslation();
+
   return (
     <div className="about-page">
-
       <Navbar />
 
       {/* HERO SECTION */}
       <div className="about-hero">
-        <h1>{t("title")}</h1>
+        <h1>{t("about.hero_title")}</h1>
 
-        <p>{t("hero_desc")}</p>
+        <p>{t("about.hero_desc")}</p>
       </div>
 
       {/* MAIN CONTENT */}
@@ -23,105 +23,74 @@ const About = () => {
 
         {/* WHAT IS ENTEMLA */}
         <div className="about-card">
-          <h2>🏛️ What is EnteMLA?</h2>
+          <h2>🏛️ {t("about.what_is_heading")}</h2>
 
-          <p>
-            EnteMLA is a modern civic grievance management platform
-            designed to bridge the gap between citizens and their
-            elected representatives.
-          </p>
+          <p>{t("about.what_is_p1")}</p>
 
-          <p>
-            The platform allows citizens to register complaints,
-            track issue progress in real time, receive official
-            updates, and participate in transparent public discussions.
-          </p>
+          <p>{t("about.what_is_p2")}</p>
 
-          <p>
-            By digitizing complaint handling, EnteMLA improves
-            accountability, communication, and efficiency in governance.
-          </p>
+          <p>{t("about.what_is_p3")}</p>
         </div>
 
         {/* WHY WE BUILT THIS */}
         <div className="about-card">
-          <h2>🎯 Why We Built This Platform</h2>
+          <h2>🎯 {t("about.why_heading")}</h2>
 
-          <p>
-            Traditional complaint systems are often slow,
-            unclear, and difficult to monitor.
-          </p>
+          <p>{t("about.why_intro")}</p>
 
-          <p>
-            Citizens frequently face challenges such as:
-          </p>
+          <p>{t("about.why_points_title")}</p>
 
           <ul>
-            <li>Long delays in complaint resolution</li>
-            <li>Lack of status transparency</li>
-            <li>No direct communication with authorities</li>
-            <li>Difficulty tracking public grievances</li>
-            <li>Limited accountability in workflows</li>
+            {t("about.why_points", { returnObjects: true }).map(
+              (point, index) => (
+                <li key={index}>{point}</li>
+              )
+            )}
           </ul>
 
-          <p>
-            EnteMLA was created to solve these issues using
-            a centralized digital complaint management system.
-          </p>
+          <p>{t("about.why_outro")}</p>
         </div>
 
         {/* KEY FEATURES */}
         <div className="about-card">
-          <h2>✨ Key Features</h2>
+          <h2>✨ {t("about.features_heading")}</h2>
 
           <div className="features-grid">
 
             <div className="feature-box">
-              <h4>📌 Complaint Registration</h4>
-              <p>
-                Citizens can submit complaints with categories,
-                urgency levels, and detailed descriptions.
-              </p>
+              <h4>{t("about.feature_1_title")}</h4>
+
+              <p>{t("about.feature_1_desc")}</p>
             </div>
 
             <div className="feature-box">
-              <h4>📊 Real-Time Tracking</h4>
-              <p>
-                Track complaint progress, updates,
-                and status changes instantly.
-              </p>
+              <h4>{t("about.feature_2_title")}</h4>
+
+              <p>{t("about.feature_2_desc")}</p>
             </div>
 
             <div className="feature-box">
-              <h4>💬 MLA & Employee Replies</h4>
-              <p>
-                Receive direct responses and updates
-                from officials and departments.
-              </p>
+              <h4>{t("about.feature_3_title")}</h4>
+
+              <p>{t("about.feature_3_desc")}</p>
             </div>
 
             <div className="feature-box">
-              <h4>🔒 Secure Role-Based Access</h4>
-              <p>
-                Separate access for citizens,
-                employees, and MLAs.
-              </p>
+              <h4>{t("about.feature_4_title")}</h4>
+
+              <p>{t("about.feature_4_desc")}</p>
             </div>
 
             <div className="feature-box">
-              <h4>⚡ Priority Handling</h4>
-              <p>
-                Urgent complaints are highlighted
-                for faster resolution.
-              </p>
+              <h4>{t("about.feature_5_title")}</h4>
+
+              <p>{t("about.feature_5_desc")}</p>
             </div>
 
             <div className="feature-box">
-              <h4>🌐 Public Civic Discussion</h4>
-              <p>
-                Citizens can engage in transparent
-                discussions regarding local issues.
-              </p>
+              <h4>{t("about.feature_6_title")}</h4>
+
+              <p>{t("about.feature_6_desc")}</p>
             </div>
 
           </div>
@@ -129,7 +98,7 @@ const About = () => {
 
         {/* HOW IT WORKS */}
         <div className="about-card">
-          <h2>⚙️ How EnteMLA Works</h2>
+          <h2>⚙️ {t("about.how_heading")}</h2>
 
           <div className="steps">
 
@@ -137,12 +106,9 @@ const About = () => {
               <span>1</span>
 
               <div>
-                <h4>Register & Login</h4>
+                <h4>{t("about.step1_title")}</h4>
 
-                <p>
-                  Citizens create accounts and securely
-                  access the platform.
-                </p>
+                <p>{t("about.step1_desc")}</p>
               </div>
             </div>
 
@@ -150,12 +116,9 @@ const About = () => {
               <span>2</span>
 
               <div>
-                <h4>Submit Complaint</h4>
+                <h4>{t("about.step2_title")}</h4>
 
-                <p>
-                  Users submit complaints with category,
-                  urgency, and issue details.
-                </p>
+                <p>{t("about.step2_desc")}</p>
               </div>
             </div>
 
@@ -163,12 +126,9 @@ const About = () => {
               <span>3</span>
 
               <div>
-                <h4>Department Review</h4>
+                <h4>{t("about.step3_title")}</h4>
 
-                <p>
-                  Complaints are reviewed and assigned
-                  to the responsible department or authority.
-                </p>
+                <p>{t("about.step3_desc")}</p>
               </div>
             </div>
 
@@ -176,12 +136,9 @@ const About = () => {
               <span>4</span>
 
               <div>
-                <h4>Track & Resolve</h4>
+                <h4>{t("about.step4_title")}</h4>
 
-                <p>
-                  Citizens receive updates until
-                  the complaint is fully resolved.
-                </p>
+                <p>{t("about.step4_desc")}</p>
               </div>
             </div>
 
@@ -190,7 +147,7 @@ const About = () => {
 
         {/* USER ROLES */}
         <div className="about-card">
-          <h2>👥 User Roles in the System</h2>
+          <h2>👥 {t("about.roles_heading")}</h2>
 
           <div className="roles-grid">
 
@@ -198,10 +155,7 @@ const About = () => {
               <h4>🧑 Citizen</h4>
 
               <ul>
-                <li>Submit complaints</li>
-                <li>Track complaint status</li>
-                <li>View updates & replies</li>
-                <li>Participate in discussions</li>
+                <li>{t("about.role_citizen")}</li>
               </ul>
             </div>
 
@@ -209,10 +163,7 @@ const About = () => {
               <h4>🏢 Employee</h4>
 
               <ul>
-                <li>Manage assigned complaints</li>
-                <li>Provide official updates</li>
-                <li>Resolve public issues</li>
-                <li>Maintain workflow efficiency</li>
+                <li>{t("about.role_employee")}</li>
               </ul>
             </div>
 
@@ -220,49 +171,33 @@ const About = () => {
               <h4>🏛️ MLA</h4>
 
               <ul>
-                <li>Monitor constituency issues</li>
-                <li>Oversee complaint resolution</li>
-                <li>Communicate with citizens</li>
-                <li>Improve governance transparency</li>
+                <li>{t("about.role_mla")}</li>
               </ul>
             </div>
 
           </div>
         </div>
 
-
         {/* VISION */}
         <div className="about-card">
+          <h2>🌍 {t("about.vision_heading")}</h2>
 
-          <h2>🌍 Our Vision</h2>
+          <p>{t("about.vision_p1")}</p>
 
-          <p>
-            Our vision is to create a transparent,
-            accessible, and technology-driven governance system
-            where every citizen's voice is heard and addressed efficiently.
-          </p>
-
-          <p>
-            We aim to strengthen trust between citizens
-            and public representatives through accountability,
-            communication, and digital innovation.
-          </p>
-
+          <p>{t("about.vision_p2")}</p>
         </div>
 
         {/* FUTURE GOALS */}
         <div className="about-card">
-
-          <h2>🚀 Future Enhancements</h2>
+          <h2>🚀 {t("about.future_heading")}</h2>
 
           <ul>
-            <li>AI-powered complaint categorization</li>
-            <li>Multilingual platform support</li>
-            <li>Mobile application integration</li>
-            <li>Analytics dashboard for governance insights</li>
-            <li>Smart notification & escalation systems</li>
+            <li>{t("about.future_1")}</li>
+            <li>{t("about.future_2")}</li>
+            <li>{t("about.future_3")}</li>
+            <li>{t("about.future_4")}</li>
+            <li>{t("about.future_5")}</li>
           </ul>
-
         </div>
 
         {/* IMAGE SECTION */}

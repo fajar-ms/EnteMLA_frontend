@@ -77,6 +77,7 @@ const constituencyMap = {
 
 const Register = () => {
   const navigate = useNavigate();
+  const selectedRole = localStorage.getItem("role");
 
   const [form, setForm] = useState({
     name: "",
@@ -120,7 +121,7 @@ const Register = () => {
         constituency: form.constituency,
         place: form.place,
         password: form.password,
-        role: "citizen"
+        role: selectedRole
       };
 
       // 3. API Call to NestJS
@@ -139,9 +140,11 @@ const Register = () => {
     <div className="register-container">
       <div className="register-card">
         <h2>Create Account</h2>
-        <div className="role-badge">
-          <h3>👤 Citizen Login</h3>
-        </div>
+        <h3>
+          {selectedRole === "employee"
+            ? "🛠️ Employee Register"
+            : "👤 Citizen Register"}
+        </h3>
         {/* <p>Direct registration enabled (OTP skipped)</p> */}
 
         <form onSubmit={handleSubmit}>
