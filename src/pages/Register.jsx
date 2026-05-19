@@ -141,10 +141,10 @@ const Register = () => {
       <div className="register-card">
         <h2>Create Account</h2>
         <h3>
-          {selectedRole === "employee"
-            ? "🛠️ Employee Register"
-            : "👤 Citizen Register"}
-        </h3>
+        {selectedRole === "employee"
+          ? "🛠️ Employee Register"
+          : "👤 Citizen Register"}
+      </h3>
         {/* <p>Direct registration enabled (OTP skipped)</p> */}
 
         <form onSubmit={handleSubmit}>

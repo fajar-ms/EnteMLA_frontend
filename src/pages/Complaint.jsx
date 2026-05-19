@@ -22,7 +22,11 @@ const ComplaintsList = () => {
       try {
         // Change this URL to your specific 'my complaints' endpoint if necessary
         const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/complaints`);
-        setComplaints(response.data);
+        setComplaints(
+          Array.isArray(response.data)
+            ? response.data
+            : response.data.data || []
+        );
       } catch (error) {
         console.error("Error fetching complaints:", error);
       } finally {
