@@ -227,48 +227,82 @@ export default function EmployeeComplaintDashboard() {
   ];
 
   const handleReplyChange = (id, value) => setReplies(prev => ({ ...prev, [id]: value }));
+// Replace your current handleSendReply function with this version
 
-  const handleSendReply = async (id) => {
-    const replyText = replies[id];
-    if (!replyText) return;
-    try {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      const role = localStorage.getItem("role"); // "employee", "mla", "citizen"
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/reply`, {
+const handleSendReply = async (id) => {
+  const replyText = replies[id];
+  if (!replyText?.trim()) return;
+
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/reply`,
+      {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-
-
-        body: JSON.stringify({ text: replyText, from: "Employee" }),
-
-      });
-      if (response.ok) {
-        setSentStatus(prev => ({ ...prev, [id]: "Sent successfully ✅" }));
-        setReplies(prev => ({ ...prev, [id]: "" }));
-
-
-        // 3. Optional: Refresh complaints to show local updates
-        // (The Citizen will see this next time they refresh their dashboard)
-
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`);
-  const data = await res.json();
-  if (Array.isArray(data)) {
-    setComplaints(data.map(c => ({
-      ...c,
-      id: c._id || c.id,
-      userName: typeof c.citizenId === "object" ? c.citizenId?.name : c.citizenId || "Unknown Citizen",
-      urgency: c.urgency || "Normal",
-      status: c.status || "Pending",
-      date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "-",
-    })));
-  }
-        setTimeout(() => setSentStatus(prev => ({ ...prev, [id]: "" })), 2000);
-
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: replyText.trim(),
+          from: "Employee",   // Display name
+          role: "employee",   // Actual role used by Citizen dashboard
+        }),
       }
-    } catch (err) {
-      alert("Failed to send reply to database.");
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to send reply");
     }
-  };
+
+    // Success message
+    setSentStatus((prev) => ({
+      ...prev,
+      [id]: "Sent successfully ✅",
+    }));
+
+    // Clear textarea
+    setReplies((prev) => ({
+      ...prev,
+      [id]: "",
+    }));
+
+    // Refresh complaints from server
+    const res = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/complaints`
+    );
+    const refreshedData = await res.json();
+
+    if (Array.isArray(refreshedData)) {
+      setComplaints(
+        refreshedData.map((c) => ({
+          ...c,
+          id: c._id || c.id,
+          userName:
+            typeof c.citizenId === "object"
+              ? c.citizenId?.name
+              : c.citizenId || "Unknown Citizen",
+          urgency: c.urgency || "Normal",
+          status: c.status || "Pending",
+          date: c.createdAt
+            ? new Date(c.createdAt).toLocaleDateString()
+            : "-",
+        }))
+      );
+    }
+
+    // Hide success message after 2 seconds
+    setTimeout(() => {
+      setSentStatus((prev) => ({
+        ...prev,
+        [id]: "",
+      }));
+    }, 2000);
+  } catch (err) {
+    console.error("Reply send error:", err);
+    alert("Failed to send reply to database.");
+  }
+};
 
   const selectStyles = {
     padding: "8px 14px", border: "1px solid #E5E1DA", borderRadius: 10,
