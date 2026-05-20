@@ -313,16 +313,32 @@ const handleRepost = async (id) => {
                   selectedComplaint.replies.map((reply, i) => (
                     <div key={i} className="single-comment">
                       {/* Use userName for the avatar initial */}
-                      <div className="comment-avatar">
-                        {reply.userName?.charAt(0) || "U"}
-                      </div>
+                     
                       <div className="comment-body">
-                        <p className="comment-user">
+                       <p className="comment-user">
 
-                          {reply.userName}
-                          {/* Optional: Add a badge if it's an official reply */}
-                          {reply.role === "MLA" && <span className="official-badge">⭐ MLA</span>}
-                        </p>
+
+  {(() => {
+    const rawRole =
+      reply.authorRole ||
+      reply.userRole ||
+      reply.role ||
+      reply.postedBy?.role ||
+      "Citizen";
+
+    const role = rawRole.toLowerCase();
+
+    if (role === "mla") {
+      return <span className="official-badge mla">👷 MLA</span>;
+    }
+
+    if (role === "employee") {
+      return <span className="official-badge employee">👷 Employee</span>;
+    }
+
+    return <span className="official-badge citizen">👥 Citizen</span>;
+  })()}
+</p>
 
                         <p className="comment-text">{reply.text}</p>
                       </div>
