@@ -889,42 +889,59 @@ export default function CitizenDashboard() {
           }}
         >
           {/* Name + Role */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              marginBottom: 4,
-            }}
-          >
-            <strong style={{ color: clr.primary }}>
-              {reply.username || reply.from || "Anonymous"}
-            </strong>
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    marginBottom: 4,
+  }}
+>
+  
+  {(() => {
+    const rawRole =
+      reply.authorRole ||
+      reply.userRole ||
+      reply.role ||
+      reply.postedBy?.role ||
+      "Citizen";
 
-            <span
-              style={{
-                fontSize: 9,
-                fontWeight: 700,
-                padding: "2px 6px",
-                borderRadius: 999,
-                background:
-                  (reply.role || "").toLowerCase() === "mla"
-                    ? "#EEF2FF"
-                    : (reply.role || "").toLowerCase() === "employee"
-                    ? "#ECFDF5"
-                    : "#FFF7ED",
-                color:
-                  (reply.role || "").toLowerCase() === "mla"
-                    ? "#4338CA"
-                    : (reply.role || "").toLowerCase() === "employee"
-                    ? "#065F46"
-                    : "#9A3412",
-              }}
-            >
-              {reply.role || "Citizen"}
-            </span>
-          </div>
+    // Format role nicely
+    const role =
+      rawRole.toLowerCase() === "mla"
+        ? "MLA"
+        : rawRole.charAt(0).toUpperCase() +
+          rawRole.slice(1).toLowerCase();
 
+    const roleLower = rawRole.toLowerCase();
+
+    return (
+      <span
+        style={{
+          fontSize: 9,
+          fontWeight: 700,
+          padding: "2px 6px",
+          borderRadius: 999,
+          background:
+            roleLower === "mla"
+              ? "#EEF2FF"
+              : roleLower === "employee"
+              ? "#ECFDF5"
+              : "#FFF7ED",
+          color:
+            roleLower === "mla"
+              ? "#4338CA"
+              : roleLower === "employee"
+              ? "#065F46"
+              : "#9A3412",
+        }}
+      >
+        {role}
+      </span>
+    );
+  })()}
+</div>
+          
           {/* Comment Text */}
           <div style={{ color: clr.text, lineHeight: 1.5 }}>
             {reply.text}
