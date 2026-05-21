@@ -75,13 +75,14 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
-/* Description */
 .stats-description {
-  font-size: 1.3rem;
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
   color: #475569;
+
   max-width: 720px;
+
   line-height: 1.75;
+
   margin-bottom: 4rem;
 }
 

@@ -232,6 +232,7 @@ const Register = () => {
 
           <button type="submit" className="register-btn">Create Account</button>
         </form>
+        
 
         {showPopup && (
           <div className="popup-overlay">

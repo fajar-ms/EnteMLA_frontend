@@ -76,10 +76,7 @@ export default function LoginPage() {
             Ente<span>MLA</span>
           </div>
 
-          <h1>Welcome Back</h1>
-
           <p className="subtitle">
-            Secure Digital Governance Portal
           </p>
 
           <div className="role-badge">

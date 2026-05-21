@@ -1,368 +1,427 @@
-/* Login.css - Creative Civic Light Theme (Matching Register) */
+/* ============================================================
+   LOGIN.CSS — Civic Portal · Teal Light Theme
+   Matches Register page aesthetic
+   Fonts: Cormorant Garamond + Outfit + Fira Code
+   ============================================================ */
 
-* {
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+/* ── Reset ──────────────────────────────────────────────────── */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Outfit', system-ui, sans-serif;
 }
 
+/* ── Page ───────────────────────────────────────────────────── */
 .login-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 24px;
   position: relative;
   overflow: hidden;
+  background: linear-gradient(145deg, #f0fafa 0%, #e0f5f1 40%, #dceffe 100%);
 }
 
-/* Background Decorations */
+/* Ambient orbs — no grid */
 .login-page::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: 
-    radial-gradient(circle at 20% 30%, rgba(34, 197, 151, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.10) 0%, transparent 50%);
+  background:
+    radial-gradient(ellipse at 18% 25%, rgba(20, 184, 166, 0.18) 0%, transparent 52%),
+    radial-gradient(ellipse at 82% 72%, rgba(59, 130, 246, 0.13) 0%, transparent 48%),
+    radial-gradient(ellipse at 55% 90%, rgba(16, 185, 129, 0.10) 0%, transparent 44%);
   pointer-events: none;
+  animation: ambientDrift 18s ease-in-out infinite alternate;
 }
 
+/* Floating decorative rings */
 .login-page::after {
   content: '';
   position: absolute;
-  inset: 0;
-  background-image: 
-    linear-gradient(rgba(15,23,42,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15,23,42,0.03) 1px, transparent 1px);
-  background-size: 80px 80px;
-  opacity: 0.6;
+  width: 520px;
+  height: 520px;
+  top: -160px;
+  right: -140px;
+  border-radius: 50%;
+  border: 1px solid rgba(20, 184, 166, 0.12);
+  box-shadow:
+    0 0 0 60px rgba(20, 184, 166, 0.04),
+    0 0 0 120px rgba(20, 184, 166, 0.025);
   pointer-events: none;
+  animation: ringRotate 30s linear infinite;
 }
 
-/* Main Card */
+/* ── Card ───────────────────────────────────────────────────── */
 .login-card {
-  background: rgba(255, 255, 255, 0.93);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(20, 184, 166, 0.18);
   border-radius: 28px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.9) inset,
+    0 24px 64px rgba(15, 118, 110, 0.12),
+    0 4px 16px rgba(0,0,0,0.06);
   width: 100%;
-  max-width: 420px;
-  padding: 48px 40px;
+  max-width: 430px;
+  padding: 44px 40px 36px;
   position: relative;
   z-index: 2;
-  transition: all 0.4s ease;
+  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s ease;
+  animation: cardRise 0.7s cubic-bezier(0.22,1,0.36,1) both;
 }
 
 .login-card:hover {
-  box-shadow: 0 25px 60px rgba(20, 184, 166, 0.15);
-  transform: translateY(-8px);
+  transform: translateY(-5px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.9) inset,
+    0 32px 80px rgba(15, 118, 110, 0.16),
+    0 6px 24px rgba(0,0,0,0.07);
 }
 
-/* Header */
+/* Top accent bar */
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 3px;
+  background: linear-gradient(to right, transparent, #14b8a6 30%, #0f766e 70%, transparent);
+  border-radius: 0 0 4px 4px;
+}
+
+/* ── Back to Home ───────────────────────────────────────────── */
+.back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: color 0.25s ease, gap 0.25s ease;
+}
+
+.back-home:hover {
+  color: #14b8a6;
+  gap: 0.65rem;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
 .login-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 2rem;
 }
 
+/* Logo */
 .logo {
-  font-size: 2.4rem;
-  font-weight: 800;
-  color: #1e2937;
-  margin-bottom: 12px;
-  letter-spacing: -1px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 2.3rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.1rem;
+  display: inline-block;
 }
 
 .logo span {
   color: #14b8a6;
-  font-weight: 900;
+  font-style: italic;
+  font-weight: 600;
 }
 
 .login-header h1 {
-  font-size: 1.85rem;
-  color: #1e2937;
-  margin-bottom: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.6rem;
   font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
 }
 
 .subtitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 400;
   color: #64748b;
-  font-size: 1.02rem;
-  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-bottom: 1.25rem;
 }
-.role-badge {
-  margin-top: 24px;
 
+/* Role Badge */
+.role-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  padding: 14px 24px;
-
+  gap: 0.5rem;
+  padding: 0.55em 1.4em;
   border-radius: 999px;
-
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-
-  backdrop-filter: blur(14px);
-
-  border:
-    1px solid rgba(255,255,255,0.18);
-
-  box-shadow:
-    0 10px 25px rgba(15,23,42,0.08);
-
-  transition: all 0.35s ease;
-
+  font-family: 'Fira Code', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, rgba(20,184,166,0.1), rgba(15,118,110,0.06));
+  color: #0f766e;
+  border: 1px solid rgba(20, 184, 166, 0.3);
   position: relative;
-
   overflow: hidden;
-
-  min-width: 220px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: badgePulse 3.5s ease-in-out infinite;
 }
 
-/* Glow effect */
-
 .role-badge::before {
-  content: "";
-
+  content: '';
   position: absolute;
   inset: 0;
-
-  background:
-    linear-gradient(
-      120deg,
-      rgba(255,255,255,0.15),
-      transparent 40%,
-      rgba(255,255,255,0.08)
-    );
-
+  background: linear-gradient(120deg, rgba(255,255,255,0.25) 0%, transparent 50%);
   pointer-events: none;
 }
 
-/* Hover */
-
 .role-badge:hover {
-  transform: translateY(-4px) scale(1.02);
-
-  box-shadow:
-    0 16px 35px rgba(15,23,42,0.14);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(20, 184, 166, 0.2);
 }
 
-/* CITIZEN */
-
-.role-badge:has-text("Citizen") {
-  background:
-    linear-gradient(
-      135deg,
-      rgba(59,130,246,0.12),
-      rgba(96,165,250,0.06)
-    );
-
-  color: #1d4ed8;
+/* ── Divider ────────────────────────────────────────────────── */
+.login-header::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  margin: 1.5rem auto 0;
+  background: linear-gradient(to right, #14b8a6, #3b82f6);
+  border-radius: 2px;
+  opacity: 0.5;
 }
 
-/* MLA */
-
-.role-badge {
-  background:
-    linear-gradient(
-      135deg,
-      rgba(16,185,129,0.10),
-      rgba(52,211,153,0.06)
-    );
-
-  color: #0f766e;
-}
-
-/* EMPLOYEE */
-
-.role-badge.employee {
-  background:
-    linear-gradient(
-      135deg,
-      rgba(249,115,22,0.12),
-      rgba(251,146,60,0.06)
-    );
-
-  color: #ea580c;
-}
-.register-link {
-  margin-top: 18px;
-  text-align: center;
-}
-
-.register-link p {
-  color: #92b0aa;
-  font-size: 14px;
-}
-
-.register-link span {
-  color: #4da6ff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
-}
-
-.register-link span:hover {
-  color: #7bb6b2;
-  text-decoration: underline;
-}
-.back-home {
-  width: fit-content;
-  margin-bottom: 18px;
-  color: #c8ebe2;
-  font-size: 14px;
-  cursor: pointer;
-  transition: 0.3s ease;
-  font-weight: 500;
-}
-
-.back-home:hover {
-  color: #92b0aa;
-  transform: translateX(-3px);
-}
-
-/* MOBILE */
-
-@media (max-width: 480px) {
-
-  .role-badge {
-    width: 100%;
-
-    padding: 13px 18px;
-
-    font-size: 0.92rem;
-
-    min-width: auto;
-  }
-}
-
-/* Form */
+/* ── Form ───────────────────────────────────────────────────── */
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 1.2rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .form-group label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: #334155;
-  font-size: 0.95rem;
-  margin-left: 4px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #475569;
+  margin-left: 2px;
 }
 
+/* Input box */
 .input-box {
-  position: relative;
   display: flex;
   align-items: center;
-  background: rgba(248, 250, 252, 0.9);
-  border: 1.5px solid rgba(148, 163, 184, 0.4);
-  border-radius: 16px;
-  transition: all 0.3s ease;
+  background: rgba(248, 250, 252, 0.85);
+  border: 1.5px solid rgba(148, 163, 184, 0.35);
+  border-radius: 14px;
   overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease, background 0.25s ease;
 }
 
-.input-box:hover,
+.input-box:hover {
+  border-color: rgba(20, 184, 166, 0.4);
+  transform: translateY(-1px);
+}
+
 .input-box:focus-within {
   border-color: #14b8a6;
-  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15);
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12);
   transform: translateY(-2px);
 }
 
-.input-box .icon {
-  padding: 0 16px;
-  color: #64748b;
-  font-size: 1.3rem;
-  transition: color 0.3s;
+.icon {
+  padding: 0 14px;
+  font-size: 1.1rem;
+  opacity: 0.55;
+  user-select: none;
+  flex-shrink: 0;
 }
 
 .input-box input {
   flex: 1;
-  padding: 16px 0;
+  padding: 15px 0;
   border: none;
   background: transparent;
-  font-size: 1.02rem;
-  color: #1e2937;
   outline: none;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #0f172a;
+  min-width: 0;
 }
 
 .input-box input::placeholder {
-  color: #94a3b8;
+  color: #b0bec5;
+  font-weight: 300;
 }
 
+/* Show/hide toggle */
 .show-btn {
-  padding: 0 20px;
   background: none;
   border: none;
-  color: #14b8a6;
-  font-weight: 600;
-  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #14b8a6;
+  padding: 0.3em 0.9em;
+  margin-right: 6px;
+  border-radius: 6px;
+  transition: background 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
 }
 
 .show-btn:hover {
+  background: rgba(20, 184, 166, 0.1);
   color: #0f766e;
-  background: #f1f5f9;
 }
 
-/* Login Button */
+/* ── Login Button ───────────────────────────────────────────── */
 .login-btn {
-  margin-top: 12px;
-  padding: 16px 28px;
-  background: linear-gradient(90deg, #14b8a6, #0f766e);
-  color: white;
+  margin-top: 0.5rem;
+  height: 52px;
   border: none;
-  border-radius: 16px;
-  font-size: 1.1rem;
-  font-weight: 700;
+  border-radius: 14px;
   cursor: pointer;
-  transition: all 0.4s ease;
-  box-shadow: 0 8px 20px rgba(20, 184, 166, 0.3);
-  letter-spacing: 0.5px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: linear-gradient(120deg, #14b8a6 0%, #0f766e 100%);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 6px 22px rgba(20, 184, 166, 0.35);
+}
+
+/* Shimmer on hover */
+.login-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.28), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.5s ease;
 }
 
 .login-btn:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 15px 30px rgba(20, 184, 166, 0.4);
+  transform: translateY(-3px) scale(1.015);
+  box-shadow: 0 12px 36px rgba(20, 184, 166, 0.42);
+}
+
+.login-btn:hover::after {
+  left: 150%;
 }
 
 .login-btn:active {
-  transform: translateY(-1px);
+  transform: translateY(0) scale(0.99);
 }
 
-/* Footer */
+/* ── Register Link ──────────────────────────────────────────── */
+.register-link {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.register-link p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.87rem;
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.register-link span {
+  color: #14b8a6;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(20, 184, 166, 0.35);
+  padding-bottom: 1px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.register-link span:hover {
+  color: #0f766e;
+  border-color: rgba(15, 118, 110, 0.6);
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
 .login-footer {
   text-align: center;
-  margin-top: 40px;
+  margin-top: 1.5rem;
 }
 
 .login-footer p {
-  color: #94a3b8;
-  font-size: 0.85rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #b0bec5;
 }
 
-/* Responsive */
+/* ── Keyframes ──────────────────────────────────────────────── */
+@keyframes cardRise {
+  from { opacity: 0; transform: translateY(28px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes ambientDrift {
+  from { transform: scale(1) translate(0, 0); }
+  to   { transform: scale(1.06) translate(-20px, 15px); }
+}
+
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(20,184,166,0); }
+  50%       { box-shadow: 0 0 0 6px rgba(20,184,166,0.08); }
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 480px) {
   .login-card {
-    padding: 40px 24px;
+    padding: 36px 24px 28px;
     border-radius: 22px;
   }
-  
+
   .logo {
-    font-size: 2.1rem;
+    font-size: 2rem;
+  }
+
+  .login-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .role-badge {
+    font-size: 0.65rem;
   }
 }

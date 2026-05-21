@@ -115,7 +115,6 @@ showCustomPopup(response.data.message);
 );
   }
 };
-// Replace your current handleRepost function with this one
 
 const handleRepost = async (id) => {
   try {
@@ -125,6 +124,7 @@ const handleRepost = async (id) => {
         "redirectAfterLogin",
         window.location.pathname
       );
+      localStorage.setItem("role", "citizen");
       navigate("/login");
       return;
     }
@@ -323,29 +323,27 @@ const handleRepost = async (id) => {
                      
                       <div className="comment-body">
                        <p className="comment-user">
+                        {(() => {
+                          const rawRole =
+                            reply.authorRole ||
+                            reply.userRole ||
+                            reply.role ||
+                            reply.postedBy?.role ||
+                            "Citizen";
 
+                          const role = rawRole.toLowerCase();
 
-  {(() => {
-    const rawRole =
-      reply.authorRole ||
-      reply.userRole ||
-      reply.role ||
-      reply.postedBy?.role ||
-      "Citizen";
+                          if (role === "mla") {
+                            return <span className="official-badge mla">👷 MLA</span>;
+                          }
 
-    const role = rawRole.toLowerCase();
+                          if (role === "employee") {
+                            return <span className="official-badge employee">👷 Employee</span>;
+                          }
 
-    if (role === "mla") {
-      return <span className="official-badge mla">👷 MLA</span>;
-    }
-
-    if (role === "employee") {
-      return <span className="official-badge employee">👷 Employee</span>;
-    }
-
-    return <span className="official-badge citizen">👥 Citizen</span>;
-  })()}
-</p>
+                          return <span className="official-badge citizen">👥 Citizen</span>;
+                        })()}
+                      </p>
 
                         <p className="comment-text">{reply.text}</p>
                       </div>
