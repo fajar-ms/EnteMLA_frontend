@@ -140,6 +140,10 @@ const Register = () => {
   return (
     <div className="register-container">
       <div className="register-card">
+        {/* Back To Home */}
+      <div className="back-home" onClick={() => navigate("/")}>
+        ← Back to Home
+      </div>
         <h2>Create Account</h2>
         {/* <p>Direct registration enabled (OTP skipped)</p> */}
         <div className="role-badge">

@@ -66,7 +66,10 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-card">
-
+        {/* Back To Home */}
+      <div className="back-home" onClick={() => navigate("/")}>
+        ← Back to Home
+      </div>
         {/* Header */}
         <div className="login-header">
           <div className="logo">
@@ -137,6 +140,18 @@ export default function LoginPage() {
             Sign In →
           </button>
         </form>
+
+        {/* Register Link - Only for Citizen */}
+        {role === "citizen" && (
+          <div className="register-link">
+            <p>
+              Not registered?{" "}
+              <span onClick={() => navigate("/register")}>
+                Register
+              </span>
+            </p>
+          </div>
+)}
 
         {/* Footer */}
         <div className="login-footer">

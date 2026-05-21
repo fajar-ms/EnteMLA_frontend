@@ -210,10 +210,7 @@ const constituencies = constituencyNames.map((name, index) => ({
 
   departments: [
   {
-    title: "🛣️ Public Works Department (PWD)",
-
-    description:
-      "Roads, bridges, infrastructure maintenance",
+    key: "pwd",
 
     location:
       `Civil Station, ${name}`,
@@ -231,10 +228,7 @@ const constituencies = constituencyNames.map((name, index) => ({
   },
 
   {
-    title: "💧 Water Supply & Sanitation",
-
-    description:
-      "Drinking water, drainage issues",
+    key: "water",
 
     location:
       `Water Authority Office, ${name}`,
@@ -252,10 +246,7 @@ const constituencies = constituencyNames.map((name, index) => ({
   },
 
   {
-    title: "⚡ Electricity Board",
-
-    description:
-      "Power supply, outages, maintenance",
+    key: "electricity",
 
     location:
       `KSEB Regional Office, ${name}`,
@@ -273,10 +264,7 @@ const constituencies = constituencyNames.map((name, index) => ({
   },
 
   {
-    title: "🏥 Health & Welfare",
-
-    description:
-      "Hospitals, medical assistance",
+    key: "health",
 
     location:
       `District Health Office, ${name}`,
@@ -294,10 +282,7 @@ const constituencies = constituencyNames.map((name, index) => ({
   },
 
   {
-    title: "🏫 Education Department",
-
-    description:
-      "Schools, scholarships, student support",
+    key: "education",
 
     location:
       `Education Office, ${name}`,
@@ -315,10 +300,7 @@ const constituencies = constituencyNames.map((name, index) => ({
   },
 
   {
-    title: "🚓 Local Administration",
-
-    description:
-      "Public services, civic management",
+    key: "admin",
 
     location:
       `Collectorate Office, ${name}`,

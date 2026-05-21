@@ -96,26 +96,19 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ===== PAGE WRAPPER ===== */
-
 .page-wrapper {
   min-height: 100vh;
   padding-bottom: 60px;
 }
 
-/* =========================================================
-   MAIN CONTAINER
-========================================================= */
 
 .control-dashboard {
-  max-width: 1240px;
-  margin: 0 auto;
-  padding: 32px 5% 0 5%;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 32px 2% 0 2%;
 }
 
-/* =========================================================
-   HEADER SECTION
-========================================================= */
 
 .header {
   position: relative;

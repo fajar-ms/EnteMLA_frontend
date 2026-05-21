@@ -42,6 +42,7 @@ const constituencyMap = {
     { value: "guruvayur", label: "Guruvayur" },
     { value: "thrissur", label: "Thrissur" },
     { value: "manalur", label: "Manalur" },
+    { value: "chalakudy", label: "Chalakudy" },
   ],
   palakkad: [
     { value: "mannarkkad", label: "Mannarkkad" },
@@ -139,6 +140,10 @@ const Register = () => {
   return (
     <div className="register-container">
       <div className="register-card">
+        {/* Back To Home */}
+        <div className="back-home" onClick={() => navigate("/")}>
+          ← Back to Home
+        </div>
         <h2>Create Account</h2>
         <h3>
         {selectedRole === "employee"
@@ -224,7 +229,15 @@ const Register = () => {
 
           <button type="submit" className="register-btn">Create Account</button>
         </form>
-
+          {/* Sign In Link */}
+        <div className="signin-link">
+          <p>
+            Already registered?{" "}
+            <span onClick={() => navigate("/login")}>
+              Sign In
+            </span>
+          </p>
+        </div>
         {showPopup && (
           <div className="popup-overlay">
             <div className="popup">

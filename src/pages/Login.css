@@ -95,19 +95,153 @@ body {
   font-size: 1.02rem;
   font-weight: 500;
 }
-
 .role-badge {
-  margin-top: 20px;
+  margin-top: 24px;
+
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  background: linear-gradient(90deg, #e0f2fe, #d1fae5);
-  color: #0f766e;
-  padding: 10px 22px;
-  border-radius: 50px;
-  font-weight: 1000;
+  justify-content: center;
+
+  padding: 14px 24px;
+
+  border-radius: 999px;
+
   font-size: 1rem;
-  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.15);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+
+  backdrop-filter: blur(14px);
+
+  border:
+    1px solid rgba(255,255,255,0.18);
+
+  box-shadow:
+    0 10px 25px rgba(15,23,42,0.08);
+
+  transition: all 0.35s ease;
+
+  position: relative;
+
+  overflow: hidden;
+
+  min-width: 220px;
+}
+
+/* Glow effect */
+
+.role-badge::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      120deg,
+      rgba(255,255,255,0.15),
+      transparent 40%,
+      rgba(255,255,255,0.08)
+    );
+
+  pointer-events: none;
+}
+
+/* Hover */
+
+.role-badge:hover {
+  transform: translateY(-4px) scale(1.02);
+
+  box-shadow:
+    0 16px 35px rgba(15,23,42,0.14);
+}
+
+/* CITIZEN */
+
+.role-badge:has-text("Citizen") {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(59,130,246,0.12),
+      rgba(96,165,250,0.06)
+    );
+
+  color: #1d4ed8;
+}
+
+/* MLA */
+
+.role-badge {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(16,185,129,0.10),
+      rgba(52,211,153,0.06)
+    );
+
+  color: #0f766e;
+}
+
+/* EMPLOYEE */
+
+.role-badge.employee {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(249,115,22,0.12),
+      rgba(251,146,60,0.06)
+    );
+
+  color: #ea580c;
+}
+.register-link {
+  margin-top: 18px;
+  text-align: center;
+}
+
+.register-link p {
+  color: #92b0aa;
+  font-size: 14px;
+}
+
+.register-link span {
+  color: #4da6ff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.register-link span:hover {
+  color: #7bb6b2;
+  text-decoration: underline;
+}
+.back-home {
+  width: fit-content;
+  margin-bottom: 18px;
+  color: #c8ebe2;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-weight: 500;
+}
+
+.back-home:hover {
+  color: #92b0aa;
+  transform: translateX(-3px);
+}
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+  .role-badge {
+    width: 100%;
+
+    padding: 13px 18px;
+
+    font-size: 0.92rem;
+
+    min-width: auto;
+  }
 }
 
 /* Form */

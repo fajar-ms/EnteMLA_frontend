@@ -68,6 +68,7 @@ const [showPopup, setShowPopup] = useState(false);
         "redirectAfterLogin",
         window.location.pathname
       );
+      localStorage.setItem("role", "Citizen");
       navigate("/login");
       return;
     }
@@ -171,11 +172,17 @@ const handleRepost = async (id) => {
   // Comment Button
   const handleComment = async () => {
     // 1. Auth Check
-    if (!user || !user._id) {
-      localStorage.setItem("redirectAfterLogin", window.location.pathname);
-      navigate("/login");
-      return;
-    }
+   if (!user || !user._id) {
+    localStorage.setItem(
+      "redirectAfterLogin",
+      window.location.pathname
+    );
+
+    localStorage.setItem("role", "citizen");
+
+    navigate("/login");
+    return;
+  }
 
     if (!commentText || !commentText.trim()) return;
 

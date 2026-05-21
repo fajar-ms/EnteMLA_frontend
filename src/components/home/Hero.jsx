@@ -24,60 +24,57 @@ const Hero = () => {
         </header>
 
         <div className="hero-content-split">
-          
-          {/* LEFT: PRIMARY ACTIONS & STATS */}
-          <section className="main-actions">
-            {/* <div className="action-meta">
-              <div className="meta-item">
-                <span className="meta-title">Representative</span>
-                <span className="meta-value">MLA Name, M.Tech</span>
-                <button className="inline-link" onClick={() => navigate("/about")}>
-                  Full Bio →
-                </button>
-              </div>
-            </div> */}
-
-            <div className="stats-grid">
-              <div className="stat-block">
-                <span className="stat-number">320</span>
-                <span className="stat-caption">{t("active_projects")}</span>
-              </div>
-              <div className="stat-block">
-                <span className="stat-number">12.5K</span>
-                <span className="stat-caption">{t("citizens_joined")}</span>
-              </div>
-              <div className="stat-block">
-                <span className="stat-number">98%</span>
-                <span className="stat-caption">{t("issue_resolution")}</span>
-              </div>
-            </div>
-          </section>
-
-          {/* RIGHT: UPDATES & OFFICE INFO */}
-          <aside className="side-brief">
-            <div className="brief-section">
-              <h4>{t("office_title")}</h4>
-              <p>{t("office_desc")}</p>
-            </div>
-
-            <div className="brief-section">
-              <h4>{t("live_progress")}</h4>
-              <ul className="bullet-list">
-                <li>{t("progress_1")}</li>
-                <li>{t("progress_2")}</li>
-              </ul>
-            </div>
-
-            <div className="brief-section">
-              <h4>{t("recent_resolutions")}</h4>
-              <ul className="resolution-list">
-                <li><span className="dot pnd"></span> {t("res_1")}</li>
-                <li><span className="dot res"></span>{t("res_2")}</li>
-              </ul>
-            </div>
-          </aside>
-          
+  {/* LEFT: PRIMARY ACTIONS & STATS */}
+  <section className="main-actions">
+    
+    <div className="quote-container">
+      <div className="quote-inner">
+        <span className="quote-mark">“</span>
+        <p className="quote-text">
+          Be the change that you wish to see in the world.
+        </p>
+        <div className="quote-footer">
+          <span className="author">— Mahatma Gandhi</span>
         </div>
+      </div>
+    </div>
+
+  </section>
+
+  <aside className="side-brief">
+
+  {/* 1. Live Complaint Activity */}
+  <div className="brief-section">
+    <h4>{t("live_complaint_activity")}</h4>
+    <ul className="bullet-list">
+      <li>{t("activity_1")}</li>
+      <li>{t("activity_2")}</li>
+      <li>{t("activity_3")}</li>
+    </ul>
+  </div>
+
+  {/* 2. Transparency & Response */}
+  <div className="brief-section">
+    <h4>{t("transparency_response")}</h4>
+    <ul className="bullet-list">
+      <li>{t("response_1")}</li>
+      <li>{t("response_2")}</li>
+    </ul>
+  </div>
+
+  {/* 3. Smart Governance Features */}
+  <div className="brief-section">
+    <h4>{t("smart_governance")}</h4>
+    <ul className="bullet-list">
+      <li>{t("smart_1")}</li>
+      <li>{t("smart_2")}</li>
+      <li>{t("smart_3")}</li>
+    </ul>
+  </div>
+
+</aside>
+
+</div>
       </div>
     </div>
   );

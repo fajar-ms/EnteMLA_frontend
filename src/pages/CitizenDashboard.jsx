@@ -337,7 +337,23 @@ export default function CitizenDashboard() {
 
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
 
-
+            <a href="/" style={{
+              display: "inline-flex", alignItems: "center", gap: 7,
+              padding: "9px 18px",
+              background: "#fff", border: "1px solid #E5E1DA", borderRadius: 10,
+              fontSize: 13, fontWeight: 600, color: "#3D3730", textDecoration: "none",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+              transition: "all 0.15s",
+            }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "#C8C2B8"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.09)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "#E5E1DA"; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.05)"; }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+                <polyline points="9 21 9 12 15 12 15 21"/>
+              </svg>
+              Home
+          </a>
             {/* Logout */}
             <button
               onClick={handleLogout}
@@ -738,7 +754,7 @@ export default function CitizenDashboard() {
                     border: `1.5px solid ${selectedComplaint?.id === c.id ? clr.primary : clr.border}`,
                     borderRadius: radius.md,
                     background: selectedComplaint?.id === c.id
-                      ? "linear-gradient(135deg, #F5ECE3, #EFE1D1)"
+                      ? "linear-gradient(135deg, #F5ECE3, #f6f3ef)"
                       : "#FAFBFF",
                     cursor: "pointer",
                     transition: "all 0.18s",
