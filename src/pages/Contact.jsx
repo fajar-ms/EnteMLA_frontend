@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "./Contact.css";
 import Navbar from "../components/home/Navbar";
 import constituencies from "../data/constituencies";
+import departments from "../data/departments";
+
 import { useTranslation } from "react-i18next";
 
 const Contact = () => {
@@ -19,15 +21,13 @@ const Contact = () => {
         .toLowerCase()
         .includes(search.toLowerCase())
     );
-
-  const departmentTitles = {
-    pwd: `🛣️ ${t("pwd")}`,
-    water: `💧 ${t("water")}`,
-    electricity: `⚡ ${t("electricity")}`,
-    health: `🏥 ${t("health")}`,
-    education: `🏫 ${t("education")}`,
-    admin: `🚓 ${t("admin")}`,
-  };
+ console.log("selected district:", selected.district);
+console.log("departments:", departments);
+console.log(
+  "matched:",
+  departments[selected.district]
+);
+  
 
   return (
     <div className="contact-page">
@@ -114,7 +114,7 @@ const Contact = () => {
 
             <p>
               <b>{t("office")}:</b>{" "}
-              {selected.mla.office}
+              {selected.mla.location}
             </p>
 
             <p>
@@ -127,10 +127,7 @@ const Contact = () => {
               {selected.mla.email}
             </p>
 
-            <p>
-              <b>{t("hours")}:</b>{" "}
-              {selected.mla.hours}
-            </p>
+           
           </div>
 
           {/* DEPARTMENTS */}
@@ -140,25 +137,15 @@ const Contact = () => {
 
           <div className="dept-grid">
 
-            {selected.departments.map(
+            {(departments[selected.district] || []).map(
               (dept, index) => (
                 <div
                   key={index}
                   className="dept-card"
                 >
-                  <h4>
-                    {
-                      departmentTitles[
-                        dept.key
-                      ]
-                    }
-                  </h4>
+                  <h4>{dept.title}</h4>
 
-                  <p>
-                    {t(
-                      `${dept.key}_desc`
-                    )}
-                  </p>
+                   <p>{dept.description}</p>
 
                   <p>
                     📍 {dept.location}
@@ -172,9 +159,7 @@ const Contact = () => {
                     ✉️ {dept.email}
                   </p>
 
-                  <p>
-                    🕒 {dept.hours}
-                  </p>
+                 
                 </div>
               )
             )}
