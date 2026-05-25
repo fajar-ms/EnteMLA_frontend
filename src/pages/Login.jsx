@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Login.css";
 
 export default function LoginPage() {
+  console.log("LOGIN PAGE OPENED");
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const selectedRole = localStorage.getItem("role");
+    if (!selectedRole) {
+      navigate("/");
+    }
+
+    if (token) {
+      navigate("/");
+    }
+  }, []);
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -14,6 +26,8 @@ export default function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
 
     const selectedRole = localStorage.getItem("role");
 
@@ -24,37 +38,91 @@ export default function LoginPage() {
     }
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
-        {
-          email,
+
+      let endpoint = "";
+      let payload = {};
+
+      if (selectedRole === "citizen") {
+
+        endpoint = "/auth/login";
+
+        payload = {
+          email: identifier,
           password,
-          role: selectedRole,
-        }
+        };
+
+      } else if (selectedRole === "mla") {
+
+        endpoint = "/auth/mla/login";
+
+        payload = {
+          mlaId: identifier,
+          password,
+        };
+
+      } else if (selectedRole === "employee") {
+
+        endpoint = "/auth/employee/login";
+
+        payload = {
+          employeeId: identifier,
+          password,
+        };
+      }
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}${endpoint}`,
+        payload
       );
 
       if (response.status === 200 || response.status === 201) {
-        const userData = response.data.user;
+
+        const { user: userData, token } = response.data;
 
         if (userData) {
-          console.log(response.data.user);
-          localStorage.setItem("user", JSON.stringify(userData));
-          localStorage.setItem("role", selectedRole);
 
-          // Redirect after login if needed
+          console.log(userData);
+
+          localStorage.setItem(
+            "user",
+            JSON.stringify(userData)
+          );
+
+          localStorage.setItem(
+            "role",
+            selectedRole
+          );
+
+          if (!token) {
+            alert("Authentication token missing");
+            return;
+          }
+
+          localStorage.setItem("token", token);
+
           const redirectAfterLogin =
-            localStorage.getItem("redirectAfterLogin");
+            localStorage.getItem(
+              "redirectAfterLogin"
+            );
 
           if (redirectAfterLogin) {
-            localStorage.removeItem("redirectAfterLogin");
+
+            localStorage.removeItem(
+              "redirectAfterLogin"
+            );
+
             navigate(redirectAfterLogin);
+
           } else {
+
             navigate("/");
-            window.location.reload();
+
           }
         }
       }
+
     } catch (error) {
+
       const errorMsg =
         error.response?.data?.message ||
         "Login failed. Please check your credentials.";
@@ -91,16 +159,26 @@ export default function LoginPage() {
 
           {/* Email */}
           <div className="form-group">
-            <label>Email Address</label>
+            <label>
+              {role === "citizen" && "Email Address"}
+              {role === "mla" && "MLA ID"}
+              {role === "employee" && "Employee ID"}
+            </label>
 
             <div className="input-box">
               <span className="icon">📧</span>
 
               <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                placeholder={
+                  role === "citizen"
+                    ? "Enter your email"
+                    : role === "mla"
+                      ? "Enter your MLA ID"
+                      : "Enter your Employee ID"
+                }
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 required
               />
             </div>

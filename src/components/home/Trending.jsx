@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Trending.css";
 import { useTranslation } from "react-i18next";
+import { FaThumbsUp, FaComment, FaRetweet } from 'react-icons/fa';
 
 const Trending = () => {
   const { t } = useTranslation();
@@ -35,7 +36,7 @@ const Trending = () => {
 
     } catch (error) {
 
-     console.error("Error fetching complaints:", error);
+      console.error("Error fetching complaints:", error);
 
     } finally {
 
@@ -43,14 +44,14 @@ const Trending = () => {
     }
   };
   const showCustomPopup = (message) => {
-  setPopupMessage(message);
-  setShowPopup(true);
+    setPopupMessage(message);
+    setShowPopup(true);
 
-  setTimeout(() => {
-    setShowPopup(false);
-    setPopupMessage("");
-  }, 2500);
-};
+    setTimeout(() => {
+      setShowPopup(false);
+      setPopupMessage("");
+    }, 2500);
+  };
 
   const handleCommentChange = (id, value) => {
     setCommentText((prev) => ({
@@ -59,123 +60,120 @@ const Trending = () => {
     }));
   };
 
+  const requireLogin = () => {
+    showCustomPopup("Please login to continue");
+
+    // setTimeout(() => {
+    //   localStorage.setItem(
+    //     "redirectAfterLogin",
+    //     window.location.pathname
+    //   );
+
+    //   navigate("/login");
+    // }, 1200);
+
+    return false;
+  };
+
   // Like Complaint
   const handleLike = async (id) => {
-  try {
-    // Redirect to login if user is not logged in
-    if (!user || !user._id) {
-      localStorage.setItem(
-        "redirectAfterLogin",
-        window.location.pathname
+    try {
+      // Redirect to login if user is not logged in
+      if (!user || !user._id) return requireLogin();
+
+      const response = await axios.patch(
+        `${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/like`,
+        {
+          userId: user._id,
+        }
       );
-      navigate("/login");
-      return;
-    }
 
-    const response = await axios.patch(
-      `${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/like`,
-      {
-        userId: user._id,
-      }
-    );
+      // Show backend message
+      showCustomPopup(response.data.message);
 
-    // Show backend message
-showCustomPopup(response.data.message);
-
-    // Update UI immediately
-    setComplaints((prev) =>
-      prev.map((complaint) =>
-        complaint._id === id
-          ? {
+      // Update UI immediately
+      setComplaints((prev) =>
+        prev.map((complaint) =>
+          complaint._id === id
+            ? {
               ...complaint,
               likes: response.data.likes,
               likedBy:
                 response.data.likedBy || complaint.likedBy,
             }
-          : complaint
-      )
-    );
-
-    // Update selected complaint if modal is open
-    if (selectedComplaint?._id === id) {
-      setSelectedComplaint((prev) => ({
-        ...prev,
-        likes: response.data.likes,
-        likedBy:
-          response.data.likedBy || prev.likedBy,
-      }));
-    }
-  } catch (error) {
-    console.error("Error liking complaint:", error);
-
-   showCustomPopup(
-  error.response?.data?.message ||
-    "Failed to like complaint."
-);
-  }
-};
-// Replace your current handleRepost function with this one
-
-const handleRepost = async (id) => {
-  try {
-    // If user is not logged in, go to login page
-    if (!user || !user._id) {
-      localStorage.setItem(
-        "redirectAfterLogin",
-        window.location.pathname
+            : complaint
+        )
       );
-      navigate("/login");
-      return;
-    }
 
-    const response = await axios.patch(
-      `${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/repost`,
-      {
-        userId: user._id,
+      // Update selected complaint if modal is open
+      if (selectedComplaint?._id === id) {
+        setSelectedComplaint((prev) => ({
+          ...prev,
+          likes: response.data.likes,
+          likedBy:
+            response.data.likedBy || prev.likedBy,
+        }));
       }
-    );
+    } catch (error) {
+      console.error("Error liking complaint:", error);
 
-    // Show backend message
-    showCustomPopup(response.data.message);
+      showCustomPopup(
+        error.response?.data?.message ||
+        "Failed to like complaint."
+      );
+    }
+  };
+  // Replace your current handleRepost function with this one
 
-    // Update complaint list immediately in UI
-    setComplaints((prev) =>
-      prev.map((complaint) =>
-        complaint._id === id
-          ? {
+  const handleRepost = async (id) => {
+    try {
+      // If user is not logged in, go to login page
+      if (!user || !user._id) return requireLogin();
+
+      const response = await axios.patch(
+        `${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/repost`,
+        {
+          userId: user._id,
+        }
+      );
+
+      // Show backend message
+      showCustomPopup(response.data.message);
+
+      // Update complaint list immediately in UI
+      setComplaints((prev) =>
+        prev.map((complaint) =>
+          complaint._id === id
+            ? {
               ...complaint,
               repostedBy: response.data.repostedBy || complaint.repostedBy,
             }
-          : complaint
-      )
-    );
+            : complaint
+        )
+      );
 
-    // Also update selected complaint if modal is open
-    if (selectedComplaint?._id === id) {
-      setSelectedComplaint((prev) => ({
-        ...prev,
-        repostedBy:
-          response.data.repostedBy || prev.repostedBy,
-      }));
+      // Also update selected complaint if modal is open
+      if (selectedComplaint?._id === id) {
+        setSelectedComplaint((prev) => ({
+          ...prev,
+          repostedBy:
+            response.data.repostedBy || prev.repostedBy,
+        }));
+      }
+    } catch (error) {
+      console.error("Error reposting complaint:", error);
+
+      showCustomPopup(
+        error.response?.data?.message ||
+        "Failed to repost complaint."
+      );
     }
-  } catch (error) {
-    console.error("Error reposting complaint:", error);
-
-    showCustomPopup(
-  error.response?.data?.message ||
-    "Failed to repost complaint."
-);
-  }
-};
+  };
   // Comment Button
   // Comment Button
   const handleComment = async () => {
     // 1. Auth Check
-    if (!user || !user._id) {
-      localStorage.setItem("redirectAfterLogin", window.location.pathname);
-      navigate("/login");
-      return;
-    }
+    if (!user || !user._id) return requireLogin();
 
     if (!commentText || !commentText.trim()) return;
 
@@ -187,7 +185,7 @@ const handleRepost = async (id) => {
         body: JSON.stringify({
           text: commentText.trim(),
           userId: user._id,
-          userName: user.name || "Citizen", // ✅ Added: Match your new Schema
+          username: user.name || "Citizen", // ✅ Added: Match your new Schema
           role: user.role || "Citizen"      // ✅ Added: Match your new Schema
         }),
 
@@ -218,11 +216,11 @@ const handleRepost = async (id) => {
 
   return (
     <div className="trending-container">
-    {showPopup && (
-  <div className="custom-popup">
-    {popupMessage}
-  </div>
-)}
+      {showPopup && (
+        <div className="custom-popup">
+          {popupMessage}
+        </div>
+      )}
       {/* Feed Header */}
       <div className="section-header">
         <div>
@@ -230,68 +228,67 @@ const handleRepost = async (id) => {
           <h2 className="heading">{t("trendingPublicComplaints")}</h2>
         </div>
       </div>
-<div className="complaint-grid">
-  {complaints.map((complaint) => {
-    const hasReposted = complaint.repostedBy?.some(
-      (id) => id.toString() === user?._id
-    );
+      <div className="complaint-grid">
+        {complaints.map((complaint) => {
+          const hasReposted = complaint.repostedBy?.some(
+            (id) => id.toString() === user?._id
+          );
 
-    return (
-      <div className="complaint-card" key={complaint._id}>
-        <div
-          className="image-container"
-          onClick={() => setSelectedComplaint(complaint)}
-        >
-          <img
-            src={
-              complaint.evidence
-                ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${complaint.evidence}`
-                : "https://images.news18.com/ibnlive/uploads/2023/06/public-grievance-168568115816x9.jpg"
-            }
-            alt={complaint.title}
-          />
-          <div className="card-overlay">
-            <div className="top-badges">
-              <span className="category-badge">
-                {complaint.category}
-              </span>
+          return (
+            <div className="complaint-card" key={complaint._id}>
+              <div
+                className="image-container"
+                onClick={() => setSelectedComplaint(complaint)}
+              >
+                <img
+                  src={
+                    complaint.evidence
+                      ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${complaint.evidence}`
+                      : "https://images.news18.com/ibnlive/uploads/2023/06/public-grievance-168568115816x9.jpg"
+                  }
+                  alt={complaint.title}
+                />
+                <div className="card-overlay">
+                  <div className="top-badges">
+                    <span className="category-badge">
+                      {complaint.category}
+                    </span>
+                  </div>
+                  <div className="bottom-metadata">
+                    <h3 className="card-title">
+                      {complaint.title}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+
+              <div className="card-actions">
+                <button
+                  className="action-btn"
+                  onClick={() => handleLike(complaint._id)}
+                >
+                  <FaThumbsUp /> {complaint.likes || 0}
+                </button>
+
+                <button
+                  className="action-btn"
+                  onClick={() => setSelectedComplaint(complaint)}
+                >
+                  <FaComment /> {complaint.replies?.length || 0}
+                </button>
+
+                <button
+                  className="action-btn"
+                  onClick={() => handleRepost(complaint._id)}
+
+                >
+                  <FaRetweet /> {complaint.repostedBy?.length || 0}
+                </button>
+              </div>
             </div>
-            <div className="bottom-metadata">
-              <h3 className="card-title">
-                {complaint.title}
-              </h3>
-            </div>
-          </div>
-        </div>
-
-        <div className="card-actions">
-          <button
-            className="action-btn"
-            onClick={() => handleLike(complaint._id)}
-          >
-            👍 {complaint.likes || 0}
-          </button>
-
-          <button
-            className="action-btn"
-            onClick={() => setSelectedComplaint(complaint)}
-          >
-            💬 {complaint.replies?.length || 0}
-          </button>
-
-          <button
-            className="action-btn"
-            onClick={() => handleRepost(complaint._id)}
-         
-          >
-            🔁 {complaint.repostedBy?.length || 0}
-            {hasReposted ? " Reposted" : ""}
-          </button>
-        </div>
+          );
+        })}
       </div>
-    );
-  })}
-</div>
 
       {/* ✅ SEPARATE COMMENT TILE (MODAL) */}
       {selectedComplaint && (
@@ -312,14 +309,14 @@ const handleRepost = async (id) => {
                 {selectedComplaint.replies?.length > 0 ? (
                   selectedComplaint.replies.map((reply, i) => (
                     <div key={i} className="single-comment">
-                      {/* Use userName for the avatar initial */}
+                      {/* Use username for the avatar initial */}
                       <div className="comment-avatar">
-                        {reply.userName?.charAt(0) || "U"}
+                        {reply.username?.charAt(0) || "U"}
                       </div>
                       <div className="comment-body">
                         <p className="comment-user">
 
-                          {reply.userName}
+                          {reply.username}
                           {/* Optional: Add a badge if it's an official reply */}
                           {reply.role === "MLA" && <span className="official-badge">⭐ MLA</span>}
                         </p>

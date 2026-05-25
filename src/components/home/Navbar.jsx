@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import "./Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 import i18n from "../../i18n";
+import { LuUser } from 'react-icons/lu';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -31,10 +32,10 @@ const Navbar = () => {
   const handleDashboard = () => {
     if (role === "citizen") {
       navigate("/citizen");
-    } 
+    }
     else if (role === "mla") {
       navigate("/mla");
-    } 
+    }
     else if (role === "employee") {
       navigate("/employee");
     }
@@ -43,6 +44,7 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("role");
+    localStorage.removeItem("token");
 
     navigate("/");
     window.location.reload();
@@ -116,133 +118,133 @@ const Navbar = () => {
           </div>
 
           {!user ? (
-          <>
-            {/* LOGIN DROPDOWN */}
-            <div className="dropdown-wrapper" ref={loginRef}>
-              <button
-                className="primary-btn"
-                onClick={() => setAuthOpen(!authOpen)}
-              >
-                Login <span className="arrow">▼</span>
-              </button>
+            <>
+              {/* LOGIN DROPDOWN */}
+              <div className="dropdown-wrapper" ref={loginRef}>
+                <button
+                  className="primary-btn"
+                  onClick={() => setAuthOpen(!authOpen)}
+                >
+                  Login <span className="arrow">▼</span>
+                </button>
 
-              {authOpen && (
-                <div className="dropdown-menu">
-                  <Link
-                    to="/login"
-                    onClick={() =>
-                      localStorage.setItem("role", "citizen")
-                    }
-                  >
-                    Citizen
-                  </Link>
+                {authOpen && (
+                  <div className="dropdown-menu">
+                    <Link
+                      to="/login"
+                      onClick={() =>
+                        localStorage.setItem("role", "citizen")
+                      }
+                    >
+                      Citizen
+                    </Link>
 
-                  <Link
-                    to="/login"
-                    onClick={() =>
-                      localStorage.setItem("role", "mla")
-                    }
-                  >
-                    MLA
-                  </Link>
+                    <Link
+                      to="/login"
+                      onClick={() =>
+                        localStorage.setItem("role", "mla")
+                      }
+                    >
+                      MLA
+                    </Link>
 
-                  <Link
-                    to="/login"
+                    <Link
+                      to="/login"
+                      onClick={() =>
+                        localStorage.setItem("role", "employee")
+                      }
+                    >
+                      Employee
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* REGISTER DROPDOWN */}
+              <div className="dropdown-wrapper" ref={registerRef}>
+                <button
+                  className="primary-btn"
+                  onClick={() => setRegisterOpen(!registerOpen)}
+                >
+                  Register <span className="arrow">▼</span>
+                </button>
+
+                {registerOpen && (
+                  <div className="dropdown-menu">
+                    <Link
+                      to="/register"
+                      onClick={() =>
+                        localStorage.setItem("role", "citizen")
+                      }
+                    >
+                      Citizen
+                    </Link>
+
+                    {/* <Link
+                    to="/register"
                     onClick={() =>
                       localStorage.setItem("role", "employee")
                     }
                   >
                     Employee
-                  </Link>
-                </div>
-              )}
-            </div>
+                  </Link> */}
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
 
-            {/* REGISTER DROPDOWN */}
-            <div className="dropdown-wrapper" ref={registerRef}>
+            <div className="profile-wrapper" ref={profileRef}>
+              {/* Dashboard Button */}
               <button
                 className="primary-btn"
-                onClick={() => setRegisterOpen(!registerOpen)}
+                onClick={handleDashboard}
               >
-                Register <span className="arrow">▼</span>
+                Dashboard
+              </button>
+              <button
+                className="profile-btn"
+                onClick={() => setProfileOpen(!profileOpen)}
+              >
+                <div className="profile-icon">
+                  <LuUser size={24} />
+                </div>
+
+                <span className="profile-name">
+                  {JSON.parse(user)?.name || "User"}
+                </span>
+
+                <span className="arrow">▼</span>
               </button>
 
-              {registerOpen && (
-                <div className="dropdown-menu">
-                  <Link
-                    to="/register"
-                    onClick={() =>
-                      localStorage.setItem("role", "citizen")
-                    }
-                  >
-                    Citizen
-                  </Link>
+              {profileOpen && (
+                <div className="profile-dropdown">
 
-                  <Link
-                    to="/register"
-                    onClick={() =>
-                      localStorage.setItem("role", "employee")
-                    }
-                  >
-                    Employee
-                  </Link>
+                  <div className="profile-info">
+                    <p>
+                      <strong>
+                        {JSON.parse(user)?.name}
+                      </strong>
+                    </p>
+
+                    <p>
+                      {JSON.parse(user)?.email}
+                    </p>
+
+                    <p className="role-text">
+                      {role?.toUpperCase()}
+                    </p>
+                  </div>
+
+                  <hr />
+
+                  <button onClick={handleLogout}>
+                    Logout
+                  </button>
                 </div>
               )}
             </div>
-          </>
-        ) : (
-          
-          <div className="profile-wrapper" ref={profileRef}>
-            {/* Dashboard Button */}
-          <button
-            className="primary-btn"
-            onClick={handleDashboard}
-          >
-            Dashboard
-          </button>
-        <button
-          className="profile-btn"
-          onClick={() => setProfileOpen(!profileOpen)}
-        >
-          <div className="profile-icon">
-            👤
-          </div>
-
-          <span className="profile-name">
-            {JSON.parse(user)?.name || "User"}
-        </span>
-
-        <span className="arrow">▼</span>
-      </button>
-
-      {profileOpen && (
-        <div className="profile-dropdown">
-
-          <div className="profile-info">
-            <p>
-              <strong>
-                {JSON.parse(user)?.name}
-              </strong>
-            </p>
-
-            <p>
-              {JSON.parse(user)?.email}
-            </p>
-
-            <p className="role-text">
-              {role?.toUpperCase()}
-            </p>
-          </div>
-
-          <hr />
-
-          <button onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-      )}
-    </div>
-        )}
+          )}
         </div>
       </div>
     </nav>

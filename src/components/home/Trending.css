@@ -410,3 +410,23 @@
     padding: 16px;
   }
 }
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Adds space between the icon and the text */
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.action-btn:hover {
+  color: #007bff; /* Change color on hover */
+}
+
+/* Optional: Style individual icons */
+.action-btn svg {
+  font-size: 16px; /* Adjust icon size */
+}

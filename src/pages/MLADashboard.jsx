@@ -67,28 +67,13 @@ const UrgencyBadge = ({ level }) => {
 const StatusBadge = ({ status }) => {
   const map = {
     Pending: { bg: clr.primaryLight, color: clr.primary },
-    "In Progress": {
-      bg: clr.inProgressLight,
-      color: clr.inProgress,
-    },
-    Resolved: {
-      bg: clr.successLight,
-      color: clr.success,
-    },
-    Rejected: {
-      bg: clr.accentLight,
-      color: clr.accent,
-    },
-    Forwarded: {
-      bg: clr.goldLight,
-      color: clr.gold,
-    },
+    "In Progress": { bg: clr.inProgressLight, color: clr.inProgress },
+    Resolved: { bg: clr.successLight, color: clr.success },
+    Rejected: { bg: clr.accentLight, color: clr.accent },
+    Forwarded: { bg: clr.goldLight, color: clr.gold },
   };
 
-  const s = map[status] || {
-    bg: "#F1EDE5",
-    color: clr.muted,
-  };
+  const s = map[status] || { bg: "#F1EDE5", color: clr.muted };
 
   return (
     <span
@@ -118,10 +103,7 @@ const AvatarCircle = ({ name }) => {
     .slice(0, 2)
     .toUpperCase();
 
-  const hue =
-    (name || "")
-      .split("")
-      .reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
+  const hue = (name || "").split("").reduce((a, c) => a + c.charCodeAt(0), 0) % 360;
 
   return (
     <div
@@ -160,57 +142,16 @@ const StatCard = ({ label, value, color, icon, sub }) => (
       overflow: "hidden",
     }}
   >
-    <div
-      style={{
-        position: "absolute",
-        top: 12,
-        right: 16,
-        fontSize: 28,
-        opacity: 0.08,
-        lineHeight: 1,
-      }}
-    >
+    <div style={{ position: "absolute", top: 12, right: 16, fontSize: 28, opacity: 0.08, lineHeight: 1 }}>
       {icon}
     </div>
-
-    <div
-      style={{
-        fontSize: 10,
-        fontFamily: font.body,
-        fontWeight: 700,
-        color: clr.muted,
-        letterSpacing: "1.2px",
-        textTransform: "uppercase",
-        marginBottom: 8,
-      }}
-    >
+    <div style={{ fontSize: 10, fontFamily: font.body, fontWeight: 700, color: clr.muted, letterSpacing: "1.2px", textTransform: "uppercase", marginBottom: 8 }}>
       {label}
     </div>
-
-    <div
-      style={{
-        fontSize: 36,
-        fontFamily: font.display,
-        fontWeight: 700,
-        color,
-        lineHeight: 1,
-        marginBottom: 4,
-      }}
-    >
+    <div style={{ fontSize: 36, fontFamily: font.display, fontWeight: 700, color, lineHeight: 1, marginBottom: 4 }}>
       {value}
     </div>
-
-    {sub && (
-      <div
-        style={{
-          fontSize: 11,
-          color: clr.hint,
-          fontFamily: font.body,
-        }}
-      >
-        {sub}
-      </div>
-    )}
+    {sub && <div style={{ fontSize: 11, color: clr.hint, fontFamily: font.body }}>{sub}</div>}
   </div>
 );
 
@@ -239,8 +180,7 @@ const labelSt = {
   fontFamily: font.body,
 };
 
-const urgencyScore = (u) =>
-  u === "Urgent" ? 1 : u === "Medium" ? 2 : 3;
+const urgencyScore = (u) => (u === "Urgent" ? 1 : u === "Medium" ? 2 : 3);
 
 // ── Main Component ─────────────────────────────────────────────
 export default function MlaComplaintDashboard() {
@@ -250,12 +190,8 @@ export default function MlaComplaintDashboard() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  const [selectedComplaint, setSelectedComplaint] =
-    useState(null);
-
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
-
   const [comment, setComment] = useState("");
 
   const [filters, setFilters] = useState({
@@ -267,65 +203,54 @@ export default function MlaComplaintDashboard() {
 
   useEffect(() => {
     const link = document.createElement("link");
-
-    link.href =
-      "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap";
-
+    link.href = "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap";
     link.rel = "stylesheet";
-
     document.head.appendChild(link);
   }, []);
 
   useEffect(() => {
     setLoading(true);
+    const token = localStorage.getItem("token");
 
     Promise.all([
-      fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`).then((r) => {
-        if (!r.ok)
-          throw new Error("Failed to fetch complaints");
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints/employee`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((r) => r.json())
+        .then((data) => data.data || data),
 
-        return r.json();
-      }),
-
-      fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`)
+      fetch(`${import.meta.env.VITE_API_BASE_URL}/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((r) => r.json())
+        .then((data) => data.data || data)
         .catch(() => []),
     ])
       .then(([complaintsData, usersData]) => {
-        const formattedComplaints = Array.isArray(
-          complaintsData
-        )
+        const formattedComplaints = Array.isArray(complaintsData)
           ? complaintsData.map((c) => ({
-              ...c,
-              id: c._id,
-              userName:
-                c.citizenId?.name || "Unknown Citizen",
-              date: new Date(
-                c.createdAt
-              ).toLocaleDateString(),
-              ward: c.ward || "General",
-            }))
+            ...c,
+            id: c._id,
+            userName: c.citizenId?.name || "Unknown Citizen",
+            date: new Date(c.createdAt).toLocaleDateString(),
+            ward: c.ward || "General",
+            status: c.status || "Pending",
+          }))
           : [];
 
         setComplaints(formattedComplaints);
-
-        setUsers(
-          Array.isArray(usersData) ? usersData : []
-        );
+        setUsers(Array.isArray(usersData) ? usersData : []);
 
         if (formattedComplaints.length > 0) {
-          setSelectedComplaint(
-            formattedComplaints[0]
-          );
+          setSelectedComplaint(formattedComplaints[0]);
         }
-
         setLoading(false);
       })
       .catch(() => {
-        setError(
-          "Could not connect to the server. Please ensure the NestJS backend is running on port 3001."
-        );
-
+        setError("Could not connect to the server. Please ensure your token is valid and the backend is active.");
         setLoading(false);
       });
   }, []);
@@ -336,100 +261,69 @@ export default function MlaComplaintDashboard() {
       [key]: val,
     }));
 
-  const activeFilters =
-    Object.values(filters).filter(Boolean).length;
+  const clearFilters = () => {
+    setFilters({ urgency: "", category: "", ward: "", status: "" });
+  };
+
+  const trendingComplaints = complaints.filter(
+    (c) => (c.reposts || 0) >= 5
+  ).length;
+
+  const activeFilters = Object.values(filters).filter(Boolean).length;
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.clear();
     navigate("/");
   };
 
-  const uniqueCategories = [
-    ...new Set(
-      complaints
-        .map((c) => c.category)
-        .filter(Boolean)
-    ),
-  ];
+  const uniqueCategories = [...new Set(complaints.map((c) => c.category).filter(Boolean))];
+  const uniqueWards = [...new Set(complaints.map((c) => c.ward).filter(Boolean))];
+  const uniqueStatuses = [...new Set(complaints.map((c) => c.status).filter(Boolean))];
 
-  const uniqueWards = [
-    ...new Set(
-      complaints.map((c) => c.ward).filter(Boolean)
-    ),
-  ];
+  const filteredComplaints = useMemo(() => {
+    return complaints
+      .filter((c) => !filters.urgency || c.urgency === filters.urgency)
+      .filter((c) => !filters.category || c.category === filters.category)
+      .filter((c) => !filters.ward || c.ward === filters.ward)
+      .filter((c) => !filters.status || c.status === filters.status)
+      .sort((a, b) => urgencyScore(a.urgency) - urgencyScore(b.urgency)).sort((a, b) => {
+        // urgent first
+        const urgencyDiff =
+          urgencyScore(a.urgency) - urgencyScore(b.urgency);
 
-  const uniqueStatuses = [
-    ...new Set(
-      complaints
-        .map((c) => c.status)
-        .filter(Boolean)
-    ),
-  ];
+        if (urgencyDiff !== 0) return urgencyDiff;
 
-  const filteredComplaints = useMemo(
-    () =>
-      complaints
-        .filter(
-          (c) =>
-            !filters.urgency ||
-            c.urgency === filters.urgency
-        )
-        .filter(
-          (c) =>
-            !filters.category ||
-            c.category === filters.category
-        )
-        .filter(
-          (c) =>
-            !filters.ward ||
-            c.ward === filters.ward
-        )
-        .filter(
-          (c) =>
-            !filters.status ||
-            c.status === filters.status
-        )
-        .sort(
-          (a, b) =>
-            urgencyScore(a.urgency) -
-            urgencyScore(b.urgency)
-        ),
-    [complaints, filters]
-  );
+        // then highest reposts
+        return (b.reposts || 0) - (a.reposts || 0);
+      });
+  }, [complaints, filters]);
 
   const totalComplaints = complaints.length;
+  const urgentIssues = complaints.filter((c) => c.urgency === "Urgent").length;
+  const pendingCount = complaints.filter((c) => c.status === "Pending").length;
+  const resolvedCount = complaints.filter((c) => c.status === "Resolved").length;
 
-  const urgentIssues = complaints.filter(
-    (c) => c.urgency === "Urgent"
-  ).length;
-
-  const pendingCount = complaints.filter(
-    (c) => c.status === "Pending"
-  ).length;
-
-  const resolvedCount = complaints.filter(
-    (c) => c.status === "Resolved"
-  ).length;
+  // Evaluates if the current item is closed under Resolved or Rejected criteria
+  const isCaseClosed = selectedComplaint?.status === "Resolved" || selectedComplaint?.status === "Rejected";
 
   const updateStatus = async (newStatus) => {
     if (!selectedComplaint) return;
-
     setActionLoading(true);
 
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/complaints/${selectedComplaint.id}/status`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             status: newStatus,
             comment,
-            userId:
-              selectedComplaint.citizenId?._id ||
-              selectedComplaint.citizenId,
+            userId: selectedComplaint.citizenId?._id || selectedComplaint.citizenId,
           }),
         }
       );
@@ -438,11 +332,7 @@ export default function MlaComplaintDashboard() {
         setComplaints((prev) =>
           prev.map((c) =>
             c.id === selectedComplaint.id
-              ? {
-                  ...c,
-                  status: newStatus,
-                  comment,
-                }
+              ? { ...c, status: newStatus, comment }
               : c
           )
         );
@@ -452,8 +342,10 @@ export default function MlaComplaintDashboard() {
           status: newStatus,
           comment,
         }));
+        setComment("");
+        alert(`Status successfully updated to ${newStatus}`);
       } else {
-        alert("Failed to update status.");
+        alert("Failed to update status. Check permissions.");
       }
     } catch {
       alert("Network error.");
@@ -462,180 +354,501 @@ export default function MlaComplaintDashboard() {
     }
   };
 
+  // Handles adding updates to the timeline log without moving state out of In Progress / Pending
+  const handleSendCommentOnly = async () => {
+    if (!comment.trim()) return alert("Please enter a comment update first.");
+    await updateStatus(selectedComplaint.status);
+  };
+
+  if (loading) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", background: clr.bg, color: clr.textMid }}>
+        Loading secure regional dashboard...
+      </div>
+    );
+  }
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: clr.bg,
-        fontFamily: font.body,
-      }}
-    >
-      <header
-        style={{
-          background: clr.paper,
-          borderBottom: `1px solid ${clr.border}`,
-          padding: "0 32px",
-        }}
-      >
-        {/* Top strip */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "10px 0",
-            borderBottom: `1px solid ${clr.borderLight}`,
-          }}
-        >
-          <span>
-            Government of Kerala · MLA Dashboard
-          </span>
-
-          <div
-            style={{
-              display: "flex",
-              gap: 20,
-              alignItems: "center",
-            }}
-          >
-            {users.length > 0 && (
-              <span>
-                {users.length} citizens registered
-              </span>
-            )}
-
-            <span>
-              {filteredComplaints.length} /{" "}
-              {totalComplaints} shown
-            </span>
+    <div style={{ minHeight: "100vh", background: clr.bg, fontFamily: font.body, color: clr.text }}>
+      <header style={{ background: clr.paper, borderBottom: `1px solid ${clr.border}`, padding: "0 32px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: `1px solid ${clr.borderLight}`, fontSize: 12, color: clr.muted }}>
+          <span>Government of Kerala · MLA Constituency Dashboard</span>
+          <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
+            {users.length > 0 && <span>{users.length} Citizens Registered</span>}
+            <span>{filteredComplaints.length} of {totalComplaints} Active Cases Shown</span>
           </div>
         </div>
 
-        {/* Main Header */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "18px 0",
-          }}
-        >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 0" }}>
           <div>
-            <h1
-              style={{
-                fontFamily: font.display,
-                fontSize: 30,
-                margin: 0,
-              }}
-            >
+            <h1 style={{ fontFamily: font.display, fontSize: 30, margin: 0, fontWeight: 700, color: clr.text }}>
               Complaint Registry
             </h1>
-
-            <p
-              style={{
-                margin: "4px 0 0",
-                fontSize: 12,
-                color: clr.muted,
-              }}
-            >
-              Constituency management
+            <p style={{ margin: "4px 0 0", fontSize: 13, color: clr.muted }}>
+              Constituency Scope: <b style={{ color: clr.primary }}>Isolated Profile</b>
             </p>
           </div>
 
-          <button onClick={handleLogout}>
+          <button
+            onClick={handleLogout}
+            style={{ padding: "8px 16px", background: "transparent", border: `1px solid ${clr.accent}`, color: clr.accent, borderRadius: 4, cursor: "pointer", fontWeight: 600, fontSize: 13, transition: "0.2s" }}
+          >
             Sign Out
           </button>
         </div>
       </header>
 
       <main style={{ padding: "24px 32px" }}>
-        {/* Stats */}
-        <div
-          style={{
-            display: "flex",
-            gap: 12,
-            marginBottom: 24,
-          }}
-        >
-          <StatCard
-            label="Total Complaints"
-            value={totalComplaints}
-            color={clr.primary}
-            icon="📋"
-          />
+        {error && (
+          <div style={{ padding: 14, background: clr.accentLight, color: clr.accent, border: `1px solid ${clr.accent}`, borderRadius: 4, marginBottom: 20, fontSize: 14 }}>
+            {error}
+          </div>
+        )}
 
+        {/* Stats Grid */}
+        <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+          <StatCard label="Total Complaints" value={totalComplaints} color={clr.primary} icon="📋" />
+          <StatCard label="Urgent Issues" value={urgentIssues} color={clr.accent} icon="🔴" />
+          <StatCard label="Pending" value={pendingCount} color={clr.warning} icon="⏳" />
+          <StatCard label="Resolved" value={resolvedCount} color={clr.success} icon="✅" />
           <StatCard
-            label="Urgent Issues"
-            value={urgentIssues}
-            color={clr.accent}
-            icon="🔴"
-          />
-
-          <StatCard
-            label="Pending"
-            value={pendingCount}
-            color={clr.warning}
-            icon="⏳"
-          />
-
-          <StatCard
-            label="Resolved"
-            value={resolvedCount}
-            color={clr.success}
-            icon="✅"
+            label="Trending Issues"
+            value={trendingComplaints}
+            color={clr.gold}
+            icon="🔁"
           />
         </div>
 
-        {/* Complaints Table */}
-        <div
-          style={{
-            background: clr.paper,
-            border: `1px solid ${clr.border}`,
-            borderRadius: 6,
-            overflow: "hidden",
-          }}
-        >
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-            }}
-          >
-            <thead>
-              <tr>
-                <th>Citizen</th>
-                <th>Complaint</th>
-                <th>Category</th>
-                <th>Urgency</th>
-                <th>Status</th>
-              </tr>
-            </thead>
+        {/* Dynamic Filters Bar */}
+        <div style={{ background: clr.paper, border: `1px solid ${clr.border}`, borderRadius: 6, padding: "16px 20px", marginBottom: 24, display: "flex", gap: 16, alignItems: "flex-end" }}>
+          <div style={{ flex: 1 }}>
+            <label style={labelSt}>Urgency</label>
+            <select value={filters.urgency} onChange={(e) => setFilter("urgency", e.target.value)} style={selectSt}>
+              <option value="">All Priorities</option>
+              <option value="Urgent">Urgent</option>
+              <option value="Medium">Medium</option>
+              <option value="Normal">Normal</option>
+            </select>
+          </div>
 
-            <tbody>
-              {filteredComplaints.map((c) => (
-                <tr
-                  key={c.id}
-                  onClick={() =>
-                    setSelectedComplaint(c)
-                  }
-                >
-                  <td>{c.userName}</td>
-                  <td>{c.title}</td>
-                  <td>{c.category}</td>
-                  <td>
-                    <UrgencyBadge
-                      level={c.urgency}
-                    />
-                  </td>
-                  <td>
-                    <StatusBadge
-                      status={c.status}
-                    />
-                  </td>
-                </tr>
+          <div style={{ flex: 1 }}>
+            <label style={labelSt}>Category</label>
+            <select value={filters.category} onChange={(e) => setFilter("category", e.target.value)} style={selectSt}>
+              <option value="">All Categories</option>
+              {uniqueCategories.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
               ))}
-            </tbody>
-          </table>
+            </select>
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <label style={labelSt}>Ward</label>
+            <select value={filters.ward} onChange={(e) => setFilter("ward", e.target.value)} style={selectSt}>
+              <option value="">All Wards / Regions</option>
+              {uniqueWards.map((w) => (
+                <option key={w} value={w}>{w}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <label style={labelSt}>Status</label>
+            <select value={filters.status} onChange={(e) => setFilter("status", e.target.value)} style={selectSt}>
+              <option value="">All Statuses</option>
+              {uniqueStatuses.map((st) => (
+                <option key={st} value={st}>{st}</option>
+              ))}
+            </select>
+          </div>
+
+          {activeFilters > 0 && (
+            <button
+              onClick={clearFilters}
+              style={{ padding: "8px 14px", background: clr.bg, border: `1px solid ${clr.border}`, color: clr.textMid, borderRadius: 4, fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+            >
+              Reset ({activeFilters})
+            </button>
+          )}
+        </div>
+
+        {/* Master-Detail Panel Split */}
+        <div>
+
+          {/* Complaints Table Container */}
+          <div style={{ flex: 1, background: clr.card, border: `1px solid ${clr.border}`, borderRadius: 6, overflow: "hidden" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: 13 }}>
+              <thead>
+                <tr style={{ background: clr.paper, borderBottom: `1px solid ${clr.border}`, color: clr.muted, fontWeight: 600 }}>
+                  <th style={{ padding: "14px 18px" }}>Citizen</th>
+                  <th style={{ padding: "14px 18px" }}>Complaint Title</th>
+                  <th style={{ padding: "14px 18px" }}>Ward</th>
+                  <th style={{ padding: "14px 18px" }}>Urgency</th>
+                  <th style={{ padding: "14px 18px" }}>Status</th>
+                  <th style={{ padding: "14px 18px" }}>Reposts</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredComplaints.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" style={{ padding: 30, color: clr.muted, textAlign: "center" }}>
+                      No regional complaints found matching active filter scope.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredComplaints.map((c) => {
+                    const isSelected = selectedComplaint?.id === c.id;
+                    return (
+                      <tr
+                        key={c.id}
+                        onClick={() => setSelectedComplaint(c)}
+                        style={{
+                          borderBottom: `1px solid ${clr.borderLight}`,
+                          cursor: "pointer",
+                          background: isSelected ? clr.primaryLight : "transparent",
+                          transition: "background 0.15s",
+                          borderLeft:
+                            (c.reposts || 0) >= 10
+                              ? `4px solid ${clr.accent}`
+                              : "4px solid transparent",
+                        }}
+                      >
+                        <td style={{ padding: "14px 18px", display: "flex", alignItems: "center", gap: 10, fontWeight: 500 }}>
+                          <AvatarCircle name={c.userName} />
+                          {c.userName}
+                        </td>
+                        <td style={{ padding: "14px 18px", color: clr.textMid }}>{c.title}</td>
+                        <td style={{ padding: "14px 18px", fontFamily: font.mono, fontSize: 12 }}>{c.ward}</td>
+                        <td style={{ padding: "14px 18px" }}><UrgencyBadge level={c.urgency} /></td>
+                        <td style={{ padding: "14px 18px" }}><StatusBadge status={c.status} /></td>
+                        <td style={{ padding: "14px 18px" }}>
+                          <div
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 6,
+                              background: clr.primaryLight,
+                              color: clr.primary,
+                              padding: "5px 10px",
+                              borderRadius: 20,
+                              fontSize: 12,
+                              fontWeight: 700,
+                            }}
+                          >
+                            🔁 {c.reposts || 0}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Details Management Side Panel */}
+          {/* Complaint Details Modal */}
+          {selectedComplaint && (
+            <div
+              onClick={() => setSelectedComplaint(null)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                background: "rgba(0,0,0,0.45)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                zIndex: 1000,
+                padding: 20,
+                backdropFilter: "blur(3px)",
+              }}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  width: "100%",
+                  maxWidth: 760,
+                  maxHeight: "90vh",
+                  overflowY: "auto",
+                  background: clr.paper,
+                  borderRadius: 10,
+                  border: `1px solid ${clr.border}`,
+                  padding: 28,
+                  position: "relative",
+                  boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+                }}
+              >
+                {/* Close Button */}
+                <button
+                  onClick={() => setSelectedComplaint(null)}
+                  style={{
+                    position: "absolute",
+                    top: 16,
+                    right: 16,
+                    width: 34,
+                    height: 34,
+                    borderRadius: "50%",
+                    border: "none",
+                    background: clr.accentLight,
+                    color: clr.accent,
+                    fontSize: 18,
+                    cursor: "pointer",
+                    fontWeight: 700,
+                  }}
+                >
+                  ×
+                </button>
+
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    marginBottom: 16,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontFamily: font.mono,
+                      color: clr.muted,
+                    }}
+                  >
+                    ID: {selectedComplaint.id.slice(-8).toUpperCase()}
+                  </span>
+
+                  <span style={{ fontSize: 11, color: clr.hint }}>
+                    {selectedComplaint.date}
+                  </span>
+                </div>
+
+                <h2
+                  style={{
+                    fontFamily: font.display,
+                    fontSize: 28,
+                    margin: "0 0 14px",
+                    color: clr.text,
+                    fontWeight: 700,
+                  }}
+                >
+                  {selectedComplaint.title}
+                </h2>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 10,
+                    marginBottom: 22,
+                  }}
+                >
+                  <StatusBadge status={selectedComplaint.status} />
+                  <UrgencyBadge level={selectedComplaint.urgency} />
+
+                  <div
+                    style={{
+                      background: clr.primaryLight,
+                      color: clr.primary,
+                      padding: "8px 12px",
+                      borderRadius: 20,
+                      fontSize: 12,
+                      fontWeight: 700,
+                    }}
+                  >
+                    🔁 {selectedComplaint.reposts || 0} Reposts
+                  </div>
+
+                  {(selectedComplaint.reposts || 0) >= 10 && (
+                    <div
+                      style={{
+                        background: clr.accentLight,
+                        color: clr.accent,
+                        padding: "8px 12px",
+                        borderRadius: 20,
+                        fontSize: 12,
+                        fontWeight: 700,
+                      }}
+                    >
+                      🔥 High Public Attention
+                    </div>
+                  )}
+                </div>
+
+                {/* Description */}
+                <div style={{ marginBottom: 20 }}>
+                  <span style={labelSt}>Description</span>
+
+                  <div
+                    style={{
+                      background: clr.card,
+                      border: `1px solid ${clr.borderLight}`,
+                      borderRadius: 6,
+                      padding: 16,
+                      lineHeight: 1.7,
+                      fontSize: 14,
+                      color: clr.textMid,
+                    }}
+                  >
+                    {selectedComplaint.details ||
+                      selectedComplaint.description ||
+                      "No detailed description available."}
+                  </div>
+                </div>
+
+                {/* Existing Comment */}
+                {selectedComplaint.comment && (
+                  <div style={{ marginBottom: 20 }}>
+                    <span style={labelSt}>Resolution Log</span>
+
+                    <div
+                      style={{
+                        background: clr.inProgressLight,
+                        border: `1px solid ${clr.borderLight}`,
+                        color: clr.inProgress,
+                        borderRadius: 6,
+                        padding: 14,
+                        fontSize: 13,
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {selectedComplaint.comment}
+                    </div>
+                  </div>
+                )}
+
+                <hr
+                  style={{
+                    border: "none",
+                    borderTop: `1px solid ${clr.borderLight}`,
+                    margin: "24px 0",
+                  }}
+                />
+
+                {/* Action Section */}
+                <div>
+                  <span style={labelSt}>Administrative Actions</span>
+
+                  {isCaseClosed && (
+                    <div
+                      style={{
+                        padding: "10px 14px",
+                        background: clr.successLight,
+                        color: clr.success,
+                        borderRadius: 6,
+                        fontSize: 13,
+                        fontWeight: 600,
+                        marginBottom: 14,
+                        border: `1px solid ${clr.success}`,
+                      }}
+                    >
+                      ✓ This case is closed and locked.
+                    </div>
+                  )}
+
+                  <textarea
+                    placeholder={
+                      isCaseClosed
+                        ? "Closed cases cannot be edited."
+                        : "Add official remarks or progress updates..."
+                    }
+                    disabled={isCaseClosed || actionLoading}
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    style={{
+                      width: "100%",
+                      minHeight: 100,
+                      padding: 14,
+                      fontSize: 13,
+                      borderRadius: 6,
+                      border: `1px solid ${clr.border}`,
+                      background: isCaseClosed ? clr.bg : clr.card,
+                      outline: "none",
+                      fontFamily: font.body,
+                      marginBottom: 14,
+                      resize: "vertical",
+                    }}
+                  />
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: 10,
+                    }}
+                  >
+                    <button
+                      disabled={isCaseClosed || actionLoading}
+                      onClick={() => updateStatus("In Progress")}
+                      style={{
+                        padding: "12px",
+                        background: clr.card,
+                        border: `1px solid ${clr.inProgress}`,
+                        color: clr.inProgress,
+                        borderRadius: 6,
+                        fontSize: 13,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                      }}
+                    >
+                      In Progress
+                    </button>
+
+                    <button
+                      disabled={isCaseClosed || actionLoading}
+                      onClick={() => updateStatus("Resolved")}
+                      style={{
+                        padding: "12px",
+                        background: clr.success,
+                        border: "none",
+                        color: "#fff",
+                        borderRadius: 6,
+                        fontSize: 13,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Resolve
+                    </button>
+
+                    <button
+                      disabled={isCaseClosed || actionLoading}
+                      onClick={handleSendCommentOnly}
+                      style={{
+                        padding: "12px",
+                        background: clr.card,
+                        border: `1px solid ${clr.primary}`,
+                        color: clr.primary,
+                        borderRadius: 6,
+                        fontSize: 13,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        gridColumn: "span 2",
+                      }}
+                    >
+                      Send Comment Only
+                    </button>
+
+                    <button
+                      disabled={isCaseClosed || actionLoading}
+                      onClick={() => updateStatus("Rejected")}
+                      style={{
+                        padding: "12px",
+                        background: clr.card,
+                        border: `1px solid ${clr.accent}`,
+                        color: clr.accent,
+                        borderRadius: 6,
+                        fontSize: 13,
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        gridColumn: "span 2",
+                      }}
+                    >
+                      Reject Complaint
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>

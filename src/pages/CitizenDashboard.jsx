@@ -157,55 +157,68 @@ export default function CitizenDashboard() {
   const [previewImage, setPreviewImage] = useState(null);
   const [imageModal, setImageModal] = useState(false);
 
+
+
   const handleLogout = () => {
-    localStorage.clear();
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
+    localStorage.removeItem("token");
     window.location.href = "/";
   };
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
 
-    if (!savedUser || role !== "citizen") {
+    if (!token || role?.trim().toLowerCase() !== "citizen") {
       window.location.replace("/");
       return;
     }
 
-    const userData = JSON.parse(savedUser);
-    setUser(userData);
-
-    const fetchMyComplaints = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints/citizen/${userData._id}`);
-        const data = await response.json();
-        console.log("Complaints API Response:", data);
-        console.log("Comments:", data[0]?.comments);
-        console.log("Replies:", data[0]?.replies);
-        console.log("First Reply Object:", data[0]?.replies?.[0]);
-        if (Array.isArray(data)) {
-          setComplaints(data.map(c => ({
-            ...c,
-            id: c._id,
-            date: new Date(c.createdAt).toLocaleDateString()
-          })));
+        // 1. Fetch Profile
+        const userResponse = await fetch("http://localhost:3001/users/me/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!userResponse.ok) throw new Error("Unauthorized");
+        const userData = await userResponse.json();
+        setUser(userData);
+
+        // 2. Fetch My Complaints (using the new endpoint)
+        const complaintResponse = await fetch("http://localhost:3001/complaints/my-complaints", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const complaintData = await complaintResponse.json();
+
+        if (Array.isArray(complaintData)) {
+          setComplaints(
+            complaintData.map((c) => ({
+              ...c,
+              id: c._id,
+              repost: c.reposts|| 0,
+              date: new Date(c.createdAt).toLocaleDateString(),
+            }))
+          );
         }
       } catch (err) {
-        console.error("Failed to load complaints:", err);
+        console.error("Data fetch failed:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMyComplaints();
-
+    fetchData();
   }, []);
 
   const handleDeleteComplaint = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this complaint?");
     if (!confirmDelete) return;
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints/${id}`, { method: "DELETE" });
+      const response = await fetch(`http://localhost:3001/complaints/${id}`, { method: "DELETE" });
       if (response.ok) {
         setComplaints((prev) => prev.filter((c) => c.id !== id));
         if (selectedComplaint?.id === id) setSelectedComplaint(null);
@@ -225,17 +238,19 @@ export default function CitizenDashboard() {
       alert("Please fill in all required fields (Title, Category, Urgency, and Details) before submitting.");
       return;
     }
+    console.log("User Object:", user);
+    console.log("User ID:", user?._id);
     const complaintPayload = {
       title,
       category: category === "Other" ? customCategory : category,
       urgency,
       details,
       visibility: visibility || "Public",
-      citizenId: user._id,
+      citizenId: user?._id,
     };
     console.log("Sending Payload:", complaintPayload);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`, {
+      const response = await fetch("http://localhost:3001/complaints", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(complaintPayload),
@@ -251,42 +266,27 @@ export default function CitizenDashboard() {
       alert("Submission failed. Check backend connection.");
     }
   };
-  const fetchMyComplaints = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-       `${import.meta.env.VITE_API_BASE_URL}/complaints/citizen/${user._id}`
-      );
-      const data = await response.json();
 
-      if (Array.isArray(data)) {
-        setComplaints(
-          data.map((c) => ({
-            ...c,
-            id: c._id,
-            date: new Date(c.createdAt).toLocaleDateString(),
-          }))
-        );
-      }
-    } catch (err) {
-      console.error("Failed to load complaints:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
   const filteredComplaints = complaints.filter(c =>
   ((c.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
     (c.id || "").toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  if (!user) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: clr.bg }}>
-      <div style={{ textAlign: "center" }}>
-        <div style={{ width: 40, height: 40, border: `3px solid ${clr.accent2}`, borderTopColor: clr.primary, borderRadius: "50%", margin: "0 auto 12px", animation: "spin 0.8s linear infinite" }} />
-        <span style={{ fontSize: 13, color: clr.muted, fontWeight: 600 }}>Loading your dashboard…</span>
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          background: clr.bg
+        }}
+      >
+        Loading...
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <>
@@ -363,29 +363,29 @@ export default function CitizenDashboard() {
         </div>
 
         {/* ── ROW 1: Profile | Track Details ── */}
-       <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 16,
-          marginBottom: 16,
-          alignItems: "start", // prevents equal height stretching
-        }}
-      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 16,
+            marginBottom: 16,
+            alignItems: "start", // prevents equal height stretching
+          }}
+        >
 
           {/* Profile Card */}
           <div style={{
             ...cardStyle,
-            
-            position: "relative", overflow: "hidden",background: "linear-gradient(135deg, #FFFFFF 60%, #f6f5f5 100%)",
+
+            position: "relative", overflow: "hidden", background: "linear-gradient(135deg, #FFFFFF 60%, #f6f5f5 100%)",
           }}>
             {/* Decorative circle */}
             <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "radial-gradient(circle, #EEF2FF, transparent 70%)", pointerEvents: "none" }} />
             <p style={labelSt}>My Profile</p>
             <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "16px 0 18px" }}>
-              <Avatar name={user.name} size={56} />
+              <Avatar name={user?.name} size={56} />
               <div>
-                <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.2, color: clr.text }}>{user.name}</div>
+                <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.2, color: clr.text }}>{user?.name}</div>
                 <span style={{
                   display: "inline-flex", marginTop: 6, alignItems: "center", gap: 5,
                   fontSize: 10, fontWeight: 700, color: clr.blueText,
@@ -393,17 +393,17 @@ export default function CitizenDashboard() {
                   border: `1px solid ${clr.accent2}`,
                 }}>
                   <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="12" cy="12" r="9" /></svg>
-                  ID: {user._id || "N/A"}
+                  ID: {user?._id || "N/A"}
                 </span>
               </div>
             </div>
             <div style={{ borderTop: `1.5px solid ${clr.border}`, paddingTop: 16, display: "flex", flexDirection: "column", gap: 11 }}>
               {[
-                { icon: "✉️", val: user.email },
-                { icon: "📞", val: user.phone },
-                { icon: "🗺️", val: user.district },
-                { icon: "🏛️", val: user.constituency },
-                { icon: "📍", val: user.place }
+                { icon: "✉️", val: user?.email },
+                { icon: "📞", val: user?.phone },
+                { icon: "🗺️", val: user?.district },
+                { icon: "🏛️", val: user?.constituencyId },
+                { icon: "📍", val: user?.place }
               ].map((item, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <span style={{ fontSize: 14 }}>{item.icon}</span>
@@ -437,19 +437,19 @@ export default function CitizenDashboard() {
             }}>
               {selectedComplaint ? (
                 <div>
-                 <div
-                  style={{
-                    fontSize: 15,
-                    fontWeight: 800,
-                    marginBottom: 4,
-                    color: clr.text,
+                  <div
+                    style={{
+                      fontSize: 15,
+                      fontWeight: 800,
+                      marginBottom: 4,
+                      color: clr.text,
 
-                    overflowWrap: "break-word",
-                    wordBreak: "break-word",
-                  }}
-                >
-                  {selectedComplaint.title}
-                </div> 
+                      overflowWrap: "break-word",
+                      wordBreak: "break-word",
+                    }}
+                  >
+                    {selectedComplaint.title}
+                  </div>
                   <div
                     style={{
                       fontSize: 11,
@@ -585,7 +585,7 @@ export default function CitizenDashboard() {
           position: "relative", overflow: "hidden",
         }}>
           {/* Decorative top strip */}
-        
+
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
             <div>
@@ -707,7 +707,7 @@ export default function CitizenDashboard() {
           background: " #FFFFFF",
           position: "relative", overflow: "hidden",
         }}>
-         
+
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
             <div>
               <p style={labelSt}>My Complaints</p>
@@ -790,7 +790,7 @@ export default function CitizenDashboard() {
                         flexShrink: 0,
                       }}
                     >
-                  <UrgencyBadge level={c.urgency} />
+                      <UrgencyBadge level={c.urgency} />
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDeleteComplaint(c.id); }}
                         style={{ border: "none", background: "transparent", cursor: "pointer", padding: 3, display: "flex", alignItems: "center", borderRadius: 6, transition: "background 0.15s" }}
@@ -828,119 +828,213 @@ export default function CitizenDashboard() {
                     <span style={{ fontSize: 9, color: clr.accent2, fontWeight: 700, letterSpacing: "0.5px" }}>#{(c.id || "").slice(-6).toUpperCase()}</span>
                   </div>
 
+                  {/* Repost Count */}
+                  <div
+                    style={{
+                      marginTop: 10,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "8px 10px",
+                      borderRadius: radius.sm,
+                      background:
+                        selectedComplaint?.id === c.id
+                          ? "rgba(176,137,104,0.08)"
+                          : "#FFFDF9",
+                      border: `1px solid ${clr.border}`,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 7,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50%",
+                          background: clr.primaryLight,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke={clr.primary}
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="17 1 21 5 17 9" />
+                          <path d="M3 11V9a4 4 0 014-4h14" />
+                          <polyline points="7 23 3 19 7 15" />
+                          <path d="M21 13v2a4 4 0 01-4 4H3" />
+                        </svg>
+                      </div>
+
+                      <div>
+                        <div
+                          style={{
+                            fontSize: 10,
+                            fontWeight: 800,
+                            color: clr.hint,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                          }}
+                        >
+                          Reposts
+                        </div>
+
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 800,
+                            color: clr.text,
+                            marginTop: 1,
+                          }}
+                        >
+                          {c.reposts || 0}
+                        </div>
+                      </div>
+                    </div>
+
+                    {c.reposts > 0 && (
+                      <span
+                        style={{
+                          fontSize: 10,
+                          fontWeight: 700,
+                          padding: "4px 8px",
+                          borderRadius: 999,
+                          background: "#F5ECE3",
+                          color: clr.primary,
+                          border: `1px solid ${clr.accent2}`,
+                        }}
+                      >
+                        Community Supported
+                      </span>
+                    )}
+                  </div>
+
                   {c.evidence && (
                     <div style={{ fontSize: 11, color: clr.success, marginTop: 7, fontWeight: 600 }}>📎 {c.evidence}</div>
                   )}
 
-                 {/* Replace every occurrence of c.replies / selectedComplaint.replies with this block.
+                  {/* Replace every occurrence of c.replies / selectedComplaint.replies with this block.
    This will show:
    - MLA replies
    - Employee replies
    - Public comments from Home page discussion
 */}
 
-<div style={{ marginTop: 10 }}>
-  <div
-    style={{
-      fontSize: 9,
-      fontWeight: 800,
-      color: clr.hint,
-      marginBottom: 5,
-      textTransform: "uppercase",
-      letterSpacing: "0.6px",
-    }}
-  >
-    Updates & Public Discussion
-  </div>
+                  <div style={{ marginTop: 10 }}>
+                    <div
+                      style={{
+                        fontSize: 9,
+                        fontWeight: 800,
+                        color: clr.hint,
+                        marginBottom: 5,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.6px",
+                      }}
+                    >
+                      Updates & Public Discussion
+                    </div>
 
-  <div style={{ maxHeight: 160, overflowY: "auto" }}>
-    {(
-      c.comments || // public comments from home page
-      c.replies ||  // MLA/Employee replies
-      []
-    ).length > 0 ? (
-      (c.comments || c.replies || []).map((reply, i) => (
-        <div
-          key={i}
-          style={{
-            fontSize: 11,
-            background: "#FFFDF9",
-            border: `1px solid ${clr.border}`,
-            borderRadius: 7,
-            padding: "8px 10px",
-            marginBottom: 6,
-            fontWeight: 500,
-          }}
-        >
-          {/* Name + Role */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              marginBottom: 4,
-            }}
-          >
-            <strong style={{ color: clr.primary }}>
-              {reply.username || reply.from || "Anonymous"}
-            </strong>
+                    <div style={{ maxHeight: 160, overflowY: "auto" }}>
+                      {(
+                        c.comments || // public comments from home page
+                        c.replies ||  // MLA/Employee replies
+                        []
+                      ).length > 0 ? (
+                        (c.comments || c.replies || []).map((reply, i) => (
+                          <div
+                            key={i}
+                            style={{
+                              fontSize: 11,
+                              background: "#FFFDF9",
+                              border: `1px solid ${clr.border}`,
+                              borderRadius: 7,
+                              padding: "8px 10px",
+                              marginBottom: 6,
+                              fontWeight: 500,
+                            }}
+                          >
+                            {/* Name + Role */}
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 6,
+                                marginBottom: 4,
+                              }}
+                            >
+                              <strong style={{ color: clr.primary }}>
+                                {reply.username || reply.from || "Anonymous"}
+                              </strong>
 
-            <span
-              style={{
-                fontSize: 9,
-                fontWeight: 700,
-                padding: "2px 6px",
-                borderRadius: 999,
-                background:
-                  (reply.role || "").toLowerCase() === "mla"
-                    ? "#EEF2FF"
-                    : (reply.role || "").toLowerCase() === "employee"
-                    ? "#ECFDF5"
-                    : "#FFF7ED",
-                color:
-                  (reply.role || "").toLowerCase() === "mla"
-                    ? "#4338CA"
-                    : (reply.role || "").toLowerCase() === "employee"
-                    ? "#065F46"
-                    : "#9A3412",
-              }}
-            >
-              {reply.role || "Citizen"}
-            </span>
-          </div>
+                              <span
+                                style={{
+                                  fontSize: 9,
+                                  fontWeight: 700,
+                                  padding: "2px 6px",
+                                  borderRadius: 999,
+                                  background:
+                                    (reply.role || "").toLowerCase() === "mla"
+                                      ? "#EEF2FF"
+                                      : (reply.role || "").toLowerCase() === "employee"
+                                        ? "#ECFDF5"
+                                        : "#FFF7ED",
+                                  color:
+                                    (reply.role || "").toLowerCase() === "mla"
+                                      ? "#4338CA"
+                                      : (reply.role || "").toLowerCase() === "employee"
+                                        ? "#065F46"
+                                        : "#9A3412",
+                                }}
+                              >
+                                {reply.role || "Citizen"}
+                              </span>
+                            </div>
 
-          {/* Comment Text */}
-          <div style={{ color: clr.text, lineHeight: 1.5 }}>
-            {reply.text}
-          </div>
+                            {/* Comment Text */}
+                            <div style={{ color: clr.text, lineHeight: 1.5 }}>
+                              {reply.text}
+                            </div>
 
-          {/* Date */}
-          {reply.createdAt && (
-            <div
-              style={{
-                fontSize: 9,
-                color: clr.hint,
-                marginTop: 4,
-              }}
-            >
-              {new Date(reply.createdAt).toLocaleString()}
-            </div>
-          )}
-        </div>
-      ))
-    ) : (
-      <span
-        style={{
-          fontSize: 10,
-          color: clr.hint,
-          fontWeight: 500,
-        }}
-      >
-        No updates yet
-      </span>
-    )}
-  </div>
-</div>
+                            {/* Date */}
+                            {reply.createdAt && (
+                              <div
+                                style={{
+                                  fontSize: 9,
+                                  color: clr.hint,
+                                  marginTop: 4,
+                                }}
+                              >
+                                {new Date(reply.createdAt).toLocaleString()}
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <span
+                          style={{
+                            fontSize: 10,
+                            color: clr.hint,
+                            fontWeight: 500,
+                          }}
+                        >
+                          No updates yet
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

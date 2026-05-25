@@ -1,22 +1,95 @@
 import React, { useEffect, useMemo, useState } from "react";
+import {
+  MdGroup, MdAssignment, MdWarning, MdInfo, MdCheckCircle, MdRepeat, MdLocalFireDepartment,
+  MdCampaign
+} from 'react-icons/md';
+import "./EmployeeDashboard.css";
+import {
+  MdCancel,
+  MdSend,
+  MdAccessTime,
+  MdClose,
+  MdPerson,
+  MdCalendarToday,
+  MdFingerprint,
+} from "react-icons/md";
 
 const URGENCY_RANK = { Urgent: 1, Medium: 2, Normal: 3 };
 
+const COLORS = {
+  primaryBg: "#FFF5D7",     // Warm beige main background
+  secondaryBg: "#F7EFD1",
+  darkBrown: "#5E452F",  // Slightly darker beige cards
+  cardBg: "#FFFBEF",        // Soft ivory card background
+
+  textPrimary: "#1D1E22",   // Deep slate black
+  textSecondary: "#49494B", // Onyx grey
+  textMuted: "#6B6257",     // Muted brown-grey
+
+  border: "#D8C9A7",        // Soft beige border
+
+  accent: "#6B4F3A",        // Elegant dark brown
+  accentHover: "#5A4230",
+
+  dark: "#393F4D",          // Deep matte grey
+  slate: "#49494B",
+
+  successBg: "#E8F3E6",
+  successText: "#2F5E3B",
+
+  warningBg: "#FFF0D6",
+  warningText: "#9A5B13",
+
+  dangerBg: "#FDEAEA",
+  dangerText: "#A63D40",
+
+  white: "#FFFFFF",
+};
+
 const urgencyStyle = {
-  Urgent: { bg: "#FFF0EE", color: "#C1391D", dot: "#F05A40" },
-  Medium: { bg: "#FFFAEB", color: "#9A6000", dot: "#F5A623" },
-  Normal: { bg: "#EDFAF4", color: "#1A7A4A", dot: "#34C573" },
+  Urgent: {
+    bg: "#FDE7E3",
+    color: "#9F3A2D",
+    dot: "#C65A4B",
+  },
+
+  Medium: {
+    bg: "#FFF1D9",
+    color: "#9A6A20",
+    dot: "#C6923D",
+  },
+
+  Normal: {
+    bg: "#F3EBDD",
+    color: "#6B5A45",
+    dot: "#A67C52",
+  },
 };
 
 const statusStyle = {
-  Pending:      { bg: "#EEF2FF", color: "#3B4FC4" },
-  "In Progress":{ bg: "#FFF5E6", color: "#B45309" },
-  Resolved:     { bg: "#EDFAF4", color: "#167346" },
-  Rejected:     { bg: "#FFF0EE", color: "#B91C1C" },
+  Pending: {
+    bg: "rgba(116,141,146,0.16)",
+    color: "#ffffff",
+  },
+
+  "In Progress": {
+    bg: "rgba(18,78,102,0.18)",
+    color: "#ffffff",
+  },
+
+  Resolved: {
+    bg: "rgba(211,217,212,0.14)",
+    color: "#ffffff",
+  },
+
+  Rejected: {
+    bg: "rgba(33,42,49,0.65)",
+    color: "#ffffff",
+  },
 };
 
 const Badge = ({ label, styleMap }) => {
-  const s = styleMap[label] || { bg: "#F1F5F9", color: "#475569" };
+  const s = styleMap[label] || { bg: "#F1F5F9", color: "#ffffff" };
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 5,
@@ -41,7 +114,7 @@ const Avatar = ({ name }) => {
       fontSize: 12, fontWeight: 800,
       display: "flex", alignItems: "center", justifyContent: "center",
       border: `1.5px solid hsl(${hue},50%,80%)`,
-      fontFamily: "'Playfair Display', Georgia, serif",
+      fontFamily: "'Manrope', sans-serif",
     }}>{initials}</div>
   );
 };
@@ -56,61 +129,83 @@ const SortIcon = ({ active, direction }) => (
 const StatCard = ({ label, value, color, icon }) => (
   <div
     style={{
-      background: "#FFFCF7",
-      border: "1px solid #E6DCCB",
-      borderTop: `3px solid ${color}`,
-      borderRadius: 8,
-      padding: "20px 24px",
+      background: COLORS.cardBg,
+      color: COLORS.textPrimary,
+      border: `1px solid ${COLORS.border}`,
+      borderRadius: 18,
+      padding: "22px",
+      display: "flex",
+      alignItems: "center",
+      gap: 16,
+      boxShadow: "0 4px 14px rgba(107,79,58,0.08)",
       flex: 1,
-      minWidth: 180,
-      minHeight: 128,
+      minWidth: 150,
       position: "relative",
       overflow: "hidden",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
+      transition: "all 0.2s ease",
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = "translateY(-4px)";
+      e.currentTarget.style.boxShadow = "0 10px 24px rgba(0,0,0,0.08)";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = "translateY(0)";
+      e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,0,0,0.05)";
     }}
   >
-    {/* faded icon */}
     <div
       style={{
         position: "absolute",
-        top: 16,
-        right: 18,
-        fontSize: 34,
-        opacity: 0.08,
-        lineHeight: 1,
+        top: -18,
+        right: -18,
+        width: 80,
+        height: 80,
+        borderRadius: "50%",
+        background: `${color}12`,
+      }}
+    />
+
+    <div
+      style={{
+        width: 50,
+        height: 50,
+        borderRadius: 14,
+        background: `${color}18`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        border: `1px solid ${color}25`,
+        fontSize: 24,
       }}
     >
       {icon}
     </div>
 
-    {/* label */}
-    <div
-      style={{
-        fontSize: 12,
-        fontWeight: 700,
-        letterSpacing: "2px",
-        textTransform: "uppercase",
-        color: "#8B7355",
-        marginBottom: 16,
-        fontFamily: "'DM Sans', sans-serif",
-      }}
-    >
-      {label}
-    </div>
+    <div>
+      <div
+        style={{
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: "0.6px",
+          color: COLORS.muted,
+          marginBottom: 5,
+          textTransform: "uppercase",
+        }}
+      >
+        {label}
+      </div>
 
-    {/* number */}
-    <div
-      style={{
-        fontSize: 54,
-        fontWeight: 700,
-        lineHeight: 1,
-        color,
-        fontFamily: "'Playfair Display', serif",
-      }}
-    >
-      {value}
+      <div
+        style={{
+          fontSize: 28,
+          fontWeight: 800,
+          color: COLORS.light,
+          lineHeight: 1,
+          fontFamily: "'Manrope', sans-serif",
+        }}
+      >
+        {value}
+      </div>
     </div>
   </div>
 );
@@ -120,7 +215,6 @@ export default function EmployeeComplaintDashboard() {
     localStorage.clear();
     window.location.href = "/";
   };
-  const [users, setUsers] = useState([]);
   const [complaints, setComplaints] = useState([]);
   const [search, setSearch] = useState("");
   const [urgencyFilter, setUrgencyFilter] = useState("");
@@ -133,36 +227,53 @@ export default function EmployeeComplaintDashboard() {
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
-    if (!savedUser || role !== "employee") {
+
+    if (!token || role !== "employee") {
       window.location.replace("/");
       return;
     }
-    const fetchData = async () => {
+
+    const fetchComplaints = async () => {
       try {
-        const userRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/citizens`);
-        const userData = await userRes.json();
-        setUsers(Array.isArray(userData) ? userData : []);
-        const complaintRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`);
-        const complaintData = await complaintRes.json();
-        if (Array.isArray(complaintData)) {
-          setComplaints(complaintData.map(c => ({
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/complaints/employee`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await res.json();
+
+        if (!Array.isArray(data)) {
+          setComplaints([]);
+          return;
+        }
+
+        setComplaints(
+          data.map((c) => ({
             ...c,
             id: c._id || c.id,
-
-            userName: c.citizenId?.name || c.userName || "Unknown Citizen",
-
+            userName:
+              c.citizenId?.name ||
+              "Unknown Citizen",
             urgency: c.urgency || "Normal",
             status: c.status || "Pending",
-            date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "-",
-          })));
-        }
+            date: c.createdAt
+              ? new Date(c.createdAt).toLocaleDateString()
+              : "-",
+          }))
+        );
+
       } catch (err) {
         console.error("Connection Error:", err);
       }
     };
-    fetchData();
+
+    fetchComplaints();
   }, []);
 
   const updateStatus = async (newStatus) => {
@@ -192,12 +303,44 @@ export default function EmployeeComplaintDashboard() {
   };
 
   const refreshComplaints = async () => {
-    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`);
-    const data = await res.json();
-    setComplaints(data);
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/complaints/employee`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      setComplaints(
+        data.map((c) => ({
+          ...c,
+          id: c._id || c.id,
+          userName:
+            c.citizenId?.name ||
+            "Unknown Citizen",
+          urgency: c.urgency || "Normal",
+          status: c.status || "Pending",
+          date: c.createdAt
+            ? new Date(c.createdAt).toLocaleDateString()
+            : "-",
+        }))
+      );
+
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const countByUrgency = (l) => complaints.filter(c => c.urgency === l).length;
+  const trendingComplaints = complaints.filter(
+    (c) => (c.reposts || 0) >= 5
+  ).length;
 
   const filtered = useMemo(() => {
     let data = complaints.filter(c => {
@@ -208,67 +351,83 @@ export default function EmployeeComplaintDashboard() {
       return matchSearch && matchUrgency && matchStatus;
     });
     data = [...data].sort((a, b) => {
-      let av = sortBy === "urgency" ? URGENCY_RANK[a.urgency] : (a[sortBy] || "").toString().toLowerCase();
-      let bv = sortBy === "urgency" ? URGENCY_RANK[b.urgency] : (b[sortBy] || "").toString().toLowerCase();
-      if (av < bv) return sortOrder === "asc" ? -1 : 1;
-      if (av > bv) return sortOrder === "asc" ? 1 : -1;
-      return 0;
+      // urgency first
+      const urgencyDiff =
+        URGENCY_RANK[a.urgency] - URGENCY_RANK[b.urgency];
+
+      if (urgencyDiff !== 0) return urgencyDiff;
+
+      // reposts next
+      return (b.reposts || 0) - (a.reposts || 0);
     });
     return data;
   }, [complaints, search, urgencyFilter, statusFilter, sortBy, sortOrder]);
 
   const cols = [
     { key: "userName", label: "Citizen" },
-    { key: "title",    label: "Complaint" },
-    { key: null,       label: "Category" },
-    { key: "urgency",  label: "Urgency" },
-    { key: "status",   label: "Status" },
-    { key: "date",     label: "Date" },
+    { key: "title", label: "Complaint" },
+    { key: null, label: "Category" },
+    { key: "urgency", label: "Urgency" },
+    { key: "status", label: "Status" },
+    { key: "date", label: "Date" },
   ];
 
   const handleReplyChange = (id, value) => setReplies(prev => ({ ...prev, [id]: value }));
 
   const handleSendReply = async (id) => {
     const replyText = replies[id];
+
     if (!replyText) return;
+
     try {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      const role = localStorage.getItem("role"); // "employee", "mla", "citizen"
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/reply`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+      const employee = JSON.parse(
+        localStorage.getItem("user") || "{}"
+      );
 
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/reply`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            replyText: replyText,
+            fromRole: "employee",
+            username: employee.name,
+          }),
+        }
+      );
 
-        body: JSON.stringify({ text: replyText, from: "Employee" }),
-
-      });
-      if (response.ok) {
-        setSentStatus(prev => ({ ...prev, [id]: "Sent successfully ✅" }));
-        setReplies(prev => ({ ...prev, [id]: "" }));
-
-
-        // 3. Optional: Refresh complaints to show local updates
-        // (The Citizen will see this next time they refresh their dashboard)
-
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`);
-  const data = await res.json();
-  if (Array.isArray(data)) {
-    setComplaints(data.map(c => ({
-      ...c,
-      id: c._id || c.id,
-      userName: typeof c.citizenId === "object" ? c.citizenId?.name : c.citizenId || "Unknown Citizen",
-      urgency: c.urgency || "Normal",
-      status: c.status || "Pending",
-      date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "-",
-    })));
-  }
-        setTimeout(() => setSentStatus(prev => ({ ...prev, [id]: "" })), 2000);
-
+      if (!response.ok) {
+        throw new Error("Failed to send reply");
       }
+
+      setSentStatus((prev) => ({
+        ...prev,
+        [id]: "Sent successfully ✅",
+      }));
+
+      setReplies((prev) => ({
+        ...prev,
+        [id]: "",
+      }));
+
+      await refreshComplaints();
+
+      setTimeout(() => {
+        setSentStatus((prev) => ({
+          ...prev,
+          [id]: "",
+        }));
+      }, 2000);
+
     } catch (err) {
+      console.error(err);
       alert("Failed to send reply to database.");
     }
   };
+
 
   const selectStyles = {
     padding: "8px 14px", border: "1px solid #E5E1DA", borderRadius: 10,
@@ -280,138 +439,195 @@ export default function EmployeeComplaintDashboard() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "linear-gradient(145deg, #FAF8F4 0%, #F5F1EB 50%, #F8F5EF 100%)",
-      fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
+      background: COLORS.primaryBg,
+      fontFamily: "'Manrope', sans-serif",
       padding: "32px 36px",
     }}>
       {/* Subtle dot-grid background texture */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
-        * { box-sizing: border-box; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #F5F1EB; }
-        ::-webkit-scrollbar-thumb { background: #D5CEBD; border-radius: 99px; }
-        tbody tr { transition: background 0.12s ease; }
-        tbody tr:hover { background: #FAF7F2 !important; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .panel-anim { animation: slideIn 0.25s cubic-bezier(0.22,1,0.36,1) both; }
-        .card-anim { animation: fadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both; }
-      `}</style>
+  @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background: ${COLORS.softBg};
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: ${COLORS.light};
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: ${COLORS.muted};
+    border-radius: 999px;
+  }
+
+  tbody tr {
+    transition: all 0.15s ease;
+  }
+
+  tbody tr:hover {
+    background: rgba(116,141,146,0.08) !important;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .panel-anim {
+    animation: slideIn 0.25s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  .card-anim {
+    animation: fadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both;
+  }
+`}</style>
 
       {/* ── HEADER ── */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          {/* Logo mark */}
-          <div style={{
-            width: 48, height: 48, borderRadius: 14,
-            background: "linear-gradient(135deg, #2D4EAF 0%, #4F46E5 100%)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 4px 14px rgba(79,70,229,0.3)", flexShrink: 0,
-          }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/>
-              <polyline points="10 9 9 9 8 9"/>
+      <div className="dashboard-topbar">
+
+        {/* LEFT */}
+        <div className="dashboard-brand">
+
+          {/* Logo */}
+          <div className="dashboard-logo">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
             </svg>
           </div>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-              <h1 style={{
-                fontSize: 22, fontWeight: 800, color: "#1C1917", margin: 0,
-                fontFamily: "'Playfair Display', Georgia, serif", letterSpacing: "-0.5px",
-              }}>
-                Complaint Registry
-              </h1>
-              <span style={{
-                fontSize: 10, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase",
-                background: "#EDFAF4", color: "#167346", border: "1px solid #BBF7D0",
-                padding: "2px 8px", borderRadius: 99, display: "flex", alignItems: "center", gap: 4,
-              }}>
-                <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#22C55E", display: "inline-block" }} />
-                Live
-              </span>
-            </div>
-            <p style={{ fontSize: 12.5, color: "#9C9484", margin: 0, fontWeight: 500 }}>
-              MLA Portal · Employee View
-            </p>
+
+          {/* Text */}
+          <div className="dashboard-brand-text">
+            <h1>Complaint Management</h1>
+            <p>MLA Portal · Employee View</p>
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: 10 }}>
-          <a href="/" style={{
-            display: "inline-flex", alignItems: "center", gap: 7,
-            padding: "9px 18px",
-            background: "#fff", border: "1px solid #E5E1DA", borderRadius: 10,
-            fontSize: 13, fontWeight: 600, color: "#3D3730", textDecoration: "none",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-            transition: "all 0.15s",
-          }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "#C8C2B8"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.09)"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "#E5E1DA"; e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.05)"; }}
+        {/* RIGHT */}
+        <div className="dashboard-actions">
+
+          <a
+            href="/"
+            className="dashboard-btn dashboard-btn-home"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
-              <polyline points="9 21 9 12 15 12 15 21"/>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+              <polyline points="9 21 9 12 15 12 15 21" />
             </svg>
+
             Home
           </a>
-          <button onClick={handleLogout} style={{
-            display: "inline-flex", alignItems: "center", gap: 7,
-            padding: "9px 18px",
-            background: "#FFF0EE", border: "1px solid #FECDC8", borderRadius: 10,
-            fontSize: 13, fontWeight: 600, color: "#B91C1C", cursor: "pointer",
-            transition: "all 0.15s",
-          }}
-            onMouseEnter={e => { e.currentTarget.style.background = "#FFE4E0"; }}
-            onMouseLeave={e => { e.currentTarget.style.background = "#FFF0EE"; }}
+
+          <button
+            onClick={handleLogout}
+            className="dashboard-btn dashboard-btn-logout"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-              <polyline points="16 17 21 12 16 7"/>
-              <line x1="21" y1="12" x2="9" y2="12"/>
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
             </svg>
+
             Logout
           </button>
+
         </div>
       </div>
 
       {/* ── STAT CARDS ── */}
       <div className="card-anim" style={{ display: "flex", gap: 12, marginBottom: 26, flexWrap: "wrap" }}>
-       <StatCard
-  label="Total Complaints"
-  value={complaints.length}
-  color="#1D4ED8"
-  icon="📋"
-/>
-
-<StatCard
-  label="Urgent Issues"
-  value={countByUrgency("Urgent")}
-  color="#DC2626"
-  icon="🔴"
-/>
-
-<StatCard
-  label="Pending"
-  value={complaints.filter(c => c.status === "Pending").length}
-  color="#D97706"
-  icon="⏳"
-/>
-
-<StatCard
-  label="Resolved"
-  value={complaints.filter(c => c.status === "Resolved").length}
-  color="#15803D"
-  icon="✅"
-/></div>
+        <StatCard
+          label="Total Citizens"
+          value={new Set(complaints.map(c => c.citizenId?._id)).size}
+          icon={<MdGroup />}
+        />
+        <StatCard
+          label="Total Complaints"
+          value={complaints.length}
+          icon={<MdAssignment />}
+        />
+        <StatCard
+          label="Urgent"
+          value={countByUrgency("Urgent")}
+          icon={<MdWarning />}
+        />
+        <StatCard
+          label="Medium"
+          value={countByUrgency("Medium")}
+          icon={<MdInfo />}
+        />
+        <StatCard
+          label="Normal"
+          value={countByUrgency("Normal")}
+          icon={<MdCheckCircle />}
+        />
+        <StatCard
+          label="Trending"
+          value={trendingComplaints}
+          icon={<MdRepeat />}
+        />
+      </div>
 
       {/* ── FILTERS ── */}
       <div style={{
-        background: "#FFFFFF",
+        background: "#FFFBEF",
         border: "1px solid #EAE8E3",
+        color: COLORS.textPrimary,
         borderRadius: 14,
         padding: "13px 18px",
         marginBottom: 16,
@@ -421,8 +637,8 @@ export default function EmployeeComplaintDashboard() {
         {/* Search */}
         <div style={{ position: "relative", flex: 2, minWidth: 200 }}>
           <svg width="14" height="14" viewBox="0 0 15 15" fill="none" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-            <circle cx="6.5" cy="6.5" r="5" stroke="#A09A90" strokeWidth="1.5"/>
-            <path d="M10.5 10.5L13.5 13.5" stroke="#A09A90" strokeWidth="1.5" strokeLinecap="round"/>
+            <circle cx="6.5" cy="6.5" r="5" stroke="#A09A90" strokeWidth="1.5" />
+            <path d="M10.5 10.5L13.5 13.5" stroke="#A09A90" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           <input
             type="text" placeholder="Search citizen, complaint, category..."
@@ -448,7 +664,7 @@ export default function EmployeeComplaintDashboard() {
             <option value="Normal">Normal</option>
           </select>
           <svg width="10" height="10" viewBox="0 0 10 6" fill="none" style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-            <path d="M1 1L5 5L9 1" stroke="#9C9484" strokeWidth="1.5" strokeLinecap="round"/>
+            <path d="M1 1L5 5L9 1" stroke="#9C9484" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
         </div>
 
@@ -462,7 +678,7 @@ export default function EmployeeComplaintDashboard() {
             <option value="Rejected">Rejected</option>
           </select>
           <svg width="10" height="10" viewBox="0 0 10 6" fill="none" style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-            <path d="M1 1L5 5L9 1" stroke="#9C9484" strokeWidth="1.5" strokeLinecap="round"/>
+            <path d="M1 1L5 5L9 1" stroke="#9C9484" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
         </div>
 
@@ -473,137 +689,81 @@ export default function EmployeeComplaintDashboard() {
 
       {/* ── TABLE ── */}
       <div style={{
-        background: "#FFFFFF",
-        border: "1px solid #EAE8E3",
+        background: COLORS.cardBg,
+        border: `1px solid ${COLORS.border}`,
         borderRadius: 16,
         overflow: "hidden",
-        boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+        boxShadow: "0 4px 14px rgba(94,69,47,0.08)",
       }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
-          <colgroup>
-            <col style={{ width: "14%" }} />
-            <col style={{ width: "22%" }} />
-            <col style={{ width: "13%" }} />
-            <col style={{ width: "12%" }} />
-            <col style={{ width: "13%" }} />
-            <col style={{ width: "11%" }} />
-          </colgroup>
-          <thead>
-            <tr style={{
-              background: "linear-gradient(90deg, #F5F2ED 0%, #FAF8F5 100%)",
-              borderBottom: "1px solid #EAE8E3",
-            }}>
-              {cols.map(col => (
-                <th key={col.label}
-                  onClick={col.key ? () => handleSort(col.key) : undefined}
+        <div className="complaints-container">
+          {/* Header */}
+          <div className="complaints-header">
+            <div>Citizen</div>
+            <div>Title</div>
+            <div>Category</div>
+            <div>Urgency</div>
+            <div>Status</div>
+            <div>Reposts</div>
+            <div>Date</div>
+          </div>
+
+          {/* Rows */}
+          {filtered.map((c) => (
+            <div
+              key={c.id}
+              className={`complaint-row ${selectedComplaint?.id === c.id ? "active" : ""
+                }`}
+              style={{
+                borderLeft:
+                  (c.reposts || 0) >= 10
+                    ? "4px solid #B42318"
+                    : "4px solid transparent",
+              }}
+              onClick={() => setSelectedComplaint(c)}
+            >
+              <div data-label="Citizen">{c.userName}</div>
+              <div data-label="Title">{c.title}</div>
+              <div data-label="Category">{c.category}</div>
+              <div data-label="Urgency">{c.urgency}</div>
+              <div data-label="Status">{c.status}</div>
+              <div data-label="Reposts">
+                <span
                   style={{
-                    padding: "12px 18px", textAlign: "left",
-                    fontSize: 10.5, fontWeight: 700, color: "#7A7468",
-                    letterSpacing: "0.8px", textTransform: "uppercase",
-                    cursor: col.key ? "pointer" : "default",
-                    userSelect: "none", whiteSpace: "nowrap",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    background:
+                      (c.reposts || 0) >= 10
+                        ? "#FDE7E3"
+                        : "#FDF1DC",
+                    color:
+                      (c.reposts || 0) >= 10
+                        ? "#B42318"
+                        : "#8B5E34",
+                    padding: "4px 10px",
+                    borderRadius: 999,
+                    fontSize: 11,
+                    fontWeight: 700,
                   }}
                 >
-                  <span style={{ display: "inline-flex", alignItems: "center" }}>
-                    {col.label}
-                    {col.key && <SortIcon active={sortBy === col.key} direction={sortOrder} />}
-                  </span>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 ? (
-              <tr>
-                <td colSpan={6} style={{ padding: "60px", textAlign: "center" }}>
-                  <div style={{ fontSize: 36, marginBottom: 10 }}>🗂️</div>
-                  <div style={{ fontSize: 14, color: "#A09A90", fontWeight: 600 }}>No complaints match the current filters.</div>
-                </td>
-              </tr>
-            ) : filtered.map((c, i) => (
-              <tr
-                key={c.id}
-                onClick={() => setSelectedComplaint(c)}
-                style={{
-                  borderBottom: i < filtered.length - 1 ? "1px solid #F5F0E8" : "none",
-                  cursor: "pointer",
-                  background: selectedComplaint?.id === c.id ? "#FAF7F2" : "transparent",
-                }}
-              >
-                {/* Citizen */}
-                <td style={{ padding: "13px 18px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <Avatar name={c.userName} />
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "#2C2520", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {c.userName}
-                    </span>
-                  </div>
-                </td>
-                {/* Title */}
-                <td style={{ padding: "13px 18px" }}>
-                <div
-                  title={c.title}
-                  style={{
-                    fontSize: 13,
-                    color: "#4A4540",
-                    fontWeight: 500,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    maxWidth: "100%",
-                    display: "block",
-                  }}
-                >
-                  {c.title}
-                </div>
-              </td>
-                {/* Category */}
-                <td style={{ padding: "13px 18px" }}>
-                <div
-                  title={c.category}
-                  style={{
-                    fontSize: 11.5,
-                    color: "#7A7468",
-                    fontWeight: 600,
-                    background: "#F5F0E8",
-                    padding: "4px 9px",
-                    borderRadius: 6,
-                    display: "inline-block",
-                    maxWidth: "100%",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {c.category}
-                </div>
-                </td>
-                {/* Urgency */}
-                <td style={{ padding: "13px 18px" }}>
-                  <Badge label={c.urgency || "Normal"} styleMap={urgencyStyle} />
-                </td>
-                {/* Status */}
-                <td style={{ padding: "13px 18px" }}>
-                  <Badge label={c.status || "Pending"} styleMap={statusStyle} />
-                </td>
-                {/* Date */}
-                <td style={{ padding: "13px 18px" }}>
-                  <span style={{ fontSize: 12, color: "#B0A898", fontWeight: 500 }}>{c.date}</span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  <MdRepeat size={14} />
+                  {c.reposts || 0}
+                </span>
+              </div>
+              <div data-label="Date">{c.date}</div>
+            </div>
+          ))}
+        </div>
 
         {/* ── DETAIL PANEL ── */}
         {selectedComplaint && (
           <div className="panel-anim" style={{
             position: "fixed", top: 0, right: 0, width: 370, height: "100vh",
-            background: "#FDFCFA",
-            borderLeft: "1px solid #EAE8E3",
-            boxShadow: "-6px 0 30px rgba(0,0,0,0.09)",
+            background: COLORS.cardBg,
+            borderLeft: `1px solid ${COLORS.border}`,
+            boxShadow: "0 10px 30px rgba(94,69,47,0.12)",
             padding: 0, zIndex: 999,
-            fontFamily: "'DM Sans','Segoe UI',sans-serif",
+            fontFamily: "'Manrope', sans-serif",
             overflowY: "auto",
             display: "flex", flexDirection: "column",
           }}>
@@ -615,26 +775,87 @@ export default function EmployeeComplaintDashboard() {
                 <>
                   {/* Panel header stripe */}
                   <div style={{
-                    background: "linear-gradient(135deg, #2D4EAF 0%, #4F46E5 100%)",
+                    background: "linear-gradient(135deg, #F7E7B4 0%, #EED9A0 100%)",
+                    borderBottom: `1px solid ${COLORS.border}`,
                     padding: "24px 22px 20px",
                     position: "relative",
                   }}>
                     <div style={{
                       position: "absolute", top: -20, right: -20, width: 100, height: 100,
-                      borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none",
+                      borderRadius: "50%", background: `rgba(166,124,82,0.08)`, pointerEvents: "none",
                     }} />
-                    <div style={{ fontSize: 11, color: "rgba(255,255,255,0.65)", fontWeight: 600, letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: 8 }}>
+                    <div style={{ fontSize: 11, color: COLORS.textPrimary, fontWeight: 600, letterSpacing: "0.8px", textTransform: "uppercase", marginBottom: 8 }}>
                       Complaint Detail
                     </div>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: "#fff", lineHeight: 1.8, fontFamily: "'Playfair Display', Georgia, serif", marginBottom: 8,whiteSpace: "pre-wrap", wordBreak: "break-word",overflowWrap: "break-word", maxWidth: "100%", }}>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: COLORS.textPrimary, lineHeight: 1.8, fontFamily: "'Manrope', sans-serif", marginBottom: 8, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "break-word", maxWidth: "100%", }}>
                       {selectedComplaint.title}
                     </div>
-                    <div style={{ fontSize: 12.5, color: "rgba(255,255,255,0.7)", fontWeight: 500, whiteSpace: "pre-wrap", wordBreak: "break-word",overflowWrap: "break-word", maxWidth: "100%", }}>
+                    <div style={{ fontSize: 12.5, color: COLORS.textPrimary, fontWeight: 500, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "break-word", maxWidth: "100%", }}>
                       {selectedComplaint.category}
                     </div>
                     <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
                       <Badge label={selectedComplaint.urgency} styleMap={urgencyStyle} />
                       <Badge label={selectedComplaint.status} styleMap={statusStyle} />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: 10,
+                        marginTop: 14,
+                        marginBottom: 18,
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      {/* Reposts */}
+                      <div
+                        style={{
+                          background: "#FDF1DC",
+                          color: "#8B5E34",
+                          padding: "8px 12px",
+                          borderRadius: 10,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                        }}
+                      >
+                        <MdRepeat size={16} />
+                        {selectedComplaint.reposts || 0} Reposts
+                      </div>
+
+                      {/* Attention */}
+                      <div
+                        style={{
+                          background:
+                            (selectedComplaint.reposts || 0) >= 10
+                              ? "#FDE7E3"
+                              : "#FDF8EE",
+                          color:
+                            (selectedComplaint.reposts || 0) >= 10
+                              ? "#B42318"
+                              : "#A16207",
+                          padding: "8px 12px",
+                          borderRadius: 10,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 6,
+                        }}
+                      >
+                        {(selectedComplaint.reposts || 0) >= 10 ? (
+                          <>
+                            <MdLocalFireDepartment size={16} />
+                            High Public Attention
+                          </>
+                        ) : (
+                          <>
+                            <MdCampaign size={16} />
+                            Community Supported
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -663,26 +884,26 @@ export default function EmployeeComplaintDashboard() {
 
                     {/* Meta info */}
                     <div style={{
-                      background: "#F9F7F3", border: "1px solid #EAE8E3", borderRadius: 12,
+                      background: COLORS.softBg, border: `1px solid ${COLORS.borderSoft}`, borderRadius: 12,
                       padding: "14px 16px", marginBottom: 16,
                     }}>
                       {selectedComplaint.details && (
-                      <div
-                        style={{
-                          fontSize: 13,
-                          color: "#4A4540",
-                          lineHeight: 1.8,
-                          margin: "0 0 12px",
-                          fontWeight: 500,
-                          whiteSpace: "pre-wrap",
-                          wordBreak: "break-word",
-                          overflowWrap: "break-word",
-                          maxWidth: "100%",
-                        }}
-                      >
-                        {selectedComplaint.details}
-                      </div>
-                    )}
+                        <div
+                          style={{
+                            fontSize: 13,
+                            color: COLORS.textSecondary,
+                            lineHeight: 1.8,
+                            margin: "0 0 12px",
+                            fontWeight: 500,
+                            whiteSpace: "pre-wrap",
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                            maxWidth: "100%",
+                          }}
+                        >
+                          {selectedComplaint.details}
+                        </div>
+                      )}
                       <div style={{ display: "grid", gridTemplateColumns: "0.6fr 1fr", gap: "10px 0", fontSize: 12 }}>
                         {[
                           ["ID", selectedComplaint.id],
@@ -690,8 +911,8 @@ export default function EmployeeComplaintDashboard() {
                           ["Date", selectedComplaint.date],
                         ].map(([k, v]) => (
                           <React.Fragment key={k}>
-                            <span style={{ color: "#A09A90", fontWeight: 600 }}>{k}</span>
-                            <span style={{ color: "#3D3730", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v}</span>
+                            <span style={{ color: COLORS.textMuted, fontWeight: 600 }}>{k}</span>
+                            <span style={{ color: COLORS.textPrimary, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v}</span>
                           </React.Fragment>
                         ))}
                       </div>
@@ -710,16 +931,16 @@ export default function EmployeeComplaintDashboard() {
                         placeholder={isClosed ? "No further replies allowed" : "Type your reply to the citizen..."}
                         style={{
                           width: "100%", padding: "10px 12px",
-                          border: "1px solid #E5E1DA", borderRadius: 10,
+                          border: `1px solid ${COLORS.border}`, borderRadius: 10,
                           fontSize: 13, outline: "none", fontFamily: "inherit",
-                          background: isClosed ? "#F5F2ED" : "#fff",
-                          color: isClosed ? "#B0A898" : "#2C2520",
+                          background: isClosed ? "#F3EBDD" : COLORS.cardBg,
+                          color: isClosed ? "#B8A58E" : COLORS.textPrimary,
                           cursor: isClosed ? "not-allowed" : "text",
                           resize: "vertical", lineHeight: 1.5, fontWeight: 400,
                           transition: "border-color 0.15s",
                         }}
-                        onFocus={e => { if (!isClosed) e.target.style.borderColor = "#6366F1"; }}
-                        onBlur={e => e.target.style.borderColor = "#E5E1DA"}
+                        onFocus={e => { if (!isClosed) e.target.style.borderColor = COLORS.accent; }}
+                        onBlur={e => e.target.style.borderColor = COLORS.border}
                       />
                     </div>
 
@@ -731,17 +952,21 @@ export default function EmployeeComplaintDashboard() {
                         onClick={() => handleSendReply(selectedComplaint.id)}
                         style={{
                           padding: "10px 16px", borderRadius: 10, fontSize: 13, fontWeight: 700,
-                          background: isClosed ? "#F0EDE8" : "linear-gradient(135deg, #2D4EAF, #4F46E5)",
+                          background: isClosed
+                            ? "#F0E7DA"
+                            : "linear-gradient(135deg, #A67C52, #8B6B47)",
                           color: isClosed ? "#B0A898" : "#fff",
                           border: "none", cursor: isClosed ? "not-allowed" : "pointer",
                           transition: "opacity 0.15s, transform 0.15s",
                           display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-                          boxShadow: isClosed ? "none" : "0 2px 8px rgba(79,70,229,0.28)",
+                          boxShadow: isClosed
+                            ? "none"
+                            : "0 4px 12px rgba(166,124,82,0.22)",
                         }}
                         onMouseEnter={e => { if (!isClosed) e.currentTarget.style.opacity = "0.9"; }}
                         onMouseLeave={e => e.currentTarget.style.opacity = "1"}
                       >
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+
                         Send Reply
                       </button>
 
@@ -752,16 +977,16 @@ export default function EmployeeComplaintDashboard() {
                           onClick={() => updateStatus("In Progress")}
                           style={{
                             padding: "9px", borderRadius: 10, fontSize: 12.5, fontWeight: 700,
-                            background: (isClosed || selectedComplaint.status === "In Progress") ? "#F5F2ED" : "#FFF8EE",
-                            color: (isClosed || selectedComplaint.status === "In Progress") ? "#C8C2B8" : "#B45309",
-                            border: "1px solid #FDE68A",
+                            background: (isClosed || selectedComplaint.status === "In Progress") ? "#F5F2ED" : "#FDF1DC",
+                            color: (isClosed || selectedComplaint.status === "In Progress") ? "#C8C2B8" : "#8B5E34",
+                            border: "1px solid #E8C999",
                             cursor: (isClosed || actionLoading || selectedComplaint.status === "In Progress") ? "not-allowed" : "pointer",
                             transition: "background 0.15s",
                           }}
                           onMouseEnter={e => { if (!isClosed && selectedComplaint.status !== "In Progress") e.currentTarget.style.background = "#FFF0D0"; }}
-                          onMouseLeave={e => { if (!isClosed && selectedComplaint.status !== "In Progress") e.currentTarget.style.background = "#FFF8EE"; }}
+                          onMouseLeave={e => { if (!isClosed && selectedComplaint.status !== "In Progress") e.currentTarget.style.background = "#FDF1DC"; }}
                         >
-                          ⏳ In Progress
+                          In Progress
                         </button>
                         <button
                           disabled={actionLoading || isClosed}
@@ -777,7 +1002,7 @@ export default function EmployeeComplaintDashboard() {
                           onMouseEnter={e => { if (!isClosed) e.currentTarget.style.background = "#D1FAE5"; }}
                           onMouseLeave={e => { if (!isClosed) e.currentTarget.style.background = "#EDFAF4"; }}
                         >
-                          ✅ Resolve
+                          Resolve
                         </button>
                       </div>
                       <button
@@ -785,16 +1010,16 @@ export default function EmployeeComplaintDashboard() {
                         onClick={() => updateStatus("Rejected")}
                         style={{
                           padding: "9px", borderRadius: 10, fontSize: 12.5, fontWeight: 700,
-                          background: isClosed ? "#F5F2ED" : "#FFF0EE",
+                          background: isClosed ? "#FDF0EC" : "#FFF0EE",
                           color: isClosed ? "#C8C2B8" : "#B91C1C",
-                          border: "1px solid #FECDC8",
+                          border: "1px solid #E6B8AF",
                           cursor: (isClosed || actionLoading) ? "not-allowed" : "pointer",
                           transition: "background 0.15s",
                         }}
                         onMouseEnter={e => { if (!isClosed) e.currentTarget.style.background = "#FFE4E0"; }}
                         onMouseLeave={e => { if (!isClosed) e.currentTarget.style.background = "#FFF0EE"; }}
                       >
-                        ❌ Reject Complaint
+                        Reject Complaint
                       </button>
                     </div>
 
@@ -808,7 +1033,7 @@ export default function EmployeeComplaintDashboard() {
                       onMouseEnter={e => e.currentTarget.style.background = "#EDE9E3"}
                       onMouseLeave={e => e.currentTarget.style.background = "#F5F2ED"}
                     >
-                      ← Close Panel
+                      Close
                     </button>
                   </div>
                 </>
@@ -818,17 +1043,36 @@ export default function EmployeeComplaintDashboard() {
         )}
 
         {/* ── FOOTER ── */}
-        <div style={{
-          padding: "11px 20px", borderTop: "1px solid #F0EDE8",
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          background: "#FAF8F5",
+        {/*<div style={{
+          padding: "11px 20px",
+          borderTop: "1px solid rgba(211,217,212,0.12)",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          background: "linear-gradient(90deg, #2E3944 0%, #124E66 100%)",
         }}>
-          <span style={{ fontSize: 12, color: "#c8e0dc" }}>
-            Showing <strong style={{ color: "#3D3730" }}>{filtered.length}</strong> complaint{filtered.length !== 1 ? "s" : ""}
+          <span style={{
+            fontSize: 12,
+            color: "#ffffff",
+            fontWeight: 500,
+          }}>
+            Showing{" "}
+            <strong style={{ color: "#FFFFFF", fontWeight: 700 }}>
+              {filtered.length}
+            </strong>{" "}
+            complaint{filtered.length !== 1 ? "s" : ""}
           </span>
-          <span style={{ fontSize: 11, color: "#C8C2B8", fontWeight: 500 }}>MLA Complaint Portal · Employee View</span>
-        </div>
+
+          <span style={{
+            fontSize: 11,
+            color: "rgba(211,217,212,0.72)",
+            fontWeight: 500,
+            letterSpacing: "0.3px",
+          }}>
+            MLA Complaint Portal · Employee View
+          </span>
+        </div>*/}
       </div>
     </div>
   );
-}
+};

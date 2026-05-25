@@ -42,6 +42,7 @@ const constituencyMap = {
     { value: "guruvayur", label: "Guruvayur" },
     { value: "thrissur", label: "Thrissur" },
     { value: "manalur", label: "Manalur" },
+    { value: "chalakkudy", label: "Chalakkudy" }
   ],
   palakkad: [
     { value: "mannarkkad", label: "Mannarkkad" },
@@ -84,7 +85,7 @@ const Register = () => {
     phone: "",
     email: "",
     district: "",      // Added
-    constituency: "",
+    constituencyId: "",
     place: "",
     password: "",
     confirmPassword: ""
@@ -98,7 +99,7 @@ const Register = () => {
     setForm(prev => ({
       ...prev,
       [name]: value,
-      ...(name === "district" ? { constituency: "" } : {})
+      ...(name === "district" ? { constituencyId: "" } : {})
     }));
   };
 
@@ -118,7 +119,7 @@ const Register = () => {
         phone: form.phone,
         email: form.email,
         district: form.district,         // Sent to NestJS
-        constituency: form.constituency,
+        constituencyId: form.constituencyId,
         place: form.place,
         password: form.password,
         role: selectedRole
@@ -183,8 +184,8 @@ const Register = () => {
           <div className="input-group">
             <span>🏛️</span>
             <select
-              name="constituency"
-              value={form.constituency}
+              name="constituencyId"
+              value={form.constituencyId}
               onChange={handleChange}
               required
               disabled={!form.district}
