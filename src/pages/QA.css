@@ -13,7 +13,7 @@
 }
 
 .qa-page {
-  background:linear-gradient(135deg, #e2f5fb 0%, #d8f1fb 100%);
+  background: #FFFCFA;
   min-height: 100vh;
   font-family: 'Inter', system-ui, sans-serif;
   color: var(--text);
@@ -23,7 +23,7 @@
 .qa-hero {
   text-align: center;
   padding: 5rem 1rem 3rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+  background: #FFFCFA;
   border-bottom: 1px solid rgba(20, 184, 166, 0.15);
 }
 
@@ -224,8 +224,8 @@
 /* ================== FAQ SECTION ================== */
 .qa-faq-section {
   max-width: 800px;
-  margin: 5rem auto 4rem;
-  padding: 0 1rem;
+  margin: 5rem auto 0;
+  padding: 2rem;
 }
 
 .faq-header {
@@ -243,8 +243,11 @@
 
 .faq-header h2 {
   font-size: 2.4rem;
+   font-weight: 800;
   margin: 0.6rem 0 1rem;
-  color: var(--text);
+  background: linear-gradient(90deg, #0f766e, #14b8a6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .header-line {

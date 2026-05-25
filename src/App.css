@@ -13,7 +13,7 @@
 /* MAIN LAYOUT */
 .auth-layout {
   display: flex;
-  height: 100vh;
+min-height: 100vh;
 }
 
 /* LEFT SIDE (AUTH PANEL) */
@@ -127,4 +127,10 @@ body {
 img {
   max-width: 100%;
   height: auto;
+}
+html,
+body,
+#root {
+  background: white;
+  min-height: 100%;
 }
