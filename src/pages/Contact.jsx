@@ -1,48 +1,48 @@
 import React, { useState } from "react";
-
 import "./Contact.css";
-
 import Navbar from "../components/home/Navbar";
-
 import constituencies from "../data/constituencies";
+import departments from "../data/departments";
+
+
+
 
 const Contact = () => {
+  
 
   const [selected, setSelected] = useState(
     constituencies[0]
   );
-  const [search, setSearch] = useState("");
 
+  const [search, setSearch] = useState("");
+  const [showAll, setShowAll] = useState(false);
   const filteredConstituencies =
-  constituencies.filter((item) =>
-    item.constituency
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+    constituencies.filter((item) =>
+      item.constituency
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    );
+ console.log("selected district:", selected.district);
+console.log("departments:", departments);
+console.log(
+  "matched:",
+  departments[selected.district]
+);
+  
 
   return (
-
     <div className="contact-page">
-
       <Navbar />
 
       {/* HERO */}
       <div className="contact-hero">
-
         <div className="hero-content">
+          <h1> Citizen–Government Communication Portal</h1>
 
-          <h1>
-            Citizen–Government Communication Portal
-          </h1>
-
-          <p>
-            Access MLA offices and important
+          <p> Access MLA offices and important
             government department contacts
-            across Kerala constituencies.
-          </p>
-
+            across Kerala constituencies.</p>
         </div>
-
       </div>
 
       {/* MAIN */}
@@ -50,20 +50,25 @@ const Contact = () => {
 
         {/* LEFT SIDEBAR */}
         <div className="constituency-sidebar">
-          <div class="sidebar-header">
-          <h2>Constituencies</h2>
-          <input
-            type="text"
-            placeholder="Search constituency..."
-            value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
-            className="search-input"
-          />
-          </div>
-          {filteredConstituencies.map((item) => (
 
+          <div className="sidebar-header">
+            <h2>Constituencies</h2>
+
+            <input
+              type="text"
+              placeholder="Search constituency..."
+              value={search}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
+              className="search-input"
+            />
+          </div>
+
+          {(showAll
+              ? filteredConstituencies
+              : filteredConstituencies.slice(0, 8)
+            ).map((item) => (
             <div
               key={item.id}
               className={`constituency-item ${
@@ -73,12 +78,24 @@ const Contact = () => {
               }`}
               onClick={() => setSelected(item)}
             >
-
               🏛️ {item.constituency}
-
             </div>
+            
+                    ))}
 
-          ))}
+          {filteredConstituencies.length > 8 && (
+            <button
+              className="show-more-btn"
+              onClick={() =>
+                setShowAll(!showAll)
+              }
+            >
+              
+              {showAll
+                ?" Show less"
+                : "Show more"}
+            </button>
+          )}
 
         </div>
 
@@ -89,92 +106,74 @@ const Contact = () => {
           <div className="mla-card">
 
             <div className="mla-header">
-
               <span>🏛️</span>
 
-              <h2>
-                {selected.constituency}
-              </h2>
-
+              <h2>{selected.constituency}</h2>
             </div>
 
             <p>
-              <b>MLA:</b>
-              {" "}
+              <b>MLA:</b>{" "}
               {selected.mla.name}
             </p>
 
             <p>
-              <b>Office:</b>
-              {" "}
-              {selected.mla.office}
+              <b>Office:</b>{" "}
+              {selected.mla.location}
             </p>
 
             <p>
-              <b>Phone:</b>
-              {" "}
+              <b>Phone:</b>{" "}
               {selected.mla.phone}
             </p>
 
             <p>
-              <b>Email:</b>
-              {" "}
+              <b>Email:</b>{" "}
               {selected.mla.email}
             </p>
 
-            <p>
-              <b>Hours:</b>
-              {" "}
-              {selected.mla.hours}
-            </p>
-
+           
           </div>
 
           {/* DEPARTMENTS */}
           <h2 className="dept-title">
+           
+            
             Government Departments
           </h2>
 
           <div className="dept-grid">
 
-            {selected.departments.map(
+            {(departments[selected.district] || []).map(
               (dept, index) => (
+                <div
+                  key={index}
+                  className="dept-card"
+                >
+                  <h4>{dept.title}</h4>
 
-              <div
-                key={index}
-                className="dept-card"
-              >
+                   <p>{dept.description}</p>
 
-                <h4>{dept.title}</h4>
+                  <p>
+                    📍 {dept.location}
+                  </p>
 
-                <p>{dept.description}</p>
+                  <p>
+                    📞 {dept.phone}
+                  </p>
 
-                <p>
-                  📍 {dept.location}
-                </p>
+                  <p>
+                    ✉️ {dept.email}
+                  </p>
 
-                <p>
-                  📞 {dept.phone}
-                </p>
-
-                <p>
-                  ✉️ {dept.email}
-                </p>
-
-                <p>
-                  🕒 {dept.hours}
-                </p>
-
-              </div>
-
-            ))}
+                 
+                </div>
+              )
+            )}
 
           </div>
 
         </div>
-
       </div>
-
     </div>
   );
 };
