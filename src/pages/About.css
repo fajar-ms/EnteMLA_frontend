@@ -5,12 +5,47 @@
   color: #475569;
   background: linear-gradient(135deg,
       #ffffff 0%,
-      #f9fcfc 15%,
+      #f5ffff 15%,
       #f0feff 30%,
       #e8ffff 50%,
       #f0feff 70%,
       #ffffff 100%);
   min-height: 100vh;
+  position: relative;
+  overflow: visible;
+}
+
+.about-page::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(20, 184, 166, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 1;
+  animation: glowMove 20s ease-in-out infinite;
+}
+
+.about-page > * {
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes glowMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(30px, -30px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
 }
 
 .about-hero {
@@ -25,8 +60,8 @@
   font-weight: 800;
   margin-bottom: 1.2rem;
   line-height: 1.1;
-  color: #0369a1;
-  background: linear-gradient(135deg, #0369a1 0%, #14b8a6 100%);
+  color: #0c2f47;
+  background: linear-gradient(135deg, #0c2f47 0%, #0369a1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -69,7 +104,7 @@
 .about-card h2 {
   font-size: 1.85rem;
   margin-bottom: 1.8rem;
-  color: #0369a1;
+  color: #0c2f47;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -102,7 +137,7 @@
 
 .section-title {
   font-weight: 600;
-  color: #0369a1;
+  color: #0c2f47;
   margin-top: 1.5rem;
   margin-bottom: 1rem;
 }
@@ -148,7 +183,7 @@
 
 .feature-box h4 {
   font-size: 1.25rem;
-  color: #0369a1;
+  color: #0c2f47;
   margin-bottom: 0.8rem;
 }
 
@@ -196,7 +231,7 @@
 
 .step h4 {
   margin-bottom: 0.6rem;
-  color: #0369a1;
+  color: #0c2f47;
   font-weight: 600;
 }
 
@@ -245,7 +280,7 @@
 
 .role-box h4 {
   font-size: 1.35rem;
-  color: #0369a1;
+  color: #0c2f47;
   margin-bottom: 1rem;
 }
 
@@ -348,4 +383,17 @@
     font-size: 1.3rem;
     gap: 8px;
   }
+}
+.navbar {
+  z-index: 3000 !important;
+}
+
+.dropdown-menu,
+.profile-dropdown,
+.mobile-menu {
+  z-index: 3100 !important;
+}
+
+.modal-overlay {
+  z-index: 9999 !important;
 }

@@ -3,29 +3,32 @@
   "login": "Login",
   "home": "Home",
   "login_get_started": "Login / Get Started",
-  "about": "About",
+  "about1": "About",
   "complaints": "Complaints",
   "qa": "Q/A",
   "contact": "Contact",
   "app_name_part1": "Ente",
   "app_name_part2": "MLA",
   "register": "Register",
-  "gov_label": "Digital Governance Initiative",
+  "gov_label": "COMMUNITY ACTION NETWORK",
   "constituency": "Constituency",
   "hero_title_main": "Your Voice.",
-  "hero_title_sub": "Real Change.",
-  "hero_description": "A transparent platform for infrastructure reporting, community project oversight, and direct citizen-representative engagement.",
+  "hero_title_sub": "Visible Impact.",
+  "hero_description": "Where public voices transform into measurable action.",
   "active_projects": "Active Projects",
   "citizens_joined": "Citizens Joined",
   "issue_resolution": "Issue Resolution",
-  "office_title": "Constituency Office",
-  "office_desc": "Greenfield Secretariat, Block A. Available 09:00 — 17:00",
-  "live_progress": "Live Progress",
-  "progress_1": "Market Street roadwork finalized",
-  "progress_2": "East-Side Green Park inaugurated",
-  "recent_resolutions": "Recent Resolutions",
-  "res_1": "Street Light repair",
-  "res_2": "Water Supply restoration",
+  "live_complaint_activity": "Smart Civic Operations",
+  "activity_1": "Citizens receive instant updates after complaint submission",
+  "activity_2": "Priority-based workflow helps resolve urgent issues faster",
+  "activity_3": "Digital workflow connecting citizens and officials",
+  "transparency_response": "Transparency & Response",
+  "response_1": "Real-time complaint tracking available",
+  "response_2": "Instant complaint acknowledgment and live status updates",
+  "smart_governance": "Smart Governance Features",
+  "smart_1": "Multi-role dashboards for citizens and officials",
+  "smart_2": "Priority-based complaint management",
+  "smart_3": "Constituency-level analytics and insights",
   "total_complaints": "Total Complaints",
   "in_progress": "In Progress",
   "avg_response": "Avg Response",
@@ -142,5 +145,67 @@
     "future_3": "Mobile application integration",
     "future_4": "Analytics dashboard for governance insights",
     "future_5": "Smart notification and escalation systems"
-  }
+  },
+  
+  "community_qa": "Community Q&A",
+  "qa_subtitle": "Ask anything about local governance.",
+
+  "type_question": "Type your question here...",
+  "ask": "Ask",
+
+  "faq": "FAQ",
+  "frequently_asked_questions": "Frequently Asked Questions",
+
+  "ask_ai": "Ask AI →",
+
+  "ai_thinking": "EnteMLA AI is thinking…",
+
+  "faq_q1": "How can I submit a complaint?",
+  "faq_a1": "You can submit a complaint through the Complaint Portal by providing details and selecting the category.",
+
+  "faq_q2": "How long does it take to resolve a complaint?",
+  "faq_a2": "Most complaints are addressed within 48 hours depending on severity and department workload.",
+
+  "faq_q3": "Can I track my complaint status?",
+  "faq_a3": "Yes, you can track your complaint using the unique tracking ID provided after submission.",
+
+  "contact_hero_title": "Citizen–Government Communication Portal",
+  "contact_hero_desc": "Access MLA offices and important government department contacts across Kerala constituencies.",
+
+  "constituencies": "Constituencies",
+  "search_constituency": "Search constituency...",
+
+  "mla": "MLA",
+  "office": "Office",
+  "phone": "Phone",
+  "email": "Email",
+  "hours": "Hours",
+
+  "government_departments": "Government Departments",
+
+  "department_location": "Location",
+  "department_phone": "Phone",
+  "department_email": "Email",
+  "department_hours": "Hours",
+  
+  "pwd": "Public Works Department (PWD)",
+  "pwd_desc": "Roads, bridges, infrastructure maintenance",
+
+  "water": "Water Supply & Sanitation",
+  "water_desc": "Drinking water, drainage issues",
+
+  "electricity": "Electricity Board",
+  "electricity_desc": "Power supply, outages, maintenance",
+
+  "health": "Health & Welfare",
+  "health_desc": "Hospitals, medical assistance",
+
+  "education": "Education Department",
+  "education_desc": "Schools, scholarships, student support",
+
+  "admin": "Local Administration",
+  "admin_desc": "Public services, civic management",
+  "show_more": "Show More",
+  "show_less": "Show Less"
+
 }
