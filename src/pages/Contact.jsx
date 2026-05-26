@@ -3,6 +3,13 @@ import "./Contact.css";
 import Navbar from "../components/home/Navbar";
 import constituencies from "../data/constituencies";
 import departments from "../data/departments";
+import {
+  FaLandmark,
+  FaMapMarkerAlt,
+  FaPhoneAlt,
+  FaEnvelope,
+  FaBuilding
+} from "react-icons/fa";
 
 
 
@@ -78,7 +85,7 @@ console.log(
               }`}
               onClick={() => setSelected(item)}
             >
-              🏛️ {item.constituency}
+              <FaLandmark className="icon" /> {item.constituency}
             </div>
             
                     ))}
@@ -106,7 +113,7 @@ console.log(
           <div className="mla-card">
 
             <div className="mla-header">
-              <span>🏛️</span>
+              <FaLandmark className="mla-icon" />
 
               <h2>{selected.constituency}</h2>
             </div>
@@ -136,10 +143,9 @@ console.log(
 
           {/* DEPARTMENTS */}
           <h2 className="dept-title">
-           
-            
-            Government Departments
-          </h2>
+  <FaBuilding className="title-icon" />
+  Government Departments
+</h2>
 
           <div className="dept-grid">
 
@@ -153,17 +159,19 @@ console.log(
 
                    <p>{dept.description}</p>
 
-                  <p>
-                    📍 {dept.location}
-                  </p>
+                 <p>
+  <FaMapMarkerAlt className="dept-icon" />
+  {dept.location}
+</p>
 
-                  <p>
-                    📞 {dept.phone}
-                  </p>
-
-                  <p>
-                    ✉️ {dept.email}
-                  </p>
+                 <p>
+  <FaPhoneAlt className="dept-icon" />
+  {dept.phone}
+</p>
+                 <p>
+  <FaEnvelope className="dept-icon" />
+  {dept.email}
+</p>
 
                  
                 </div>
