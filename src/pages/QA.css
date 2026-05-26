@@ -13,7 +13,13 @@
 }
 
 .qa-page {
-  background: #FFFCFA;
+ background: linear-gradient(135deg,
+      #ffffff 0%,
+      #f5ffff 15%,
+      #f0feff 30%,
+      #e8ffff 50%,
+      #f0feff 70%,
+      #ffffff 100%);
   min-height: 100vh;
   font-family: 'Inter', system-ui, sans-serif;
   color: var(--text);
@@ -23,7 +29,13 @@
 .qa-hero {
   text-align: center;
   padding: 5rem 1rem 3rem;
-  background: #FFFCFA;
+ background: linear-gradient(135deg,
+      #ffffff 0%,
+      #f5ffff 15%,
+      #f0feff 30%,
+      #e8ffff 50%,
+      #f0feff 70%,
+      #ffffff 100%);
   border-bottom: 1px solid rgba(20, 184, 166, 0.15);
 }
 
