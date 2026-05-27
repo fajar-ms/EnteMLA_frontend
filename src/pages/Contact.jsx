@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./Contact.css";
 import Navbar from "../components/home/Navbar";
 import constituencies from "../data/constituencies";
+import { useTranslation } from "react-i18next";
 import departments from "../data/departments";
 import {
   FaLandmark,
@@ -12,10 +13,8 @@ import {
 } from "react-icons/fa";
 
 
-
-
 const Contact = () => {
-  
+  const { t } = useTranslation();
 
   const [selected, setSelected] = useState(
     constituencies[0]
@@ -29,14 +28,14 @@ const Contact = () => {
         .toLowerCase()
         .includes(search.toLowerCase())
     );
- console.log("selected district:", selected.district);
+
+  console.log("selected district:", selected.district);
 console.log("departments:", departments);
 console.log(
   "matched:",
   departments[selected.district]
 );
   
-
   return (
     <div className="contact-page">
       <Navbar />
@@ -44,11 +43,9 @@ console.log(
       {/* HERO */}
       <div className="contact-hero">
         <div className="hero-content">
-          <h1> Citizen–Government Communication Portal</h1>
+          <h1>{t("contact_hero_title")}</h1>
 
-          <p> Access MLA offices and important
-            government department contacts
-            across Kerala constituencies.</p>
+          <p>{t("contact_hero_desc")}</p>
         </div>
       </div>
 
@@ -59,11 +56,11 @@ console.log(
         <div className="constituency-sidebar">
 
           <div className="sidebar-header">
-            <h2>Constituencies</h2>
+            <h2>{t("constituencies")}</h2>
 
             <input
               type="text"
-              placeholder="Search constituency..."
+              placeholder={t("search_constituency")}
               value={search}
               onChange={(e) =>
                 setSearch(e.target.value)
@@ -85,7 +82,7 @@ console.log(
               }`}
               onClick={() => setSelected(item)}
             >
-              <FaLandmark className="icon" /> {item.constituency}
+             <FaLandmark className="icon" /> {item.constituency}
             </div>
             
                     ))}
@@ -97,10 +94,9 @@ console.log(
                 setShowAll(!showAll)
               }
             >
-              
               {showAll
-                ?" Show less"
-                : "Show more"}
+                ? t("show_less")
+                : t("show_more")}
             </button>
           )}
 
@@ -115,26 +111,27 @@ console.log(
             <div className="mla-header">
               <FaLandmark className="mla-icon" />
 
+
               <h2>{selected.constituency}</h2>
             </div>
 
             <p>
-              <b>MLA:</b>{" "}
+              <b>{t("mla")}:</b>{" "}
               {selected.mla.name}
             </p>
 
             <p>
-              <b>Office:</b>{" "}
+              <b>{t("office")}:</b>{" "}
               {selected.mla.location}
             </p>
 
             <p>
-              <b>Phone:</b>{" "}
+              <b>{t("phone")}:</b>{" "}
               {selected.mla.phone}
             </p>
 
             <p>
-              <b>Email:</b>{" "}
+              <b>{t("email")}:</b>{" "}
               {selected.mla.email}
             </p>
 
@@ -143,13 +140,13 @@ console.log(
 
           {/* DEPARTMENTS */}
           <h2 className="dept-title">
-  <FaBuilding className="title-icon" />
-  Government Departments
-</h2>
+            <FaBuilding className="title-icon" />
+            {t("government_departments")}
+          </h2>
 
           <div className="dept-grid">
 
-            {(departments[selected.district] || []).map(
+           {(departments[selected.district] || []).map(
               (dept, index) => (
                 <div
                   key={index}
@@ -157,21 +154,22 @@ console.log(
                 >
                   <h4>{dept.title}</h4>
 
-                   <p>{dept.description}</p>
+                  
 
-                 <p>
-  <FaMapMarkerAlt className="dept-icon" />
-  {dept.location}
-</p>
+                  <p>
+                     <FaMapMarkerAlt className="dept-icon" />
+                    {dept.location}
+                  </p>
 
-                 <p>
-  <FaPhoneAlt className="dept-icon" />
-  {dept.phone}
-</p>
-                 <p>
-  <FaEnvelope className="dept-icon" />
-  {dept.email}
-</p>
+                  <p>
+                    <FaPhoneAlt className="dept-icon" />
+                     {dept.phone}
+                  </p>
+
+                  <p>
+                    <FaEnvelope className="dept-icon" />
+                    {dept.email}
+                  </p>
 
                  
                 </div>
