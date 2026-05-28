@@ -1,31 +1,31 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaClipboardList, FaExclamationCircle, FaClock, FaCheckCircle, FaRetweet } from "react-icons/fa";
 
 // ── Design Tokens ──────────────────────────────────────────────
 const clr = {
-  bg: "#F5F0E8",
-  paper: "#FDFAF4",
+  bg: "#E8F4FB",
+  paper: "#FFFFFF",
   card: "#FFFFFF",
-  border: "#E8DFD0",
-  borderLight: "#F0E9DC",
-  text: "#1A1410",
-  textMid: "#4A3F35",
-  muted: "#8C7B6B",
-  hint: "#B5A595",
-  primary: "#1A4A8C",
-  primaryLight: "#EEF3FA",
-  accent: "#C4401C",
-  accentLight: "#FDF1EE",
-  gold: "#B8860B",
-  goldLight: "#FDF8EE",
-  success: "#1A6B3C",
-  successLight: "#EEF7F2",
-  warning: "#C47A1C",
-  warningLight: "#FDF5EE",
-  inProgress: "#5B3A8C",
-  inProgressLight: "#F5F0FB",
+  border: "#C8DFF0",
+  borderLight: "#DAEDF8",
+  text: "#0D2137",
+  textMid: "#1A3A55",
+  muted: "#4A7A9B",
+  hint: "#7AAEC8",
+  primary: "#1A6BAF",
+  primaryLight: "#E0F0FA",
+  accent: "#1565C0",
+  accentLight: "#E3F0FC",
+  gold: "#1A7BB5",
+  goldLight: "#DCF0FB",
+  success: "#1A8A5A",
+  successLight: "#E0F5EC",
+  warning: "#1A7AAF",
+  warningLight: "#DCF0FB",
+  inProgress: "#1A55A0",
+  inProgressLight: "#E0ECFA",
 };
-
 const font = {
   display: "'Playfair Display', Georgia, serif",
   body: "'DM Sans', 'Segoe UI', sans-serif",
@@ -142,7 +142,7 @@ const StatCard = ({ label, value, color, icon, sub }) => (
       overflow: "hidden",
     }}
   >
-    <div style={{ position: "absolute", top: 12, right: 16, fontSize: 28, opacity: 0.08, lineHeight: 1 }}>
+    <div style={{ position: "absolute", top: 12, right: 16, fontSize: 28, opacity: 0.4, lineHeight: 1,color }}>
       {icon}
     </div>
     <div style={{ fontSize: 10, fontFamily: font.body, fontWeight: 700, color: clr.muted, letterSpacing: "1.2px", textTransform: "uppercase", marginBottom: 8 }}>
@@ -407,15 +407,15 @@ export default function MlaComplaintDashboard() {
 
         {/* Stats Grid */}
         <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
-          <StatCard label="Total Complaints" value={totalComplaints} color={clr.primary} icon="📋" />
-          <StatCard label="Urgent Issues" value={urgentIssues} color={clr.accent} icon="🔴" />
-          <StatCard label="Pending" value={pendingCount} color={clr.warning} icon="⏳" />
-          <StatCard label="Resolved" value={resolvedCount} color={clr.success} icon="✅" />
+          <StatCard label="Total Complaints" value={totalComplaints} color={clr.primary}  icon={<FaClipboardList />} />
+          <StatCard label="Urgent Issues" value={urgentIssues} color={clr.accent} icon={<FaExclamationCircle />}  />
+          <StatCard label="Pending" value={pendingCount} color={clr.warning} icon={<FaClock />} />
+          <StatCard label="Resolved" value={resolvedCount} color={clr.success} icon={<FaCheckCircle />} />
           <StatCard
             label="Trending Issues"
             value={trendingComplaints}
             color={clr.gold}
-            icon="🔁"
+            icon={<FaRetweet />} 
           />
         </div>
 
@@ -534,7 +534,7 @@ export default function MlaComplaintDashboard() {
                               fontWeight: 700,
                             }}
                           >
-                            🔁 {c.reposts || 0}
+                            <FaRetweet style={{ marginRight: 4 }} />  {c.reposts || 0}
                           </div>
                         </td>
                       </tr>
@@ -654,7 +654,7 @@ export default function MlaComplaintDashboard() {
                       fontWeight: 700,
                     }}
                   >
-                    🔁 {selectedComplaint.reposts || 0} Reposts
+                    <FaRetweet style={{ marginRight: 4 }} />  {selectedComplaint.reposts || 0} Reposts
                   </div>
 
                   {(selectedComplaint.reposts || 0) >= 10 && (
