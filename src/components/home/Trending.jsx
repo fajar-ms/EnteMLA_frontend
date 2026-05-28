@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./Trending.css";
+import "./Hero.css";
 import { useTranslation } from "react-i18next";
 import { FaThumbsUp, FaComment, FaRetweet } from 'react-icons/fa';
 

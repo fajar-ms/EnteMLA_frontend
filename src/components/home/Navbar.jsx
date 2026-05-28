@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import "./Navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 import i18n from "../../i18n";
-import { LuUser } from 'react-icons/lu';
+import { LuUser, LuMenu, LuX, LuChevronDown } from 'react-icons/lu';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ const Navbar = () => {
   };
 
   const currentLang = localStorage.getItem("i18nextLng") || "en";
-
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState(
     langNames[currentLang]
   );
@@ -88,14 +88,25 @@ const Navbar = () => {
       <div className="navbar-container">
         <div className="logo">Ente<span>MLA</span></div>
 
-        <div className="nav-links">
-          <Link to="/" className="nav-item">Home</Link>
+          <div className={`nav-links ${mobileMenuOpen ? "active" : ""}`}>
+          <Link
+            to="/"
+            className="nav-item"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Home
+          </Link>
           <Link to="/about" className="nav-item">About</Link>
           <Link to="/complaint" className="nav-item">Complaints</Link>
           <Link to="/qa" className="nav-item">Q/A</Link>
           <Link to="/contact" className="nav-item">Contact</Link>
         </div>
-
+        <button
+          className="mobile-menu-btn"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? <LuX size={28} /> : <LuMenu size={28} />}
+        </button>
         <div className="right-section">
           {/* LANGUAGE SELECTOR */}
           <div className="dropdown-wrapper" ref={langRef}>

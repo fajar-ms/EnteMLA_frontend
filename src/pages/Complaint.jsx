@@ -15,7 +15,7 @@ import {
 const ComplaintsList = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  
+  const [authPopup, setAuthPopup] = useState(false);
   const [complaints, setComplaints] = useState([]);
   const [selected, setSelected] = useState(null);
   const [selectedForModal, setSelectedForModal] = useState(null);
@@ -139,7 +139,67 @@ const ComplaintsList = () => {
     return "";
   };
 
-  if (error) return <div className="loading-container"><h2>{error}</h2></div>;
+  if (error)
+  return (
+    <div className="loading-container">
+      <div className="login-alert-box">
+        <h2>Please login to view complaints</h2>
+
+        <button
+          className="login-redirect-btn"
+          onClick={() => setAuthPopup(true)}
+        >
+          Login →
+        </button>
+      </div>
+
+      {/* ROLE POPUP */}
+      {authPopup && (
+        <div className="auth-popup-overlay">
+          <div className="auth-popup">
+            <h3>Select Your Role</h3>
+
+            <button
+              onClick={() => {
+                localStorage.setItem("role", "citizen");
+                navigate("/login");
+              }}
+            >
+              Citizen
+            </button>
+
+            <button
+              onClick={() => {
+                localStorage.setItem("role", "employee");
+                navigate("/login");
+              }}
+            >
+              Employee
+            </button>
+
+            <button
+              onClick={() => {
+                localStorage.setItem("role", "mla");
+                navigate("/login");
+              }}
+            >
+              MLA
+            </button>
+
+            <button
+              className="close-popup-btn"
+              onClick={() => {
+                setAuthPopup(false);
+                navigate("/");
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="page-wrapper">

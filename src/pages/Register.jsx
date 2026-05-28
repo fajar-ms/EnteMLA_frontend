@@ -221,7 +221,11 @@ const Register = () => {
               onChange={handleChange}
               required
             />
-            <span className="eye" onClick={() => setShowPassword(!showPassword)}></span>
+            <span className="eye-btn" onClick={() => setShowPassword(!showPassword)}>{showPassword ? (
+      <FaEyeSlash size={18} color="#0369a1" />
+    ) : (
+      <FaEye size={18} color="#0369a1" />
+    )}</span>
           </div>
 
           {/* Confirm Password */}

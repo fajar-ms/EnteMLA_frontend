@@ -121,12 +121,45 @@ form {
   width: 100%;
 }
 
-.input-group span {
+/* LEFT ICONS ONLY */
+
+.input-group > span:not(.eye-btn) {
   position: absolute;
   left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+
   font-size: 1.2rem;
+
   pointer-events: none;
+
   z-index: 2;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  border: none;
+  background: transparent;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  color: #131515;
+
+  padding: 0;
+
+  z-index: 5;
+}
+
+.eye-btn:hover {
+  color: #14b8a6;
 }
 
 .input-group input,
@@ -175,18 +208,13 @@ form {
   background-color: #f0f2f5;
 }
 
-.input-group .eye {
-  position: absolute;
-  right: 16px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  user-select: none;
+
+/* Extra space for eye icon */
+
+.input-group input {
+  padding-right: 48px;
 }
 
-.input-group .eye:hover {
-  transform: scale(1.1);
-}
 
 /* ====================== REGISTER BUTTON ====================== */
 .register-btn {
@@ -232,7 +260,10 @@ form {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(20, 184, 166, 0.3);
 }
-
+.signin-link { margin-top: 1.5rem; text-align: center; } 
+.signin-link p { color: #64748b; font-size: 0.92rem; } 
+.signin-link span { color: #14b8a6; cursor: pointer; font-weight: 700; }
+ .signin-link span:hover { text-decoration: underline; }
 /* ====================== POPUP MODAL ====================== */
 .popup-overlay {
   position: fixed;
@@ -364,15 +395,12 @@ form {
     font-size: 0.9rem;
   }
 
-  .input-group span {
-    left: 14px;
-    font-size: 1rem;
-  }
+ .input-group > span:not(.eye-btn) {
+  left: 14px;
+  font-size: 1rem;
+}
 
-  .input-group .eye {
-    right: 14px;
-    font-size: 1rem;
-  }
+ 
 
   .register-btn {
     padding: 12px 20px;
@@ -426,15 +454,11 @@ form {
     border-radius: 10px;
   }
 
-  .input-group span {
-    left: 12px;
-    font-size: 0.95rem;
-  }
+ .input-group span:not(.eye) {
+  pointer-events: none;
+}
 
-  .input-group .eye {
-    right: 12px;
-    font-size: 1rem;
-  }
+  
 
   .register-btn {
     padding: 11px 18px;
@@ -502,15 +526,25 @@ form {
     border-radius: 8px;
   }
 
-  .input-group span {
-    left: 11px;
-    font-size: 0.9rem;
-  }
+ .input-group > span:not(.eye-btn) {
+  left: 11px;
+  font-size: 0.9rem;
+}
 
-  .input-group .eye {
-    right: 11px;
-    font-size: 0.95rem;
-  }
+  .eye-btn {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  z-index: 5;
+}
 
   .register-btn {
     padding: 10px 16px;
@@ -569,4 +603,21 @@ form {
     animation: none;
     transition: none;
   }
+  @media (max-width: 768px) {
+  .eye-btn {
+    right: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .eye-btn {
+    right: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .eye-btn {
+    right: 11px;
+  }
+}
 }

@@ -17,7 +17,7 @@ const Hero = () => {
             <span className="division-line"></span>
             <span className="constituency-label">{t("constituency")}</span>
           </div>
-          <h1>{t("hero_title_main")} <span className="text-muted">{t("hero_title_sub")}</span></h1>
+          <h1>{t("hero_title_main")}  {t("hero_title_sub")}</h1>
           <p className="description">
             {t("hero_description")}
           </p>
@@ -34,7 +34,7 @@ const Hero = () => {
           Be the change that you wish to see in the world.
         </p>
         <div className="quote-footer">
-          <span className="author">— Mahatma Gandhi</span>
+          <span className="author">Mahatma Gandhi</span>
         </div>
       </div>
     </div>

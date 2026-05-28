@@ -1,7 +1,7 @@
 // Stats.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./Stats.css";
+import "./Hero.css";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 

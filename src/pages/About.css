@@ -3,16 +3,67 @@
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.7;
   color: #475569;
-  background: linear-gradient(135deg,
+
+  background:
+    radial-gradient(circle at top left,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(240, 253, 255, 0.95) 25%,
+      transparent 45%),
+
+    radial-gradient(circle at top right,
+      rgba(224, 247, 250, 0.75) 0%,
+      transparent 42%),
+
+    radial-gradient(circle at bottom left,
+      rgba(220, 252, 231, 0.65) 0%,
+      transparent 45%),
+
+    radial-gradient(circle at center,
+      rgba(240, 249, 255, 0.9) 0%,
+      transparent 60%),
+
+    linear-gradient(
+      135deg,
       #ffffff 0%,
-      #f5ffff 15%,
-      #f0feff 30%,
-      #e8ffff 50%,
-      #f0feff 70%,
-      #ffffff 100%);
+      #feffff 12%,
+      #f8feff 28%,
+      #f0fdff 50%,
+      #f6ffff 72%,
+      #ffffff 100%
+    );
+
   min-height: 100vh;
   position: relative;
   overflow: visible;
+}
+
+/* Strong premium glow */
+.about-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(circle at 18% 20%,
+      rgba(45, 212, 191, 0.22),
+      transparent 30%),
+
+    radial-gradient(circle at 82% 18%,
+      rgba(56, 189, 248, 0.2),
+      transparent 32%),
+
+    radial-gradient(circle at 50% 78%,
+      rgba(103, 232, 249, 0.18),
+      transparent 35%),
+
+    radial-gradient(circle at center,
+      rgba(255, 255, 255, 0.6),
+      transparent 55%);
+
+  filter: blur(55px);
+
+  pointer-events: none;
+  z-index: 0;
 }
 
 .about-page::before {

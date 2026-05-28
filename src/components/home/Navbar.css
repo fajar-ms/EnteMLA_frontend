@@ -427,28 +427,37 @@
 /* =========================
    RESPONSIVE
 ========================= */
+/* =========================
+   MOBILE MENU BUTTON
+========================= */
 
-@media (max-width: 1024px) {
-  .nav-links {
-    gap: 1.8rem;
-  }
-
-  .logo {
-    font-size: 1.6rem;
-  }
-
-  .logo span {
-    font-size: 1.65rem;
-  }
+.mobile-menu-btn {
+  display: none;
+  border: none;
+  background: transparent;
+  color: #0c2f47;
+  cursor: pointer;
+  z-index: 5000;
 }
 
-@media (max-width: 868px) {
+/* =========================
+   MOBILE RESPONSIVE NAVBAR
+========================= */
+
+@media (max-width: 768px) {
+
+  .navbar {
+    overflow: visible;
+  }
+
   .navbar-container {
     height: auto;
-    padding: 1rem 4%;
+    padding: 14px 18px;
+    position: relative;
     flex-wrap: wrap;
   }
 
+  /* Top Row */
   .logo {
     font-size: 1.5rem;
   }
@@ -457,122 +466,106 @@
     font-size: 1.55rem;
   }
 
-  .logo::before {
-    width: 5px;
-    height: 24px;
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
+  /* Hide Desktop Menu */
   .nav-links {
-    width: 100%;
-    margin-top: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 1.2rem;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+
+    padding: 1rem;
+
+    background: linear-gradient(
+      135deg,
+      rgba(255,255,255,0.98),
+      rgba(245,255,255,0.98)
+    );
+
+    backdrop-filter: blur(20px);
+
+    border-bottom: 1px solid rgba(20,184,166,0.1);
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+
+    z-index: 4000;
+  }
+
+  .nav-links.active {
+    display: flex;
   }
 
   .nav-item {
-    font-size: 0.95rem;
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1rem;
+    border-bottom: 1px solid rgba(20,184,166,0.08);
   }
 
+  .nav-item:last-child {
+    border-bottom: none;
+  }
+
+  /* Right Section */
   .right-section {
     width: 100%;
     margin-top: 1rem;
-    justify-content: center;
+
+    display: flex;
     flex-wrap: wrap;
+    justify-content: center;
+
     gap: 10px;
-  }
-}
-
-@media (max-width: 600px) {
-  .navbar-container {
-    padding: 0.8rem 3%;
-    height: auto;
-  }
-
-  .logo {
-    font-size: 1.4rem;
-    gap: 4px;
-  }
-
-  .logo span {
-    font-size: 1.45rem;
-  }
-
-  .logo::before {
-    width: 4px;
-    height: 22px;
-  }
-
-  .nav-links {
-    gap: 0.8rem;
-    margin-top: 0.8rem;
-  }
-
-  .nav-item {
-    font-size: 0.9rem;
-    font-weight: 500;
-  }
-
-  .nav-item::after {
-    bottom: -4px;
-    height: 2px;
-  }
-
-  .right-section {
-    gap: 8px;
-    margin-top: 0.8rem;
   }
 
   .secondary-btn,
   .primary-btn {
-    padding: 8px 14px;
-    font-size: 0.85rem;
-    font-weight: 600;
-  }
-
-  .profile-name {
-    display: none;
-  }
-
-  .profile-btn {
-    padding: 6px 10px;
-  }
-
-  .profile-icon {
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
-  }
-
-  .dropdown-menu {
-    min-width: 180px;
-  }
-
-  .dropdown-menu div,
-  .dropdown-menu a {
-    padding: 12px 18px;
+    padding: 10px 16px;
     font-size: 0.9rem;
   }
 
+  .profile-wrapper {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .profile-btn {
+    width: auto;
+    max-width: 100%;
+  }
+
   .profile-dropdown {
-    width: 240px;
-    padding: 14px;
+    right: 50%;
+    transform: translateX(50%);
+    width: 90%;
+    max-width: 280px;
   }
 
-  .profile-info p {
-    margin: 4px 0;
-    font-size: 0.85rem;
-  }
-
-  .profile-dropdown button {
-    padding: 10px;
-    font-size: 0.85rem;
+  .dropdown-menu {
+    right: 50%;
+    transform: translateX(50%);
+    min-width: 220px;
   }
 }
 
+/* =========================
+   SMALL MOBILE
+========================= */
+
 @media (max-width: 480px) {
+
   .navbar-container {
-    padding: 0.8rem 2.5%;
+    padding: 12px 14px;
   }
 
   .logo {
@@ -583,45 +576,41 @@
     font-size: 1.35rem;
   }
 
-  .logo::before {
-    display: none;
-  }
-
-  .nav-links {
-    gap: 0.6rem;
-  }
-
-  .nav-item {
-    font-size: 0.85rem;
-  }
-
   .right-section {
-    gap: 6px;
+    gap: 8px;
   }
 
   .secondary-btn,
   .primary-btn {
-    padding: 7px 12px;
-    font-size: 0.8rem;
+    width: 100%;
+    justify-content: center;
   }
 
-  .profile-icon {
-    width: 34px;
-    height: 34px;
-    font-size: 16px;
+  .dropdown-wrapper {
+    width: 100%;
   }
 
-  .arrow {
-    display: none;
+  .secondary-btn,
+  .primary-btn,
+  .profile-btn {
+    width: 100%;
+  }
+
+  .profile-name {
+    display: block;
+    font-size: 0.85rem;
   }
 
   .dropdown-menu {
-    min-width: 160px;
+    width: 100%;
+    min-width: unset;
+    right: 0;
+    transform: none;
   }
 
-  .dropdown-menu div,
-  .dropdown-menu a {
-    padding: 10px 16px;
-    font-size: 0.85rem;
+  .profile-dropdown {
+    width: 100%;
+    right: 0;
+    transform: none;
   }
 }
