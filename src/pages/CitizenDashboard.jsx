@@ -1,40 +1,45 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
+import {
+  FaHome, FaSignOutAlt, FaSearch, FaEnvelope, FaPhone,
+  FaMapMarkerAlt, FaLandmark, FaLocationArrow, FaIdBadge,
+  FaPaperPlane, FaUpload, FaTrash, FaRetweet, FaFileAlt,
+  FaBan, FaComments
+} from "react-icons/fa";
 
 const clr = {
-  bg: "#F8F5EF",
+  bg: "#E8F4FB",
   card: "#FFFFFF",
-  border: "#E7DED2",
+  border: "#C8DFF0",
 
-  text: "#3E2F24",
-  muted: "#7A6858",
-  hint: "#B09B88",
+  text: "#0D2137",
+  muted: "#2A5F80",
+  hint: "#5A9BB8",
 
-  primary: "#B08968",
-  primaryLight: "#F3E8DC",
+  primary: "#1A6BAF",
+  primaryLight: "#D6EDF8",
 
   danger: "#D9534F",
   dangerBg: "#FFF1F0",
   dangerText: "#A94442",
 
-  warning: "#D4A373",
-  warningBg: "#FFF7ED",
-  warningText: "#9C6644",
+  warning: "#1A7AAF",
+  warningBg: "#E0F0FA",
+  warningText: "#0D4F73",
 
-  success: "#6B8E23",
-  successBg: "#F1F8E9",
-  successText: "#4E6E1E",
+  success: "#1A8A5A",
+  successBg: "#E0F5EC",
+  successText: "#0F5235",
 
-  blue: "#F5ECE3",
-  blueText: "#7C5C46",
+  blue: "#D6EDF8",
+  blueText: "#1A5A80",
 
-  accent1: "#C4A484",
-  accent2: "#E6D5C3",
+  accent1: "#1A7AB5",
+  accent2: "#B8D9EE",
 
-  gradientStart: "#FAF6F0",
-  gradientEnd: "#F5EFE6",
+  gradientStart: "#EAF5FC",
+  gradientEnd: "#D6EDF8",
 };
-
 const shadow = "0 2px 12px rgba(120, 90, 60, 0.08)";
 const shadowHover = "0 6px 24px rgba(120, 90, 60, 0.14)";
 const radius = { sm: 10, md: 14, lg: 20, xl: 28 };
@@ -54,7 +59,7 @@ const Avatar = ({ name, size = 52 }) => {
   return (
     <div style={{
       width: size, height: size, borderRadius: "50%", flexShrink: 0,
-      background: `linear-gradient(135deg, hsl(${hue},70%,85%), hsl(${hue + 30},70%,75%))`,
+     background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
       color: `hsl(${hue},55%,28%)`,
       fontSize: size * 0.33, fontWeight: 800,
       display: "flex", alignItems: "center", justifyContent: "center",
@@ -303,7 +308,7 @@ export default function CitizenDashboard() {
     `}</style>
       <div style={{
         minHeight: "100vh",
-        background: "linear-gradient(145deg, #FAF6F0 0%, #F5EFE6 50%, #EFE6DA 100%)",
+background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
         padding: "28px 32px",
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontSize: 14,
@@ -316,7 +321,7 @@ export default function CitizenDashboard() {
             {/* Logo mark */}
             <div style={{
               width: 44, height: 44, borderRadius: radius.md,
-              background: `linear-gradient(135deg, #B08968 0%, #D4A373 100%)`,
+             background: "linear-gradient(145deg, #EAF5FC 0%, #409ac4 50%, #C8E8F5 100%)",
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: "0 4px 16px rgba(233, 233, 237, 0.35)",
             }}>
@@ -345,11 +350,11 @@ export default function CitizenDashboard() {
                 display: "flex", alignItems: "center", gap: 8, padding: "0 18px",
                 height: 42, borderRadius: radius.md,
                 border: `1.5px solid ${clr.border}`,
-                background: clr.card, color: clr.danger,
+                background: clr.card, color: clr.text,
                 fontSize: 12, fontWeight: 700, cursor: "pointer",
                 boxShadow: shadow, transition: "all 0.2s",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = clr.dangerBg; e.currentTarget.style.borderColor = "#FECDD3"; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = clr.dangerBg; e.currentTarget.style.borderColor = "#9eb9db"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = clr.card; e.currentTarget.style.borderColor = clr.border; }}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -399,11 +404,11 @@ export default function CitizenDashboard() {
             </div>
             <div style={{ borderTop: `1.5px solid ${clr.border}`, paddingTop: 16, display: "flex", flexDirection: "column", gap: 11 }}>
               {[
-                { icon: "✉️", val: user?.email },
-                { icon: "📞", val: user?.phone },
-                { icon: "🗺️", val: user?.district },
-                { icon: "🏛️", val: user?.constituencyId },
-                { icon: "📍", val: user?.place }
+                {  icon: <FaEnvelope size={13} color={clr.accent1} />, val: user?.email },
+                { icon: <FaPhone size={13} color={clr.accent1} />, val: user?.phone },
+                { icon: <FaMapMarkerAlt size={13} color={clr.accent1} />, val: user?.district },
+                { icon: <FaLandmark size={13} color={clr.accent1} />, val: user?.constituencyId },
+                { icon: <FaLocationArrow size={13} color={clr.accent1} />, val: user?.place }
               ].map((item, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <span style={{ fontSize: 14 }}>{item.icon}</span>
@@ -478,7 +483,7 @@ export default function CitizenDashboard() {
                       boxShadow: "0 2px 8px rgba(225, 29, 72, 0.05)"
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                        <span style={{ fontSize: "16px" }}>🚫</span>
+                        <span style={{ fontSize: "16px" }}><FaBan size={14} color="#BE123C" /></span>
                         <span style={{ fontWeight: 800, fontSize: "10px", color: "#9F1239", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                           Rejection Reason
                         </span>
