@@ -1,9 +1,18 @@
 /* Stats.css - Enhanced Premium Light Version */
 .stats-section {
-  padding: 120px 5%;
-  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 60%, #f0fdfa 100%);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.7;
+  color: #475569;
+  background: linear-gradient(135deg,
+      #ffffff 0%,
+      #f5ffff 15%,
+      #f0feff 30%,
+      #e8ffff 50%,
+      #f0feff 70%,
+      #ffffff 100%);
+  min-height: 100vh;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .stats-section::before {
@@ -75,13 +84,14 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
-/* Description */
 .stats-description {
-  font-size: 1.3rem;
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
   color: #475569;
+
   max-width: 720px;
+
   line-height: 1.75;
+
   margin-bottom: 4rem;
 }
 

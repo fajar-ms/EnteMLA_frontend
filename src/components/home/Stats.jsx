@@ -2,12 +2,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Stats.css";
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const Stats = () => {
   const { t } = useTranslation();
-
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalComplaints: 0,
     resolvedComplaints: 0,
@@ -120,10 +120,21 @@ const Stats = () => {
             </div>
 
             {/* BUTTON */}
-            <button className="complaint-btn">
-              <Link to="/login">
-                {t("fileComplaint")}
-              </Link>
+            <button
+              className="complaint-btn"
+              onClick={() => {
+                const user = localStorage.getItem("user");
+                const role = localStorage.getItem("role");
+
+                if (user && role === "citizen") {
+                  navigate("/citizen");
+                } else {
+                  localStorage.setItem("role", "citizen");
+                  navigate("/login");
+                }
+              }}
+            >
+              {t("fileComplaint")}
             </button>
           </div>
         </div>
