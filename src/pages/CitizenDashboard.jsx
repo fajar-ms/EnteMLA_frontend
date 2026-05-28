@@ -743,8 +743,8 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
                     border: `1.5px solid ${selectedComplaint?.id === c.id ? clr.primary : clr.border}`,
                     borderRadius: radius.md,
                     background: selectedComplaint?.id === c.id
-                      ? "linear-gradient(135deg, #F5ECE3, #EFE1D1)"
-                      : "#FAFBFF",
+  ? "linear-gradient(135deg, #D6EDF8, #C0E0F5)"
+  : "#FFFFFF",
                     cursor: "pointer",
                     transition: "all 0.18s",
                     boxShadow: selectedComplaint?.id === c.id ? `0 4px 16px rgba(79,70,229,0.15)` : "none",
