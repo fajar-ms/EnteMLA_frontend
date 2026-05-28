@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Login.css";
-
+import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUser, FaLandmark, FaTools } from "react-icons/fa";
 export default function LoginPage() {
   console.log("LOGIN PAGE OPENED");
   useEffect(() => {
@@ -149,11 +149,23 @@ export default function LoginPage() {
             Secure Digital Governance Portal
           </p>
 
-          <div className="role-badge">
-            {role === "citizen" && "👤 Citizen Login"}
-            {role === "mla" && "🏛️ MLA Login"}
-            {role === "employee" && "🛠️ Employee Login"}
-          </div>
+        <div className="role-badge">
+  {role === "citizen" && (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+      <FaUser size={13} /> Citizen Login
+    </span>
+  )}
+  {role === "mla" && (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+      <FaLandmark size={13} /> MLA Login
+    </span>
+  )}
+  {role === "employee" && (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+      <FaTools size={13}  /> Employee Login
+    </span>
+  )}
+</div>
         </div>
 
         {/* Form */}
@@ -168,7 +180,7 @@ export default function LoginPage() {
             </label>
 
             <div className="input-box">
-              <span className="icon">📧</span>
+              <span className="icon"><FaEnvelope size={14} color="#030f18" /></span>
 
               <input
                 type="text"
@@ -191,7 +203,7 @@ export default function LoginPage() {
             <label>Password</label>
 
             <div className="input-box">
-              <span className="icon">🔒</span>
+              <span className="icon"><FaLock size={14}  color="#030f18" /></span>
 
               <input
                 type={showPassword ? "text" : "password"}
