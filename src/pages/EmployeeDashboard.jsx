@@ -115,11 +115,7 @@ const StatCard = ({ label, value, color, icon }) => (
       e.currentTarget.style.boxShadow = "0 4px 14px rgba(18,78,102,0.08)";
     }}
   >
-    <div style={{
-      position: "absolute", top: -18, right: -18,
-      width: 80, height: 80, borderRadius: "50%",
-      background: `${COLORS.accent}10`,
-    }} />
+  
     <div style={{
       width: 50, height: 50, borderRadius: 14,
       background: `${COLORS.accent}15`,
