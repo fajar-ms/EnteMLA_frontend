@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./Register.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { FaUser, FaMobileAlt, FaEnvelope, FaMapMarkerAlt, FaLandmark, FaLocationArrow, FaLock, FaKey, FaEye, FaEyeSlash, FaTools } from "react-icons/fa";
 const constituencyMap = {
   thiruvananthapuram: [
     { value: "Kovalam", label: "Kovalam" },
@@ -147,34 +148,34 @@ const Register = () => {
             Ente<span>MLA</span>
         </div>
         <h2>Create Account</h2>
-        <h3>
-          {selectedRole === "employee"
-            ? "🛠️ Employee Register"
-            : "👤 Citizen Register"}
-        </h3>
+       <h3>
+  {selectedRole === "employee"
+    ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><FaTools size={14} /> Employee Register</span>
+    : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><FaUser size={14} /> Citizen Register</span>}
+</h3>
         {/* <p>Direct registration enabled (OTP skipped)</p> */}
 
         <form onSubmit={handleSubmit}>
           {/* Name */}
           <div className="input-group">
-            <span>👤</span>
+            <span><FaUser size={14} color="#0c1013" /></span>
             <input type="text" name="name" placeholder="Full Name" onChange={handleChange} required />
           </div>
 
           {/* Phone (Simple Input) */}
           <div className="input-group">
-            <span>📱</span>
+            <span><FaMobileAlt size={14} color="#0b1014" /></span>
             <input type="text" name="phone" placeholder="Phone Number" onChange={handleChange} required />
           </div>
 
           {/* Email (Simple Input) */}
           <div className="input-group">
-            <span>📧</span>
+            <span><FaEnvelope size={14} color="#14191e" /></span>
             <input type="email" name="email" placeholder="Email Address" onChange={handleChange} required />
           </div>
           {/* District */}
           <div className="input-group">
-            <span>🗺️</span>
+            <span><FaMapMarkerAlt size={14} color="#181d21" /></span>
             <select name="district" value={form.district} onChange={handleChange} required>
               <option value="" disabled>Select District</option>
 
@@ -188,7 +189,7 @@ const Register = () => {
 
           {/* Constituency */}
           <div className="input-group">
-            <span>🏛️</span>
+            <span><FaLandmark size={14} color="#0e171e" /></span>
             <select
               name="constituencyId"
               value={form.constituencyId}
@@ -206,13 +207,13 @@ const Register = () => {
           </div>
           {/* Place */}
           <div className="input-group">
-            <span>📍</span>
+            <span><FaLocationArrow size={14} color="#050d13" /></span>
             <input type="text" name="place" placeholder="Your Location" onChange={handleChange} required />
           </div>
 
           {/* Password */}
           <div className="input-group">
-            <span>🔒</span>
+            <span><FaLock size={14} color="#091015" /></span>
             <input
               type={showPassword ? "text" : "password"}
               name="password"
@@ -220,12 +221,12 @@ const Register = () => {
               onChange={handleChange}
               required
             />
-            <span className="eye" onClick={() => setShowPassword(!showPassword)}>👁</span>
+            <span className="eye" onClick={() => setShowPassword(!showPassword)}></span>
           </div>
 
           {/* Confirm Password */}
           <div className="input-group">
-            <span>🔑</span>
+            <span><FaLock size={14} color="#0a1721" /></span>
             <input type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleChange} required />
           </div>
 
