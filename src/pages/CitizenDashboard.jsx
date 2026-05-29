@@ -11,32 +11,24 @@ const clr = {
   bg: "#E8F4FB",
   card: "#FFFFFF",
   border: "#C8DFF0",
-
   text: "#0D2137",
   muted: "#2A5F80",
   hint: "#5A9BB8",
-
   primary: "#1A6BAF",
   primaryLight: "#D6EDF8",
-
   danger: "#D9534F",
   dangerBg: "#FFF1F0",
   dangerText: "#A94442",
-
   warning: "#1A7AAF",
   warningBg: "#E0F0FA",
   warningText: "#0D4F73",
-
   success: "#1A8A5A",
   successBg: "#E0F5EC",
   successText: "#0F5235",
-
   blue: "#D6EDF8",
   blueText: "#1A5A80",
-
   accent1: "#1A7AB5",
   accent2: "#B8D9EE",
-
   gradientStart: "#EAF5FC",
   gradientEnd: "#D6EDF8",
 };
@@ -44,13 +36,198 @@ const shadow = "0 2px 12px rgba(120, 90, 60, 0.08)";
 const shadowHover = "0 6px 24px rgba(120, 90, 60, 0.14)";
 const radius = { sm: 10, md: 14, lg: 20, xl: 28 };
 
-// Inline style for the global font
 const fontStyle = `
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
   * { font-family: 'Plus Jakarta Sans', sans-serif; }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #C7D2FE; border-radius: 99px; }
+
+  /* ── Mobile responsive overrides ── */
+
+  /* Header */
+  .cd-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .cd-header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* Row 1: Profile | Track — 2 cols on desktop, 1 on mobile */
+  .cd-row1 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: start;
+  }
+
+  /* Form grid: 4 cols desktop → 2 cols tablet → 1 col mobile */
+  .cd-form-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  /* Form footer row */
+  .cd-form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Complaints grid */
+  .cd-complaints-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 12px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  /* Home button */
+  .dashboard-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 18px;
+    height: 42px;
+    border-radius: 14px;
+    border: 1.5px solid #C8DFF0;
+    background: #FFFFFF;
+    color: #0D2137;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(120,90,60,0.08);
+    transition: all 0.2s;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .dashboard-btn:hover {
+    background: #D6EDF8;
+    border-color: #1A7AB5;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: #C4A484 !important;
+    box-shadow: 0 0 0 3px rgba(196,164,132,0.15) !important;
+    background: #FFFFFF !important;
+  }
+
+  /* ── Tablet: ≤ 900px ── */
+  @media (max-width: 900px) {
+    .cd-row1 {
+      grid-template-columns: 1fr;
+    }
+    .cd-form-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* ── Mobile: ≤ 600px ── */
+  @media (max-width: 600px) {
+    .cd-page-wrap {
+      padding: 16px 14px !important;
+    }
+    .cd-header {
+      flex-direction: column;
+      align-items: stretch !important;
+      margin-bottom: 18px;
+      gap: 14px;
+    }
+    .cd-header-logo h1 {
+      font-size: 17px !important;
+    }
+    .cd-header-logo p {
+      font-size: 10px !important;
+    }
+    .cd-header-actions {
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+    .dashboard-btn {
+      width: 100%;
+      justify-content: center;
+      height: 44px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1A8FA8 0%, #1A6BAF 100%) !important;
+      color: #ffffff !important;
+      border: none !important;
+      box-shadow: 0 3px 12px rgba(26,107,175,0.3) !important;
+      gap: 8px;
+      padding: 0 !important;
+    }
+    .dashboard-btn:hover {
+      background: linear-gradient(135deg, #157f96 0%, #155d9e 100%) !important;
+      border: none !important;
+    }
+    .cd-logout-btn {
+      width: 100% !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      height: 44px !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      border-radius: 12px !important;
+      background: linear-gradient(135deg, #1A8FA8 0%, #1A6BAF 100%) !important;
+      color: #ffffff !important;
+      border: none !important;
+      box-shadow: 0 3px 12px rgba(26,107,175,0.3) !important;
+      gap: 8px !important;
+      padding: 0 !important;
+    }
+    .cd-form-grid {
+      grid-template-columns: 1fr;
+    }
+    .cd-form-footer {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+    .cd-form-footer > * {
+      width: 100%;
+      justify-content: center;
+    }
+    .cd-submit-btn {
+      width: 100% !important;
+      justify-content: center !important;
+    }
+    .cd-complaints-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .cd-card {
+      padding: 16px 14px !important;
+    }
+    .cd-profile-info-row span {
+      font-size: 12px !important;
+    }
+  }
+
+  /* ── Very small: ≤ 380px ── */
+  @media (max-width: 380px) {
+    .cd-page-wrap {
+      padding: 12px 10px !important;
+    }
+  }
 `;
 
 const Avatar = ({ name, size = 52 }) => {
@@ -59,7 +236,7 @@ const Avatar = ({ name, size = 52 }) => {
   return (
     <div style={{
       width: size, height: size, borderRadius: "50%", flexShrink: 0,
-     background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
+      background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
       color: `hsl(${hue},55%,28%)`,
       fontSize: size * 0.33, fontWeight: 800,
       display: "flex", alignItems: "center", justifyContent: "center",
@@ -117,16 +294,12 @@ const inputBase = (hasError) => ({
   padding: "10px 14px",
   fontSize: 13,
   color: clr.text,
-
   background: "#FFFDF9",
   border: `1.5px solid ${hasError ? clr.danger : "#E6D5C3"}`,
-
   borderRadius: radius.sm,
   outline: "none",
   fontFamily: "inherit",
-
   transition: "all 0.2s ease",
-
   boxShadow: "0 1px 3px rgba(120,90,60,0.04)",
 });
 
@@ -162,8 +335,6 @@ export default function CitizenDashboard() {
   const [previewImage, setPreviewImage] = useState(null);
   const [imageModal, setImageModal] = useState(false);
 
-
-
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("role");
@@ -183,28 +354,23 @@ export default function CitizenDashboard() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // 1. Fetch Profile
         const userResponse = await fetch("http://localhost:3001/users/me/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         if (!userResponse.ok) throw new Error("Unauthorized");
         const userData = await userResponse.json();
         setUser(userData);
 
-        // 2. Fetch My Complaints (using the new endpoint)
         const complaintResponse = await fetch("http://localhost:3001/complaints/my-complaints", {
           headers: { Authorization: `Bearer ${token}` },
         });
-
         const complaintData = await complaintResponse.json();
-
         if (Array.isArray(complaintData)) {
           setComplaints(
             complaintData.map((c) => ({
               ...c,
               id: c._id,
-              repost: c.reposts|| 0,
+              repost: c.reposts || 0,
               date: new Date(c.createdAt).toLocaleDateString(),
             }))
           );
@@ -238,13 +404,10 @@ export default function CitizenDashboard() {
 
   const handleAddComplaint = async (e) => {
     e.preventDefault();
-    console.log("Current User State:", user);
     if (!title || !category || !urgency || !details) {
       alert("Please fill in all required fields (Title, Category, Urgency, and Details) before submitting.");
       return;
     }
-    console.log("User Object:", user);
-    console.log("User ID:", user?._id);
     const complaintPayload = {
       title,
       category: category === "Other" ? customCategory : category,
@@ -253,7 +416,6 @@ export default function CitizenDashboard() {
       visibility: visibility || "Public",
       citizenId: user?._id,
     };
-    console.log("Sending Payload:", complaintPayload);
     try {
       const response = await fetch("http://localhost:3001/complaints", {
         method: "POST",
@@ -273,21 +435,13 @@ export default function CitizenDashboard() {
   };
 
   const filteredComplaints = complaints.filter(c =>
-  ((c.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (c.id || "").toLowerCase().includes(searchQuery.toLowerCase()))
+    ((c.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (c.id || "").toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-          background: clr.bg
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: clr.bg }}>
         Loading...
       </div>
     );
@@ -295,35 +449,28 @@ export default function CitizenDashboard() {
 
   return (
     <>
-      <style>{`
-      ${fontStyle}
-
-      input:focus,
-      textarea:focus,
-      select:focus {
-        border-color: #C4A484 !important;
-        box-shadow: 0 0 0 3px rgba(196,164,132,0.15) !important;
-        background: #FFFFFF !important;
-      }
-    `}</style>
-      <div style={{
-        minHeight: "100vh",
-background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
-        padding: "28px 32px",
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
-        fontSize: 14,
-        color: clr.text,
-      }}>
+      <style>{fontStyle}</style>
+      <div
+        className="cd-page-wrap"
+        style={{
+          minHeight: "100vh",
+          background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
+          padding: "28px 32px",
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
+          fontSize: 14,
+          color: clr.text,
+        }}
+      >
 
         {/* ── Header ── */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <div className="cd-header">
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }} className="cd-header-logo">
             {/* Logo mark */}
             <div style={{
-              width: 44, height: 44, borderRadius: radius.md,
-             background: "linear-gradient(145deg, #EAF5FC 0%, #409ac4 50%, #C8E8F5 100%)",
+              width: 44, height: 44, borderRadius: radius.md, flexShrink: 0,
+              background: "linear-gradient(145deg, #EAF5FC 0%, #409ac4 50%, #C8E8F5 100%)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 4px 16px rgba(233, 233, 237, 0.35)",
+              boxShadow: "0 4px 16px rgba(233,233,237,0.35)",
             }}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
@@ -340,12 +487,17 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-
-
-            {/* Logout */}
+          <div className="cd-header-actions">
+            <a href="/" className="dashboard-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+                <polyline points="9 21 9 12 15 12 15 21" />
+              </svg>
+              <span className="btn-label">Home</span>
+            </a>
             <button
               onClick={handleLogout}
+              className="cd-logout-btn"
               style={{
                 display: "flex", alignItems: "center", gap: 8, padding: "0 18px",
                 height: 42, borderRadius: radius.md,
@@ -362,40 +514,35 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
                 <polyline points="16 17 21 12 16 7" />
                 <line x1="21" y1="12" x2="9" y2="12" />
               </svg>
-              Logout
+              <span className="btn-label">Logout</span>
             </button>
           </div>
         </div>
 
         {/* ── ROW 1: Profile | Track Details ── */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 16,
-            marginBottom: 16,
-            alignItems: "start", // prevents equal height stretching
-          }}
-        >
+        <div className="cd-row1">
 
           {/* Profile Card */}
-          <div style={{
-            ...cardStyle,
-
-            position: "relative", overflow: "hidden", background: "linear-gradient(135deg, #FFFFFF 60%, #f6f5f5 100%)",
-          }}>
-            {/* Decorative circle */}
+          <div
+            className="cd-card"
+            style={{
+              ...cardStyle,
+              position: "relative", overflow: "hidden",
+              background: "linear-gradient(135deg, #FFFFFF 60%, #f6f5f5 100%)",
+            }}
+          >
             <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "radial-gradient(circle, #EEF2FF, transparent 70%)", pointerEvents: "none" }} />
             <p style={labelSt}>My Profile</p>
             <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "16px 0 18px" }}>
               <Avatar name={user?.name} size={56} />
-              <div>
-                <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.2, color: clr.text }}>{user?.name}</div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.2, color: clr.text, wordBreak: "break-word" }}>{user?.name}</div>
                 <span style={{
                   display: "inline-flex", marginTop: 6, alignItems: "center", gap: 5,
                   fontSize: 10, fontWeight: 700, color: clr.blueText,
                   background: "#F5ECE3", padding: "3px 10px", borderRadius: 99,
                   border: `1px solid ${clr.accent2}`,
+                  wordBreak: "break-all",
                 }}>
                   <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="12" cy="12" r="9" /></svg>
                   ID: {user?._id || "N/A"}
@@ -404,26 +551,29 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
             </div>
             <div style={{ borderTop: `1.5px solid ${clr.border}`, paddingTop: 16, display: "flex", flexDirection: "column", gap: 11 }}>
               {[
-                {  icon: <FaEnvelope size={13} color={clr.accent1} />, val: user?.email },
+                { icon: <FaEnvelope size={13} color={clr.accent1} />, val: user?.email },
                 { icon: <FaPhone size={13} color={clr.accent1} />, val: user?.phone },
                 { icon: <FaMapMarkerAlt size={13} color={clr.accent1} />, val: user?.district },
                 { icon: <FaLandmark size={13} color={clr.accent1} />, val: user?.constituencyId },
                 { icon: <FaLocationArrow size={13} color={clr.accent1} />, val: user?.place }
               ].map((item, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontSize: 14 }}>{item.icon}</span>
-                  <span style={{ fontSize: 13, color: clr.muted, fontWeight: 500 }}>{item.val || "N/A"}</span>
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }} className="cd-profile-info-row">
+                  <span style={{ fontSize: 14, flexShrink: 0 }}>{item.icon}</span>
+                  <span style={{ fontSize: 13, color: clr.muted, fontWeight: 500, wordBreak: "break-word", minWidth: 0 }}>{item.val || "N/A"}</span>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Track Details Card */}
-          <div style={{
-            ...cardStyle,
-            background: "linear-gradient(135deg, #FFFFFF 60%, #fdfbf9 100%)",
-            display: "flex", flexDirection: "column", position: "relative", overflow: "hidden",
-          }}>
+          <div
+            className="cd-card"
+            style={{
+              ...cardStyle,
+              background: "linear-gradient(135deg, #FFFFFF 60%, #fdfbf9 100%)",
+              display: "flex", flexDirection: "column", position: "relative", overflow: "hidden",
+            }}
+          >
             <div style={{ position: "absolute", bottom: -20, left: -20, width: 100, height: 100, borderRadius: "50%", background: "#FFFFFF", pointerEvents: "none" }} />
             <p style={labelSt}>Track Complaint</p>
             <div style={{ position: "relative", margin: "14px 0 12px" }}>
@@ -442,45 +592,20 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
             }}>
               {selectedComplaint ? (
                 <div>
-                  <div
-                    style={{
-                      fontSize: 15,
-                      fontWeight: 800,
-                      marginBottom: 4,
-                      color: clr.text,
-
-                      overflowWrap: "break-word",
-                      wordBreak: "break-word",
-                    }}
-                  >
+                  <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 4, color: clr.text, overflowWrap: "break-word", wordBreak: "break-word" }}>
                     {selectedComplaint.title}
                   </div>
-                  <div
-                    style={{
-                      fontSize: 11,
-                      color: clr.hint,
-                      marginBottom: 12,
-                      fontWeight: 500,
-
-                      overflowWrap: "break-word",
-                      wordBreak: "break-word",
-                    }}
-                  >
+                  <div style={{ fontSize: 11, color: clr.hint, marginBottom: 12, fontWeight: 500, overflowWrap: "break-word", wordBreak: "break-word" }}>
                     ID: <strong style={{ color: clr.accent1 }}>{selectedComplaint.id}</strong> · {selectedComplaint.category} · {selectedComplaint.date}
                   </div>
 
                   <div style={{ height: 1, background: clr.border, marginBottom: 12 }} />
 
-                  {/* 🔴 NEW: REJECTION HIGHLIGHT BOX */}
                   {selectedComplaint.status === "Rejected" && selectedComplaint.rejectionReasons?.length > 0 && (
                     <div style={{
-                      background: "#FFF1F2",
-                      border: "1.5px solid #FECDD3",
-                      borderRadius: radius.sm,
-                      padding: "12px 14px",
-                      marginBottom: "16px",
-                      borderLeft: "4px solid #E11D48",
-                      boxShadow: "0 2px 8px rgba(225, 29, 72, 0.05)"
+                      background: "#FFF1F2", border: "1.5px solid #FECDD3",
+                      borderRadius: radius.sm, padding: "12px 14px", marginBottom: "16px",
+                      borderLeft: "4px solid #E11D48", boxShadow: "0 2px 8px rgba(225,29,72,0.05)"
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
                         <span style={{ fontSize: "16px" }}><FaBan size={14} color="#BE123C" /></span>
@@ -497,13 +622,7 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
                     </div>
                   )}
 
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: 16,
-                      flexWrap: "wrap",
-                    }}
-                  >
+                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
                     <div>
                       <div style={{ fontSize: 9, color: clr.hint, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 6 }}>Status</div>
                       <StatusBadge status={selectedComplaint.status} />
@@ -513,57 +632,28 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
                       <UrgencyBadge level={selectedComplaint.urgency} />
                     </div>
                   </div>
+
                   {selectedComplaint.details && (
                     <div style={{ marginTop: 12, padding: "10px 13px", background: "#fff", border: `1.5px solid ${clr.border}`, borderRadius: radius.sm }}>
-                      <p
-                        style={{
-                          fontSize: 12,
-                          color: clr.muted,
-                          margin: 0,
-                          lineHeight: 1.8,
-                          fontWeight: 500,
-
-                          whiteSpace: "pre-wrap",
-                          wordBreak: "break-word",
-                          overflowWrap: "break-word",
-                        }}
-                      >
+                      <p style={{ fontSize: 12, color: clr.muted, margin: 0, lineHeight: 1.8, fontWeight: 500, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "break-word" }}>
                         {selectedComplaint.details}
                       </p>
                     </div>
                   )}
-                  {/* MLA / Updates Section */}
+
                   <div style={{ marginTop: 14 }}>
-                    <div style={{
-                      fontSize: 9,
-                      fontWeight: 800,
-                      color: clr.hint,
-                      marginBottom: 6,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.6px"
-                    }}>
+                    <div style={{ fontSize: 9, fontWeight: 800, color: clr.hint, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.6px" }}>
                       Updates / MLA Replies
                     </div>
-
                     <div style={{ maxHeight: 140, overflowY: "auto" }}>
                       {selectedComplaint.replies && selectedComplaint.replies.length > 0 ? (
                         selectedComplaint.replies.map((r, i) => (
-                          <div key={i} style={{
-                            fontSize: 12,
-                            background: "#FFFDF9",
-                            border: `1px solid ${clr.border}`,
-                            borderRadius: 8,
-                            padding: "6px 10px",
-                            marginBottom: 6,
-                            fontWeight: 500
-                          }}>
+                          <div key={i} style={{ fontSize: 12, background: "#FFFDF9", border: `1px solid ${clr.border}`, borderRadius: 8, padding: "6px 10px", marginBottom: 6, fontWeight: 500 }}>
                             <strong style={{ color: clr.primary }}>{r.from}:</strong> {r.text}
                           </div>
                         ))
                       ) : (
-                        <span style={{ fontSize: 11, color: clr.hint }}>
-                          No MLA replies yet
-                        </span>
+                        <span style={{ fontSize: 11, color: clr.hint }}>No MLA replies yet</span>
                       )}
                     </div>
                   </div>
@@ -583,16 +673,15 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
         </div>
 
         {/* ── ROW 2: Complaint Form ── */}
-        <div style={{
-          ...cardStyle,
-          marginBottom: 16,
-          background: "linear-gradient(160deg, #FFFFFF 70%, #faf7f3 100%)",
-          position: "relative", overflow: "hidden",
-        }}>
-          {/* Decorative top strip */}
-
-
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+        <div
+          className="cd-card"
+          style={{
+            ...cardStyle, marginBottom: 16,
+            background: "linear-gradient(160deg, #FFFFFF 70%, #faf7f3 100%)",
+            position: "relative", overflow: "hidden",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
             <div>
               <p style={{ ...labelSt, marginBottom: 4 }}>Lodge a Complaint</p>
               <p style={{ fontSize: 12, color: clr.hint, margin: 0, fontWeight: 500 }}>Fill in the details and submit your civic issue</p>
@@ -610,7 +699,7 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
           </div>
 
           <form onSubmit={handleAddComplaint}>
-            <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 12, marginBottom: 14 }}>
+            <div className="cd-form-grid">
               <div>
                 <label style={labelSt}>Complaint Title</label>
                 <input style={inputBase(!!errors.title)} value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Street light not working" />
@@ -659,7 +748,7 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
               <FieldError msg={errors.details} />
             </div>
 
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div className="cd-form-footer">
               <label style={{
                 display: "inline-flex", alignItems: "center", gap: 8,
                 fontSize: 12, color: clr.muted, fontWeight: 600,
@@ -681,21 +770,24 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
               </label>
 
               {file && (
-                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                   <p style={{ fontSize: 11, color: clr.success, fontWeight: 600, margin: 0 }}>📎 {file.name}</p>
                   <img src={previewImage} alt="Preview" onClick={() => setImageModal(true)}
                     style={{ width: 48, height: 48, objectFit: "cover", borderRadius: radius.sm, border: `2px solid ${clr.accent2}`, cursor: "pointer", boxShadow: shadow }} />
                 </div>
               )}
 
-              <button type="submit" style={{
-                display: "inline-flex", alignItems: "center", gap: 9, padding: "10px 26px",
-                borderRadius: radius.sm,
-                background: `linear-gradient(135deg, ${clr.primary})`,
-                color: "#fff", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer",
-                boxShadow: "0 4px 16px rgba(79,70,229,0.35)",
-                transition: "all 0.2s",
-              }}
+              <button
+                type="submit"
+                className="cd-submit-btn"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 9, padding: "10px 26px",
+                  borderRadius: radius.sm,
+                  background: `linear-gradient(135deg, ${clr.primary})`,
+                  color: "#fff", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer",
+                  boxShadow: "0 4px 16px rgba(79,70,229,0.35)",
+                  transition: "all 0.2s",
+                }}
                 onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"}
                 onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
               >
@@ -707,12 +799,10 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
         </div>
 
         {/* ── ROW 3: My Complaints ── */}
-        <div style={{
-          ...cardStyle,
-          background: " #FFFFFF",
-          position: "relative", overflow: "hidden",
-        }}>
-
+        <div
+          className="cd-card"
+          style={{ ...cardStyle, background: "#FFFFFF", position: "relative", overflow: "hidden" }}
+        >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
             <div>
               <p style={labelSt}>My Complaints</p>
@@ -735,7 +825,7 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
               <p style={{ fontSize: 13, color: clr.hint, margin: 0, fontWeight: 600 }}>No complaints found. Submit one above.</p>
             </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))", gap: 12, maxHeight: 420, overflowY: "auto", paddingRight: 4 }}>
+            <div className="cd-complaints-grid">
               {filteredComplaints.map(c => (
                 <div key={c.id} onClick={() => setSelectedComplaint(c)}
                   style={{
@@ -743,8 +833,8 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
                     border: `1.5px solid ${selectedComplaint?.id === c.id ? clr.primary : clr.border}`,
                     borderRadius: radius.md,
                     background: selectedComplaint?.id === c.id
-  ? "linear-gradient(135deg, #D6EDF8, #C0E0F5)"
-  : "#FFFFFF",
+                      ? "linear-gradient(135deg, #D6EDF8, #C0E0F5)"
+                      : "#FFFFFF",
                     cursor: "pointer",
                     transition: "all 0.18s",
                     boxShadow: selectedComplaint?.id === c.id ? `0 4px 16px rgba(79,70,229,0.15)` : "none",
@@ -752,49 +842,17 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
                   onMouseEnter={e => { if (selectedComplaint?.id !== c.id) { e.currentTarget.style.borderColor = clr.accent1; e.currentTarget.style.boxShadow = shadowHover; } }}
                   onMouseLeave={e => { if (selectedComplaint?.id !== c.id) { e.currentTarget.style.borderColor = clr.border; e.currentTarget.style.boxShadow = "none"; } }}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      gap: 8,
-                      marginBottom: 7,
-                    }}
-                  >
-                    {/* LEFT SIDE */}
-                    <div
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 700,
-                          lineHeight: 1.4,
-                          color: clr.text,
-
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          wordBreak: "break-word",
-                        }}
-                      >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 7 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{
+                        fontSize: 13, fontWeight: 700, lineHeight: 1.4, color: clr.text,
+                        display: "-webkit-box", WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical", overflow: "hidden", wordBreak: "break-word",
+                      }}>
                         {c.title}
                       </span>
                     </div>
-
-                    {/* RIGHT SIDE */}
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 7,
-                        flexShrink: 0,
-                      }}
-                    >
+                    <div style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
                       <UrgencyBadge level={c.urgency} />
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDeleteComplaint(c.id); }}
@@ -813,18 +871,7 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
                     </div>
                   </div>
 
-                  <div
-                    style={{
-                      fontSize: 10,
-                      color: clr.hint,
-                      marginBottom: 10,
-                      fontWeight: 600,
-
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
+                  <div style={{ fontSize: 10, color: clr.hint, marginBottom: 10, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {c.category} · {c.date}
                   </div>
 
@@ -834,94 +881,32 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
                   </div>
 
                   {/* Repost Count */}
-                  <div
-                    style={{
-                      marginTop: 10,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "8px 10px",
-                      borderRadius: radius.sm,
-                      background:
-                        selectedComplaint?.id === c.id
-                          ? "rgba(176,137,104,0.08)"
-                          : "#FFFDF9",
-                      border: `1px solid ${clr.border}`,
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 7,
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: "50%",
-                          background: clr.primaryLight,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke={clr.primary}
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
+                  <div style={{
+                    marginTop: 10, display: "flex", alignItems: "center", justifyContent: "space-between",
+                    padding: "8px 10px", borderRadius: radius.sm,
+                    background: selectedComplaint?.id === c.id ? "rgba(176,137,104,0.08)" : "#FFFDF9",
+                    border: `1px solid ${clr.border}`,
+                    flexWrap: "wrap", gap: 6,
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: clr.primaryLight, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={clr.primary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="17 1 21 5 17 9" />
                           <path d="M3 11V9a4 4 0 014-4h14" />
                           <polyline points="7 23 3 19 7 15" />
                           <path d="M21 13v2a4 4 0 01-4 4H3" />
                         </svg>
                       </div>
-
                       <div>
-                        <div
-                          style={{
-                            fontSize: 10,
-                            fontWeight: 800,
-                            color: clr.hint,
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
-                          }}
-                        >
-                          Reposts
-                        </div>
-
-                        <div
-                          style={{
-                            fontSize: 14,
-                            fontWeight: 800,
-                            color: clr.text,
-                            marginTop: 1,
-                          }}
-                        >
-                          {c.reposts || 0}
-                        </div>
+                        <div style={{ fontSize: 10, fontWeight: 800, color: clr.hint, textTransform: "uppercase", letterSpacing: "0.5px" }}>Reposts</div>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: clr.text, marginTop: 1 }}>{c.reposts || 0}</div>
                       </div>
                     </div>
-
                     {c.reposts > 0 && (
-                      <span
-                        style={{
-                          fontSize: 10,
-                          fontWeight: 700,
-                          padding: "4px 8px",
-                          borderRadius: 999,
-                          background: "#F5ECE3",
-                          color: clr.primary,
-                          border: `1px solid ${clr.accent2}`,
-                        }}
-                      >
+                      <span style={{
+                        fontSize: 10, fontWeight: 700, padding: "4px 8px", borderRadius: 999,
+                        background: "#F5ECE3", color: clr.primary, border: `1px solid ${clr.accent2}`,
+                      }}>
                         Community Supported
                       </span>
                     )}
@@ -931,112 +916,33 @@ background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
                     <div style={{ fontSize: 11, color: clr.success, marginTop: 7, fontWeight: 600 }}>📎 {c.evidence}</div>
                   )}
 
-                  {/* Replace every occurrence of c.replies / selectedComplaint.replies with this block.
-   This will show:
-   - MLA replies
-   - Employee replies
-   - Public comments from Home page discussion
-*/}
-
+                  {/* Updates & Public Discussion */}
                   <div style={{ marginTop: 10 }}>
-                    <div
-                      style={{
-                        fontSize: 9,
-                        fontWeight: 800,
-                        color: clr.hint,
-                        marginBottom: 5,
-                        textTransform: "uppercase",
-                        letterSpacing: "0.6px",
-                      }}
-                    >
+                    <div style={{ fontSize: 9, fontWeight: 800, color: clr.hint, marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.6px" }}>
                       Updates & Public Discussion
                     </div>
-
                     <div style={{ maxHeight: 160, overflowY: "auto" }}>
-                      {(
-                        c.comments || // public comments from home page
-                        c.replies ||  // MLA/Employee replies
-                        []
-                      ).length > 0 ? (
+                      {(c.comments || c.replies || []).length > 0 ? (
                         (c.comments || c.replies || []).map((reply, i) => (
-                          <div
-                            key={i}
-                            style={{
-                              fontSize: 11,
-                              background: "#FFFDF9",
-                              border: `1px solid ${clr.border}`,
-                              borderRadius: 7,
-                              padding: "8px 10px",
-                              marginBottom: 6,
-                              fontWeight: 500,
-                            }}
-                          >
-                            {/* Name + Role */}
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 6,
-                                marginBottom: 4,
-                              }}
-                            >
-                              <strong style={{ color: clr.primary }}>
-                                {reply.username || reply.from || "Anonymous"}
-                              </strong>
-
-                              <span
-                                style={{
-                                  fontSize: 9,
-                                  fontWeight: 700,
-                                  padding: "2px 6px",
-                                  borderRadius: 999,
-                                  background:
-                                    (reply.role || "").toLowerCase() === "mla"
-                                      ? "#EEF2FF"
-                                      : (reply.role || "").toLowerCase() === "employee"
-                                        ? "#ECFDF5"
-                                        : "#FFF7ED",
-                                  color:
-                                    (reply.role || "").toLowerCase() === "mla"
-                                      ? "#4338CA"
-                                      : (reply.role || "").toLowerCase() === "employee"
-                                        ? "#065F46"
-                                        : "#9A3412",
-                                }}
-                              >
+                          <div key={i} style={{ fontSize: 11, background: "#FFFDF9", border: `1px solid ${clr.border}`, borderRadius: 7, padding: "8px 10px", marginBottom: 6, fontWeight: 500 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
+                              <strong style={{ color: clr.primary }}>{reply.username || reply.from || "Anonymous"}</strong>
+                              <span style={{
+                                fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 999,
+                                background: (reply.role || "").toLowerCase() === "mla" ? "#EEF2FF" : (reply.role || "").toLowerCase() === "employee" ? "#ECFDF5" : "#FFF7ED",
+                                color: (reply.role || "").toLowerCase() === "mla" ? "#4338CA" : (reply.role || "").toLowerCase() === "employee" ? "#065F46" : "#9A3412",
+                              }}>
                                 {reply.role || "Citizen"}
                               </span>
                             </div>
-
-                            {/* Comment Text */}
-                            <div style={{ color: clr.text, lineHeight: 1.5 }}>
-                              {reply.text}
-                            </div>
-
-                            {/* Date */}
+                            <div style={{ color: clr.text, lineHeight: 1.5 }}>{reply.text}</div>
                             {reply.createdAt && (
-                              <div
-                                style={{
-                                  fontSize: 9,
-                                  color: clr.hint,
-                                  marginTop: 4,
-                                }}
-                              >
-                                {new Date(reply.createdAt).toLocaleString()}
-                              </div>
+                              <div style={{ fontSize: 9, color: clr.hint, marginTop: 4 }}>{new Date(reply.createdAt).toLocaleString()}</div>
                             )}
                           </div>
                         ))
                       ) : (
-                        <span
-                          style={{
-                            fontSize: 10,
-                            color: clr.hint,
-                            fontWeight: 500,
-                          }}
-                        >
-                          No updates yet
-                        </span>
+                        <span style={{ fontSize: 10, color: clr.hint, fontWeight: 500 }}>No updates yet</span>
                       )}
                     </div>
                   </div>
