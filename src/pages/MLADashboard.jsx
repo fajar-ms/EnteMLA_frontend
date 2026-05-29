@@ -193,6 +193,17 @@ export default function MlaComplaintDashboard() {
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [comment, setComment] = useState("");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
 
   const [filters, setFilters] = useState({
     urgency: "",
@@ -370,35 +381,145 @@ export default function MlaComplaintDashboard() {
 
   return (
     <div style={{ minHeight: "100vh", background: clr.bg, fontFamily: font.body, color: clr.text }}>
-      <header style={{ background: clr.paper, borderBottom: `1px solid ${clr.border}`, padding: "0 32px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: `1px solid ${clr.borderLight}`, fontSize: 12, color: clr.muted }}>
-          <span>Government of Kerala · MLA Constituency Dashboard</span>
-          <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-            {users.length > 0 && <span>{users.length} Citizens Registered</span>}
-            <span>{filteredComplaints.length} of {totalComplaints} Active Cases Shown</span>
-          </div>
-        </div>
+     
+{/* ── HEADER ── */}
+<div
+  style={{
+    background: clr.paper,
+    borderBottom: `1px solid ${clr.border}`,
+    padding: isMobile ? "16px" : "18px 32px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: isMobile ? "flex-start" : "center",
+    flexDirection: isMobile ? "column" : "row",
+    gap: isMobile ? 16 : 0,
+  }}
+>
+  {/* LEFT */}
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: 14,
+    }}
+  >
+    {/* LOGO */}
+    <div
+      style={{
+        width: 52,
+        height: 52,
+        borderRadius: 14,
+        background: clr.primary,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0 6px 18px rgba(26,107,175,0.25)",
+        flexShrink: 0,
+      }}
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#ffffff"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M3 21h18" />
+        <path d="M5 21V7l7-4 7 4v14" />
+        <path d="M9 10h.01" />
+        <path d="M15 10h.01" />
+        <path d="M9 14h.01" />
+        <path d="M15 14h.01" />
+      </svg>
+    </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 0" }}>
-          <div>
-            <h1 style={{ fontFamily: font.display, fontSize: 30, margin: 0, fontWeight: 700, color: clr.text }}>
-              Complaint Registry
-            </h1>
-            <p style={{ margin: "4px 0 0", fontSize: 13, color: clr.muted }}>
-              Constituency Scope: <b style={{ color: clr.primary }}>Isolated Profile</b>
-            </p>
-          </div>
+    {/* TITLE */}
+    <div>
+      <h1
+        style={{
+          margin: 0,
+          fontSize: isMobile ? 22 : 30,
+          fontFamily: font.display,
+          color: clr.text,
+          fontWeight: 700,
+          lineHeight: 1.1,
+        }}
+      >
+        MLA Complaint Dashboard
+      </h1>
 
-          <button
-            onClick={handleLogout}
-            style={{ padding: "8px 16px", background: "transparent", border: `1px solid ${clr.accent}`, color: clr.accent, borderRadius: 4, cursor: "pointer", fontWeight: 600, fontSize: 13, transition: "0.2s" }}
-          >
-            Sign Out
-          </button>
-        </div>
-      </header>
+      <p
+        style={{
+          margin: "6px 0 0",
+          color: clr.muted,
+          fontSize: 13,
+          fontWeight: 500,
+        }}
+      >
+        Constituency Administration Portal
+      </p>
+    </div>
+  </div>
 
-      <main style={{ padding: "24px 32px" }}>
+  {/* RIGHT BUTTONS */}
+  <div
+    style={{
+      display: "flex",
+      gap: 12,
+      width: isMobile ? "100%" : "auto",
+    }}
+  >
+    <a
+      href="/"
+      style={{
+        flex: isMobile ? 1 : "unset",
+        textDecoration: "none",
+        padding: "10px 16px",
+        borderRadius: 8,
+        border: `1px solid ${clr.border}`,
+        background: clr.paper,
+        color: clr.textMid,
+        fontSize: 13,
+        fontWeight: 700,
+        display: "flex",
+
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+      }}
+    >
+      Home
+    </a>
+
+    <button
+      onClick={handleLogout}
+      style={{
+        flex: isMobile ? 1 : "unset",
+        padding: "10px 16px",
+        borderRadius: 8,
+        border: "none",
+        background: clr.accent,
+        color: "#fff",
+        fontSize: 13,
+        fontWeight: 700,
+        cursor: "pointer",
+      }}
+    >
+      Logout
+    </button>
+  </div>
+</div>
+
+
+
+      <main
+  style={{
+    padding: isMobile ? "16px" : "24px 32px",
+  }}
+>
         {error && (
           <div style={{ padding: 14, background: clr.accentLight, color: clr.accent, border: `1px solid ${clr.accent}`, borderRadius: 4, marginBottom: 20, fontSize: 14 }}>
             {error}
@@ -406,7 +527,14 @@ export default function MlaComplaintDashboard() {
         )}
 
         {/* Stats Grid */}
-        <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+        <div
+  style={{
+    display: "grid",
+    gridTemplateColumns: isMobile ? "1fr" : "repeat(5, 1fr)",
+    gap: 16,
+    marginBottom: 24,
+  }}
+>
           <StatCard label="Total Complaints" value={totalComplaints} color={clr.primary}  icon={<FaClipboardList />} />
           <StatCard label="Urgent Issues" value={urgentIssues} color={clr.accent} icon={<FaExclamationCircle />}  />
           <StatCard label="Pending" value={pendingCount} color={clr.warning} icon={<FaClock />} />
@@ -420,7 +548,19 @@ export default function MlaComplaintDashboard() {
         </div>
 
         {/* Dynamic Filters Bar */}
-        <div style={{ background: clr.paper, border: `1px solid ${clr.border}`, borderRadius: 6, padding: "16px 20px", marginBottom: 24, display: "flex", gap: 16, alignItems: "flex-end" }}>
+        <div
+  style={{
+    background: clr.paper,
+    border: `1px solid ${clr.border}`,
+    borderRadius: 6,
+    padding: "16px 20px",
+    marginBottom: 24,
+    display: "grid",
+    gridTemplateColumns: isMobile ? "1fr" : "repeat(5, 1fr)",
+    gap: 16,
+    alignItems: "flex-end",
+  }}
+>
           <div style={{ flex: 1 }}>
             <label style={labelSt}>Urgency</label>
             <select value={filters.urgency} onChange={(e) => setFilter("urgency", e.target.value)} style={selectSt}>
@@ -475,7 +615,7 @@ export default function MlaComplaintDashboard() {
         <div>
 
           {/* Complaints Table Container */}
-          <div style={{ flex: 1, background: clr.card, border: `1px solid ${clr.border}`, borderRadius: 6, overflow: "hidden" }}>
+          <div style={{ flex: 1, background: clr.card, border: `1px solid ${clr.border}`, borderRadius: 6, overflow: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: 13 }}>
               <thead>
                 <tr style={{ background: clr.paper, borderBottom: `1px solid ${clr.border}`, color: clr.muted, fontWeight: 600 }}>
