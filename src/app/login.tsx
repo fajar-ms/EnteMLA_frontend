@@ -78,7 +78,7 @@ const LoginPage = () => {
                 endpoint = '/auth/employee/login';
                 payload = { employeeId: identifier, password };
             }
-
+console.log("API:", process.env.EXPO_PUBLIC_API_BASE_URL);
             const response = await axios.post(
                 `${process.env.EXPO_PUBLIC_API_BASE_URL}${endpoint}`,
                 payload
