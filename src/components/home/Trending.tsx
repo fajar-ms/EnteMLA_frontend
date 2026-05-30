@@ -49,16 +49,23 @@ const Trending = () => {
     };
 
     const fetchComplaints = async () => {
-        try {
-            const response = await axios.get(
-                `${process.env.EXPO_PUBLIC_API_BASE_URL}/complaints/public`
-            );
-            setComplaints(response.data);
-        } catch (error) {
-            console.error("Error fetching complaints:", error);
-        } finally {
-            setLoading(false);
-        }
+    try {
+        const url = `${process.env.EXPO_PUBLIC_API_BASE_URL}/complaints/public`;
+
+        console.log("API URL =", process.env.EXPO_PUBLIC_API_BASE_URL);
+        console.log("Request URL =", url);
+
+        const response = await axios.get(url);
+
+        setComplaints(response.data);
+    } catch (error: any) {
+        console.log("Status:", error.response?.status);
+        console.log("URL:", error.config?.url);
+        console.log("Response:", error.response?.data);
+        console.error(error);
+    } finally {
+        setLoading(false);
+    }
     };
 
     const showCustomPopup = (message: string) => {
