@@ -1,0 +1,545 @@
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  Modal,
+  Image,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import axios from "axios";
+
+// ==================== TYPES ====================
+
+interface User {
+  _id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  district?: string;
+  constituencyId?: string;
+  place?: string;
+}
+
+interface Complaint {
+  id: string;
+  _id?: string;
+  title: string;
+  category: string;
+  urgency: string;
+  details?: string;
+  status: string;
+  date: string;
+  rejectionReasons?: any[];
+  replies?: any[];
+  comments?: any[];
+  reposts?: number;
+}
+
+// ==================== COLORS & STYLES ====================
+
+const clr = {
+  bg: "#E8F4FB",
+  card: "#FFFFFF",
+  border: "#C8DFF0",
+  text: "#0D2137",
+  muted: "#2A5F80",
+  hint: "#5A9BB8",
+  primary: "#1A6BAF",
+  primaryLight: "#D6EDF8",
+  danger: "#D9534F",
+  success: "#1A8A5A",
+  accent1: "#1A7AB5",
+  accent2: "#B8D9EE",
+};
+
+const radius = { sm: 10, md: 14, lg: 20 };
+
+export default function CitizenDashboard() {
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // Form States
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
+  const [urgency, setUrgency] = useState("");
+  const [details, setDetails] = useState("");
+  const [visibility, setVisibility] = useState("Public");
+
+  // Logout
+  const handleLogout = () => {
+    Alert.alert("Logout", "Are you sure?", [
+      { text: "Cancel" },
+      { text: "Logout", onPress: () => console.log("Logged out") },
+    ]);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const token = "your-token-here"; // Replace with AsyncStorage.getItem('token')
+
+        const userRes = await fetch("http://localhost:3001/users/me/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const userData: User = await userRes.json();
+        setUser(userData);
+
+        const compRes = await fetch("http://localhost:3001/complaints/my-complaints", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const compData = await compRes.json();
+
+        if (Array.isArray(compData)) {
+          setComplaints(
+            compData.map((c: any) => ({
+              ...c,
+              id: c._id,
+              date: new Date(c.createdAt).toLocaleDateString(),
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleAddComplaint = async () => {
+    if (!title || !category || !urgency || !details) {
+      Alert.alert("Error", "Please fill all required fields");
+      return;
+    }
+
+    const payload = {
+      title,
+      category: category === "Other" ? customCategory : category,
+      urgency,
+      details,
+      visibility,
+      citizenId: user?._id,
+    };
+
+    try {
+      const res = await fetch("http://localhost:3001/complaints", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const newComplaint = await res.json();
+        const formatted = {
+          ...newComplaint,
+          id: newComplaint._id,
+          date: new Date().toLocaleDateString(),
+        };
+
+        setComplaints((prev) => [formatted, ...prev]);
+        setTitle(""); 
+        setCategory(""); 
+        setDetails(""); 
+        setUrgency(""); 
+        setCustomCategory("");
+        setSubmitSuccess(true);
+        setTimeout(() => setSubmitSuccess(false), 3000);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Submission failed");
+    }
+  };
+
+  const handleDeleteComplaint = (id: string) => {
+    Alert.alert("Delete Complaint", "Are you sure?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await fetch(`http://localhost:3001/complaints/${id}`, { method: "DELETE" });
+            setComplaints((prev) => prev.filter((c) => c.id !== id));
+            if (selectedComplaint?.id === id) setSelectedComplaint(null);
+          } catch (err) {
+            Alert.alert("Error", "Failed to delete complaint");
+          }
+        },
+      },
+    ]);
+  };
+
+  const filteredComplaints = complaints.filter((c) =>
+    c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.id.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={clr.primary} />
+        <Text style={{ marginTop: 10 }}>Loading...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.logoContainer}>
+          <View style={styles.logo}>
+            <Icon name="home" size={24} color="#fff" />
+          </View>
+          <View>
+            <Text style={styles.appTitle}>Citizen Dashboard</Text>
+            <Text style={styles.subtitle}>MLA Portal • Civic Complaint System</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+          <Icon name="sign-out" size={16} color={clr.text} />
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Profile + Track Section */}
+      <View style={styles.row}>
+        {/* Profile Card */}
+        <View style={styles.card}>
+          <Text style={styles.label}>My Profile</Text>
+          <View style={styles.profileRow}>
+            <View style={styles.avatar}>
+              <Text style={styles.initials}>
+                {user?.name?.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) || "??"}
+              </Text>
+            </View>
+            <View>
+              <Text style={styles.name}>{user?.name}</Text>
+              <Text style={styles.userId}>ID: {user?._id}</Text>
+            </View>
+          </View>
+
+          <View style={styles.profileDetails}>
+            {[
+              { icon: "envelope", val: user?.email },
+              { icon: "phone", val: user?.phone },
+              { icon: "map-marker", val: user?.district },
+              { icon: "building", val: user?.constituencyId },
+            ].map((item, i) => (
+              <View key={i} style={styles.detailRow}>
+                <Icon name={item.icon} size={14} color={clr.accent1} />
+                <Text style={styles.detailText}>{item.val || "N/A"}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Track Complaint Card */}
+        <View style={styles.card}>
+          <Text style={styles.label}>Track Complaint</Text>
+          <View style={styles.searchContainer}>
+            <Icon name="search" size={16} color={clr.hint} style={{ marginRight: 8 }} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search by ID or title…"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+
+          <View style={styles.trackDetailsBox}>
+            {selectedComplaint ? (
+              <View>
+                <Text style={styles.complaintTitle}>{selectedComplaint.title}</Text>
+                <Text style={styles.complaintMeta}>
+                  ID: {selectedComplaint.id} • {selectedComplaint.category} • {selectedComplaint.date}
+                </Text>
+
+                <View style={styles.badgesRow}>
+                  <StatusBadge status={selectedComplaint.status} />
+                  <UrgencyBadge level={selectedComplaint.urgency} />
+                </View>
+
+                {selectedComplaint.details && (
+                  <View style={styles.detailsBox}>
+                    <Text style={styles.detailsText}>{selectedComplaint.details}</Text>
+                  </View>
+                )}
+              </View>
+            ) : (
+              <Text style={styles.noSelection}>Select a complaint to view details</Text>
+            )}
+          </View>
+        </View>
+      </View>
+
+      {/* Lodge Complaint Form */}
+      <View style={styles.card}>
+        <Text style={styles.label}>Lodge a Complaint</Text>
+
+        <TextInput style={styles.input} placeholder="Complaint Title" value={title} onChangeText={setTitle} />
+
+        <View style={styles.pickerRow}>
+          <TextInput
+            style={[styles.input, { flex: 1 }]}
+            placeholder="Category"
+            value={category}
+            onChangeText={setCategory}
+          />
+          <TextInput
+            style={[styles.input, { flex: 1 }]}
+            placeholder="Urgency"
+            value={urgency}
+            onChangeText={setUrgency}
+          />
+        </View>
+
+        <TextInput
+          style={[styles.input, { height: 100, textAlignVertical: "top" }]}
+          placeholder="Describe the issue in detail..."
+          multiline
+          value={details}
+          onChangeText={setDetails}
+        />
+
+        <TouchableOpacity style={styles.submitBtn} onPress={handleAddComplaint}>
+          <Text style={styles.submitText}>Submit Complaint</Text>
+          <Icon name="paper-plane" size={16} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
+      {/* My Complaints */}
+      <View style={styles.card}>
+        <Text style={styles.label}>My Complaints ({filteredComplaints.length})</Text>
+
+        <FlatList
+          data={filteredComplaints}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[styles.complaintCard, selectedComplaint?.id === item.id && styles.selectedCard]}
+              onPress={() => setSelectedComplaint(item)}
+            >
+              <View style={styles.complaintHeader}>
+                <Text style={styles.cardTitle} numberOfLines={2}>{item.title}</Text>
+                <TouchableOpacity onPress={() => handleDeleteComplaint(item.id)}>
+                  <Icon name="trash" size={18} color={clr.danger} />
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.cardMeta}>
+                {item.category} • {item.date}
+              </Text>
+
+              <View style={styles.statusRow}>
+                <StatusBadge status={item.status} />
+                <UrgencyBadge level={item.urgency} />
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+
+      {/* Image Modal */}
+      <Modal visible={false} transparent animationType="fade">
+        {/* Add image modal logic if needed */}
+      </Modal>
+    </ScrollView>
+  );
+}
+
+// ==================== HELPER COMPONENTS ====================
+
+const UrgencyBadge = ({ level }: { level: string }) => {
+  const colors: any = {
+    Urgent: { bg: "#FFF1F2", color: "#BE123C" },
+    Medium: { bg: "#FFFBEB", color: "#92400E" },
+    Normal: { bg: "#ECFDF5", color: "#065F46" },
+  };
+  const s = colors[level] || colors.Normal;
+
+  return (
+    <View style={[styles.badge, { backgroundColor: s.bg }]}>
+      <Text style={[styles.badgeText, { color: s.color }]}>{level}</Text>
+    </View>
+  );
+};
+
+const StatusBadge = ({ status }: { status: string }) => {
+  const colors: any = {
+    Submitted: { bg: "#EEF2FF", color: "#4338CA" },
+    Resolved: { bg: "#ECFDF5", color: "#065F46" },
+    Rejected: { bg: "#FFF1F2", color: "#BE123C" },
+  };
+  const s = colors[status] || { bg: "#F1F5F9", color: "#64748B" };
+
+  return (
+    <View style={[styles.badge, { backgroundColor: s.bg }]}>
+      <Text style={[styles.badgeText, { color: s.color }]}>{status}</Text>
+    </View>
+  );
+};
+
+// ==================== STYLES ====================
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#EAF5FC", padding: 16 },
+
+  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 },
+  logoContainer: { flexDirection: "row", alignItems: "center", gap: 12 },
+  logo: {
+    width: 50,
+    height: 50,
+    borderRadius: 12,
+    backgroundColor: "#1A6BAF",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  appTitle: { fontSize: 20, fontWeight: "800", color: clr.text },
+  subtitle: { fontSize: 12, color: clr.hint },
+
+  logoutBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: "#fff",
+    borderWidth: 1.5,
+    borderColor: clr.border,
+  },
+  logoutText: { fontWeight: "700", fontSize: 14 },
+
+  row: { marginBottom: 16 },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: radius.lg,
+    padding: 18,
+    marginBottom: 16,
+    borderWidth: 1.5,
+    borderColor: clr.border,
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: clr.accent1,
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+    marginBottom: 12,
+  },
+
+  profileRow: { flexDirection: "row", alignItems: "center", gap: 16, marginVertical: 12 },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#D6EDF8",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  initials: { fontSize: 22, fontWeight: "800", color: "#0D4F73" },
+  name: { fontSize: 18, fontWeight: "800" },
+  userId: { fontSize: 12, color: clr.hint, marginTop: 4 },
+
+  profileDetails: { marginTop: 8 },
+  detailRow: { flexDirection: "row", alignItems: "center", gap: 10, marginVertical: 6 },
+  detailText: { fontSize: 13, color: clr.muted },
+
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    borderWidth: 1.5,
+    borderColor: clr.border,
+  },
+  searchInput: { flex: 1, paddingVertical: 10, fontSize: 14 },
+
+  trackDetailsBox: { minHeight: 180, justifyContent: "center" },
+  complaintTitle: { fontSize: 16, fontWeight: "800", marginBottom: 6 },
+  complaintMeta: { fontSize: 12, color: clr.hint, marginBottom: 12 },
+  badgesRow: { flexDirection: "row", gap: 10 },
+  detailsBox: { marginTop: 12, padding: 12, backgroundColor: "#F9F9F9", borderRadius: 10 },
+  detailsText: { fontSize: 13, lineHeight: 20 },
+
+  input: {
+    borderWidth: 1.5,
+    borderColor: "#E6D5C3",
+    borderRadius: radius.sm,
+    padding: 12,
+    fontSize: 14,
+    marginBottom: 12,
+    backgroundColor: "#FFFDF9",
+  },
+  pickerRow: { flexDirection: "row", gap: 10 },
+
+  submitBtn: {
+    backgroundColor: clr.primary,
+    padding: 14,
+    borderRadius: radius.sm,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 10,
+    marginTop: 10,
+  },
+  submitText: { color: "#fff", fontWeight: "700", fontSize: 15 },
+
+  complaintCard: {
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: clr.border,
+    marginBottom: 12,
+  },
+  selectedCard: {
+    borderColor: clr.primary,
+    backgroundColor: "#D6EDF8",
+  },
+  complaintHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
+  cardTitle: { fontSize: 15, fontWeight: "700", flex: 1, marginRight: 10 },
+  cardMeta: { fontSize: 12, color: clr.hint, marginVertical: 6 },
+  statusRow: { flexDirection: "row", gap: 8, marginTop: 8 },
+
+  badge: {
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 20,
+  },
+  badgeText: {
+    fontSize: 11,
+    fontWeight: "700",
+  },
+
+  noSelection: { textAlign: "center", color: clr.hint, fontStyle: "italic" },
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: clr.bg,
+  },
+});

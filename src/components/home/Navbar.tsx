@@ -52,8 +52,8 @@ const Navbar = () => {
         if (role === 'citizen') router.push('/citizen');
         else if (role === 'mla') router.push('/mla');
         else if (role === 'employee') router.push('/employee');
-    };*/
-
+    };
+*/
     return (
         <View style={styles.navbar}>
             <View style={styles.container}>
