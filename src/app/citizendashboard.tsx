@@ -7,13 +7,11 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
-  Image,
   FlatList,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
-import axios from "axios";
+import { FontAwesome } from "@expo/vector-icons";
 
 // ==================== TYPES ====================
 
@@ -204,7 +202,7 @@ export default function CitizenDashboard() {
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <View style={styles.logo}>
-            <Icon name="home" size={24} color="#fff" />
+            <FontAwesome name="home" size={24} color="#fff" />
           </View>
           <View>
             <Text style={styles.appTitle}>Citizen Dashboard</Text>
@@ -213,7 +211,7 @@ export default function CitizenDashboard() {
         </View>
 
         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-          <Icon name="sign-out" size={16} color={clr.text} />
+          <FontAwesome name="sign-out" size={16} color={clr.text} />
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </View>
@@ -235,26 +233,26 @@ export default function CitizenDashboard() {
             </View>
           </View>
 
-          <View style={styles.profileDetails}>
-            {[
-              { icon: "envelope", val: user?.email },
-              { icon: "phone", val: user?.phone },
-              { icon: "map-marker", val: user?.district },
-              { icon: "building", val: user?.constituencyId },
-            ].map((item, i) => (
-              <View key={i} style={styles.detailRow}>
-                <Icon name={item.icon} size={14} color={clr.accent1} />
-                <Text style={styles.detailText}>{item.val || "N/A"}</Text>
-              </View>
-            ))}
-          </View>
+         <View style={styles.profileDetails}>
+          {[
+            { icon: "envelope", val: user?.email },
+            { icon: "phone", val: user?.phone },
+            { icon: "map-marker", val: user?.district },
+            { icon: "building", val: user?.constituencyId },
+          ].map((item, i) => (
+            <View key={i} style={styles.detailRow}>
+              <FontAwesome name={item.icon as any} size={14} color={clr.accent1} />
+              <Text style={styles.detailText}>{item.val || "N/A"}</Text>
+            </View>
+          ))}
+        </View>
         </View>
 
         {/* Track Complaint Card */}
         <View style={styles.card}>
           <Text style={styles.label}>Track Complaint</Text>
           <View style={styles.searchContainer}>
-            <Icon name="search" size={16} color={clr.hint} style={{ marginRight: 8 }} />
+            <FontAwesome name="search" size={16} color={clr.hint} style={{ marginRight: 8 }} />
             <TextInput
               style={styles.searchInput}
               placeholder="Search by ID or title…"
@@ -320,7 +318,7 @@ export default function CitizenDashboard() {
 
         <TouchableOpacity style={styles.submitBtn} onPress={handleAddComplaint}>
           <Text style={styles.submitText}>Submit Complaint</Text>
-          <Icon name="paper-plane" size={16} color="#fff" />
+          <FontAwesome name="paper-plane" size={16} color="#fff" />
         </TouchableOpacity>
       </View>
 
@@ -339,7 +337,7 @@ export default function CitizenDashboard() {
               <View style={styles.complaintHeader}>
                 <Text style={styles.cardTitle} numberOfLines={2}>{item.title}</Text>
                 <TouchableOpacity onPress={() => handleDeleteComplaint(item.id)}>
-                  <Icon name="trash" size={18} color={clr.danger} />
+                  <FontAwesome name="trash" size={18} color={clr.danger} />
                 </TouchableOpacity>
               </View>
 

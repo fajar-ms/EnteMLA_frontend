@@ -48,12 +48,12 @@ const Navbar = () => {
         router.replace('/');
     };
 
-    /*const handleDashboard = () => {
-        if (role === 'citizen') router.push('/citizen');
-        else if (role === 'mla') router.push('/mla');
-        else if (role === 'employee') router.push('/employee');
+    const handleDashboard = () => {
+        if (role === 'citizen') router.push('/citizendashboard');
+        //else if (role === 'mla') router.push('/mla');
+        //else if (role === 'employee') router.push('/employee');
     };
-*/
+
     return (
         <View style={styles.navbar}>
             <View style={styles.container}>
@@ -141,10 +141,10 @@ const Navbar = () => {
                         </>
                     ) : (
                         <View style={styles.profileWrapper}>
-                          {/*  <TouchableOpacity style={styles.primaryBtn} onPress={handleDashboard}>
+                            <TouchableOpacity style={styles.primaryBtn} onPress={handleDashboard}>
                                 <Text style={styles.btnTextWhite}>Dashboard</Text>
                             </TouchableOpacity>
-*/}
+
                             <TouchableOpacity style={styles.profileBtn} onPress={() => setProfileOpen(!profileOpen)}>
                                 <View style={styles.profileIcon}>
                                     <Ionicons name="person" size={22} color="white" />
