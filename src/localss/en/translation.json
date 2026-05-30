@@ -1,0 +1,211 @@
+{
+  "welcome": "Welcome",
+  "login": "Login",
+  "home": "Home",
+  "login_get_started": "Login / Get Started",
+  "about1": "About",
+  "complaints": "Complaints",
+  "qa": "Q/A",
+  "contact": "Contact",
+  "app_name_part1": "Ente",
+  "app_name_part2": "MLA",
+  "register": "Register",
+  "gov_label": "COMMUNITY ACTION NETWORK",
+  "constituency": "Constituency",
+  "hero_title_main": "Your Voice.",
+  "hero_title_sub": "Visible Impact.",
+  "hero_description": "Where public voices transform into measurable action.",
+  "active_projects": "Active Projects",
+  "citizens_joined": "Citizens Joined",
+  "issue_resolution": "Issue Resolution",
+  "live_complaint_activity": "Smart Civic Operations",
+  "activity_1": "Citizens receive instant updates after complaint submission",
+  "activity_2": "Priority-based workflow helps resolve urgent issues faster",
+  "activity_3": "Digital workflow connecting citizens and officials",
+  "transparency_response": "Transparency & Response",
+  "response_1": "Real-time complaint tracking available",
+  "response_2": "Instant complaint acknowledgment and live status updates",
+  "smart_governance": "Smart Governance Features",
+  "smart_1": "Multi-role dashboards for citizens and officials",
+  "smart_2": "Priority-based complaint management",
+  "smart_3": "Constituency-level analytics and insights",
+  "total_complaints": "Total Complaints",
+  "in_progress": "In Progress",
+  "avg_response": "Avg Response",
+  "file_complaint": "File Complaint",
+  "civicAnalytics": "Civic Analytics",
+  "publicTransparencyDashboard": "Public Transparency Dashboard",
+  "realTime": "Real-Time",
+  "impactMetrics": "Impact Metrics",
+  "description": "Track complaint resolutions, response efficiency, and ongoing civic actions across the platform through a transparent public dashboard.",
+  "totalComplaints": "Total Complaints",
+  "resolvedIssues": "Resolved Issues",
+  "avgResponseDays": "Avg Response Days",
+  "platformOverview": "Platform Overview",
+  "platformOverviewText": "Citizens can publicly raise civic complaints, track resolution progress, and engage with authorities through transparent issue reporting.",
+  "liveComplaintStatus": "Live Complaint Status",
+  "liveStatus1": "Public complaints are monitored in real time",
+  "liveStatus2": "Resolved issues are verified and archived",
+  "liveStatus3": "Escalated complaints receive priority tracking",
+  "fileComplaint": "File Complaint",
+  "communityCivicFeed": "Community Civic Feed",
+  "trendingPublicComplaints": "Trending Public Complaints",
+  "citizen": "Citizen",
+  "noComments": "No comments yet.",
+  "send": "Send",
+  "failedToAddComment": "Failed to add comment",
+  "selectComplaint": "Select a complaint to open case file",
+  "overview": "Overview",
+  "status": "Status",
+  "progress": "Progress",
+  "closeView": "Close View",
+  "writeComment": "Write comment...",
+  "total": "Total",
+  "pending": "Pending",
+  "inProgress": "In Progress",
+  "resolved": "Resolved",
+  "normal": "Normal",
+  "medium": "Medium",
+  "urgent": "Urgent",
+  "loading": "Loading...",
+  "complaintControlDashboard": "Complaint Control Dashboard",
+  "complaintQueue": "Complaint Queue",
+  "caseFile": "Case File",
+  "discussion": "Discussion",
+  "rejected": "Rejected",
+  "title": "About EnteMLA",
+  "hero_desc": "Empowering citizens through transparent governance...",
+   "about": {
+    "hero_title": "About EnteMLA",
+    "hero_desc": "Empowering citizens through transparent governance, digital complaint tracking, and direct communication with elected representatives.",
+
+    "what_is_heading": "What is EnteMLA?",
+    "what_is_p1": "EnteMLA is a modern digital civic grievance management platform that connects citizens and their elected representatives through a unified system.",
+    "what_is_p2": "Citizens can easily register complaints, track their progress in real-time, and receive official responses and updates.",
+    "what_is_p3": "The primary goal is to improve transparency and accountability in governance.",
+
+    "why_heading": "Why We Built This Platform",
+    "why_intro": "Traditional complaint systems are often slow, unclear, and difficult for citizens to access efficiently.",
+    "why_points_title": "Major challenges faced by citizens:",
+    "why_points": [
+      "Unnecessary delays in complaint resolution",
+      "Lack of status updates and transparency",
+      "No direct communication with authorities",
+      "Difficulty tracking complaints",
+      "Lack of accountability"
+    ],
+    "why_outro": "EnteMLA was designed as a digital solution to address these governance challenges.",
+
+    "features_heading": "Key Features",
+
+    "feature_1_title": " Complaint Registration",
+    "feature_1_desc": "Citizens can submit complaints with categories, urgency levels, and detailed descriptions.",
+
+    "feature_2_title": " Real-Time Tracking",
+    "feature_2_desc": "Track complaint progress and updates instantly.",
+
+    "feature_3_title": " Direct Responses",
+    "feature_3_desc": "Receive official replies and updates directly from authorities.",
+
+    "feature_4_title": " Secure Access",
+    "feature_4_desc": "Separate and secure access for citizens, employees, and MLAs.",
+
+    "feature_5_title": " Priority Handling",
+    "feature_5_desc": "Urgent complaints are prioritized for faster resolution.",
+
+    "feature_6_title": " Public Discussion System",
+    "feature_6_desc": "Citizens can participate in transparent discussions about local issues.",
+
+    "how_heading": "How EnteMLA Works",
+
+    "step1_title": "Register & Login",
+    "step1_desc": "Citizens securely create accounts and access the platform.",
+
+    "step2_title": "Submit Complaint",
+    "step2_desc": "Users submit complaints with categories and detailed information.",
+
+    "step3_title": "Authority Review",
+    "step3_desc": "Complaints are reviewed and forwarded to the responsible department.",
+
+    "step4_title": "Track & Resolve",
+    "step4_desc": "Citizens receive updates until the complaint is fully resolved.",
+
+    "roles_heading": "User Roles",
+    "role_citizen": "Citizen: Submit and track complaints.",
+    "role_employee": "Employee: Manage and resolve complaints.",
+    "role_mla": "MLA: Monitor and oversee the overall system.",
+
+    "vision_heading": "Our Vision",
+    "vision_p1": "Our vision is to create a transparent governance system where every citizen’s voice is heard and addressed efficiently.",
+    "vision_p2": "We aim to strengthen trust between citizens and governance through technology and innovation.",
+
+    "future_heading": "Future Enhancements",
+    "future_1": "AI-powered complaint categorization",
+    "future_2": "Multilingual platform support",
+    "future_3": "Mobile application integration",
+    "future_4": "Analytics dashboard for governance insights",
+    "future_5": "Smart notification and escalation systems"
+  },
+  
+  "community_qa": "Community Q&A",
+  "qa_subtitle": "Ask anything about local governance.",
+
+  "type_question": "Type your question here...",
+  "ask": "Ask",
+
+  "faq": "FAQ",
+  "frequently_asked_questions": "Frequently Asked Questions",
+
+  "ask_ai": "Ask AI →",
+
+  "ai_thinking": "EnteMLA AI is thinking…",
+
+  "faq_q1": "How can I submit a complaint?",
+  "faq_a1": "You can submit a complaint through the Complaint Portal by providing details and selecting the category.",
+
+  "faq_q2": "How long does it take to resolve a complaint?",
+  "faq_a2": "Most complaints are addressed within 48 hours depending on severity and department workload.",
+
+  "faq_q3": "Can I track my complaint status?",
+  "faq_a3": "Yes, you can track your complaint using the unique tracking ID provided after submission.",
+
+  "contact_hero_title": "Citizen–Government Communication Portal",
+  "contact_hero_desc": "Access MLA offices and important government department contacts across Kerala constituencies.",
+
+  "constituencies": "Constituencies",
+  "search_constituency": "Search constituency...",
+
+  "mla": "MLA",
+  "office": "Office",
+  "phone": "Phone",
+  "email": "Email",
+  "hours": "Hours",
+
+  "government_departments": "Government Departments",
+
+  "department_location": "Location",
+  "department_phone": "Phone",
+  "department_email": "Email",
+  "department_hours": "Hours",
+  
+  "pwd": "Public Works Department (PWD)",
+  "pwd_desc": "Roads, bridges, infrastructure maintenance",
+
+  "water": "Water Supply & Sanitation",
+  "water_desc": "Drinking water, drainage issues",
+
+  "electricity": "Electricity Board",
+  "electricity_desc": "Power supply, outages, maintenance",
+
+  "health": "Health & Welfare",
+  "health_desc": "Hospitals, medical assistance",
+
+  "education": "Education Department",
+  "education_desc": "Schools, scholarships, student support",
+
+  "admin": "Local Administration",
+  "admin_desc": "Public services, civic management",
+  "show_more": "Show More",
+  "show_less": "Show Less"
+
+}
