@@ -50,8 +50,8 @@ const Navbar = () => {
 
     const handleDashboard = () => {
         if (role === 'citizen') router.push('/citizendashboard');
-        //else if (role === 'mla') router.push('/mla');
-        //else if (role === 'employee') router.push('/employee');
+        else if (role === 'mla') router.push('/mladashboard');
+        else if (role === 'employee') router.push('/employedashboard');
     };
 
     return (
