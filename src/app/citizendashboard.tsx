@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from 'expo-router';
+import { Picker } from '@react-native-picker/picker';
 
 import {
   View,
   Text,
+  Image,
   TextInput,
   ScrollView,
   TouchableOpacity,
@@ -78,6 +80,9 @@ export default function CitizenDashboard() {
   const [urgency, setUrgency] = useState("");
   const [details, setDetails] = useState("");
   const [visibility, setVisibility] = useState("Public");
+  const [file, setFile] = useState(null);
+const [previewImage, setPreviewImage] = useState(null);
+const [imageModal, setImageModal] = useState(false);
 
   // Logout
   
@@ -141,22 +146,30 @@ console.log("TOKEN =", token);
       return;
     }
 
-    const payload = {
-      title,
-      category: category === "Other" ? customCategory : category,
-      urgency,
-      details,
-      visibility,
-      citizenId: user?._id,
-    };
+   const payload = {
+  title,
+  category: category === "Other" ? customCategory : category,
+  urgency,
+  details,
+  visibility: visibility || "Public",
+  citizenId: user?._id,
+};
 
     try {
-      const res = await fetch( "http://10.144.180.158:3001/complaints", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
 
+      const token = await AsyncStorage.getItem("token");
+
+const res = await fetch(
+  "http://10.144.180.158:3001/complaints",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  }
+);
       if (res.ok) {
         const newComplaint = await res.json();
         const formatted = {
@@ -199,9 +212,18 @@ console.log("TOKEN =", token);
   };
 
   const filteredComplaints = complaints.filter((c) =>
-    c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    c.id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  c.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  c.id?.toLowerCase().includes(searchQuery.toLowerCase())
+);
+useEffect(() => {
+  if (searchQuery.trim() === "") {
+    return;
+  }
+
+  if (filteredComplaints.length > 0) {
+    setSelectedComplaint(filteredComplaints[0]);
+  }
+}, [searchQuery, complaints]);
 
   if (loading) {
     return (
@@ -264,79 +286,171 @@ console.log("TOKEN =", token);
         </View>
         </View>
 
-        {/* Track Complaint Card */}
-        <View style={styles.card}>
-          <Text style={styles.label}>Track Complaint</Text>
-          <View style={styles.searchContainer}>
-            <FontAwesome name="search" size={16} color={clr.hint} style={{ marginRight: 8 }} />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search by ID or title…"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-          </View>
+       {/* Track Complaint Card */}
+{/* Track Complaint Card */}
+<View style={styles.card}>
+  <Text style={styles.label}>Track Complaint</Text>
+  
+  <View style={styles.searchContainer}>
+    <FontAwesome name="search" size={16} color={clr.hint} style={{ marginRight: 8 }} />
+    <TextInput
+      style={styles.searchInput}
+      placeholder="Search by ID or title…"
+      value={searchQuery}
+      onChangeText={setSearchQuery}
+    />
+  </View>
 
-          <View style={styles.trackDetailsBox}>
-            {selectedComplaint ? (
-              <View>
-                <Text style={styles.complaintTitle}>{selectedComplaint.title}</Text>
-                <Text style={styles.complaintMeta}>
-                  ID: {selectedComplaint.id} • {selectedComplaint.category} • {selectedComplaint.date}
-                </Text>
+  <View style={styles.trackDetailsBox}>
+    {selectedComplaint ? (
+      <ScrollView style={{ maxHeight: 280 }} showsVerticalScrollIndicator={false}>
+        <Text style={styles.complaintTitle}>{selectedComplaint.title}</Text>
+        <Text style={styles.complaintMeta}>
+          ID: {selectedComplaint.id} • {selectedComplaint.category} • {selectedComplaint.date}
+        </Text>
 
-                <View style={styles.badgesRow}>
-                  <StatusBadge status={selectedComplaint.status} />
-                  <UrgencyBadge level={selectedComplaint.urgency} />
-                </View>
-
-                {selectedComplaint.details && (
-                  <View style={styles.detailsBox}>
-                    <Text style={styles.detailsText}>{selectedComplaint.details}</Text>
-                  </View>
-                )}
-              </View>
-            ) : (
-              <Text style={styles.noSelection}>Select a complaint to view details</Text>
-            )}
-          </View>
+        <View style={styles.badgesRow}>
+          <StatusBadge status={selectedComplaint.status} />
+          <UrgencyBadge level={selectedComplaint.urgency} />
         </View>
+
+        {selectedComplaint.details && (
+          <View style={styles.detailsBox}>
+            <Text style={styles.detailsText}>{selectedComplaint.details}</Text>
+          </View>
+        )}
+
+        <TouchableOpacity 
+          style={styles.clearSelectionBtn}
+          onPress={() => setSelectedComplaint(null)}
+        >
+          <Text style={{ color: clr.hint, fontSize: 13, fontWeight: "600" }}>
+            Clear Selection
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    ) : (
+      <Text style={styles.noSelection}>
+        Tap on any complaint from below to see full details here
+      </Text>
+    )}
+  </View>
+</View>
       </View>
 
       {/* Lodge Complaint Form */}
-      <View style={styles.card}>
-        <Text style={styles.label}>Lodge a Complaint</Text>
+      {/* ── LODGE COMPLAINT FORM ── */}
+<View style={styles.complaintFormCard}>
+  {/* Header */}
+  <View style={styles.formHeader}>
+    <View>
+      <Text style={styles.label}>Lodge a Complaint</Text>
+      <Text style={styles.formSubtitle}>
+        Fill in the details and submit your civic issue
+      </Text>
+    </View>
 
-        <TextInput style={styles.input} placeholder="Complaint Title" value={title} onChangeText={setTitle} />
-
-        <View style={styles.pickerRow}>
-          <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Category"
-            value={category}
-            onChangeText={setCategory}
-          />
-          <TextInput
-            style={[styles.input, { flex: 1 }]}
-            placeholder="Urgency"
-            value={urgency}
-            onChangeText={setUrgency}
-          />
-        </View>
-
-        <TextInput
-          style={[styles.input, { height: 100, textAlignVertical: "top" }]}
-          placeholder="Describe the issue in detail..."
-          multiline
-          value={details}
-          onChangeText={setDetails}
-        />
-
-        <TouchableOpacity style={styles.submitBtn} onPress={handleAddComplaint}>
-          <Text style={styles.submitText}>Submit Complaint</Text>
-          <FontAwesome name="paper-plane" size={16} color="#fff" />
-        </TouchableOpacity>
+    {submitSuccess && (
+      <View style={styles.successBadge}>
+        <View style={styles.successDot} />
+        <Text style={styles.successText}>Submitted successfully</Text>
       </View>
+    )}
+  </View>
+
+  {/* Form Fields */}
+  <TextInput
+    style={styles.input}
+    placeholder="Complaint Title (e.g. Street light not working)"
+    value={title}
+    onChangeText={setTitle}
+  />
+
+  <View style={styles.pickerRow}>
+    {/* Category */}
+    <View style={{ flex: 1 }}>
+      <Text style={styles.fieldLabel}>Category</Text>
+      <Picker
+        selectedValue={category}
+        onValueChange={(itemValue) => setCategory(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Select..." value="" />
+        <Picker.Item label="Electricity" value="Electricity" />
+        <Picker.Item label="Roads & Infrastructure" value="Roads & Infrastructure" />
+        <Picker.Item label="Sanitation" value="Sanitation" />
+        <Picker.Item label="Water Supply" value="Water" />
+        <Picker.Item label="Other" value="Other" />
+      </Picker>
+      {category === "Other" && (
+        <TextInput
+          style={[styles.input, { marginTop: 8 }]}
+          placeholder="Enter custom category"
+          value={customCategory}
+          onChangeText={setCustomCategory}
+        />
+      )}
+    </View>
+
+    {/* Urgency */}
+    <View style={{ flex: 1 }}>
+      <Text style={styles.fieldLabel}>Urgency</Text>
+      <Picker
+        selectedValue={urgency}
+        onValueChange={setUrgency}
+        style={styles.picker}
+      >
+        <Picker.Item label="Select..." value="" />
+        <Picker.Item label="Normal" value="Normal" />
+        <Picker.Item label="Medium" value="Medium" />
+        <Picker.Item label="Urgent" value="Urgent" />
+      </Picker>
+    </View>
+  </View>
+
+  {/* Visibility */}
+  <View style={{ marginBottom: 12 }}>
+    <Text style={styles.fieldLabel}>Visibility</Text>
+    <Picker
+      selectedValue={visibility}
+      onValueChange={setVisibility}
+      style={styles.picker}
+    >
+      <Picker.Item label="Select..." value="" />
+      <Picker.Item label="Public" value="Public" />
+      <Picker.Item label="Private" value="Private" />
+    </Picker>
+  </View>
+
+  {/* Details */}
+  <Text style={styles.fieldLabel}>Complaint Details</Text>
+  <TextInput
+    style={[styles.input, { height: 110, textAlignVertical: "top" }]}
+    placeholder="Describe the issue — location, duration, impact..."
+    multiline
+    value={details}
+    onChangeText={setDetails}
+  />
+
+  {/* Upload + Submit Row */}
+  <View style={styles.uploadSubmitRow}>
+    <TouchableOpacity style={styles.uploadBtn} onPress={() => {/* Open file picker logic */}}>
+      <FontAwesome name="upload" size={16} color={clr.accent1} />
+      <Text style={styles.uploadText}>Upload Evidence</Text>
+    </TouchableOpacity>
+
+    {file && previewImage && (
+      <TouchableOpacity onPress={() => setImageModal(true)}>
+        <Image source={{ uri: previewImage }} style={styles.previewImage} />
+      </TouchableOpacity>
+    )}
+
+    <TouchableOpacity style={styles.submitBtn} onPress={handleAddComplaint}>
+      <Text style={styles.submitText}>Submit Complaint</Text>
+      <FontAwesome name="paper-plane" size={16} color="#fff" />
+    </TouchableOpacity>
+  </View>
+</View>
 
       {/* My Complaints */}
       <View style={styles.card}>
@@ -556,4 +670,118 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: clr.bg,
   },
+  complaintFormCard: {
+  backgroundColor: "#fff",
+  borderRadius: radius.lg,
+  padding: 18,
+  marginBottom: 16,
+  borderWidth: 1.5,
+  borderColor: clr.border,
+  shadowColor: "#000",
+  shadowOpacity: 0.06,
+  shadowRadius: 12,
+  elevation: 4,
+},
+
+formHeader: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  marginBottom: 20,
+},
+
+formSubtitle: {
+  fontSize: 12,
+  color: clr.hint,
+  fontWeight: "500",
+},
+
+successBadge: {
+  flexDirection: "row",
+  alignItems: "center",
+  backgroundColor: "#ECFDF5",
+  paddingHorizontal: 14,
+  paddingVertical: 6,
+  borderRadius: 99,
+  borderWidth: 1,
+  borderColor: "#A7F3D0",
+  gap: 6,
+},
+
+successDot: {
+  width: 8,
+  height: 8,
+  borderRadius: 4,
+  backgroundColor: clr.success,
+},
+
+successText: {
+  fontSize: 12,
+  fontWeight: "700",
+  color: clr.success,
+},
+
+fieldLabel: {
+  fontSize: 13,
+  fontWeight: "600",
+  color: clr.muted,
+  marginBottom: 6,
+},
+
+picker: {
+  backgroundColor: "#FFFDF9",
+  borderWidth: 1.5,
+  borderColor: "#E6D5C3",
+  borderRadius: radius.sm,
+  padding: 12,
+  fontSize: 14,
+},
+
+uploadSubmitRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  marginTop: 10,
+},
+
+uploadBtn: {
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 8,
+  paddingHorizontal: 16,
+  paddingVertical: 12,
+  borderWidth: 1.5,
+  borderColor: clr.accent2,
+  borderStyle: "dashed",
+  borderRadius: radius.sm,
+  backgroundColor: "#F5ECE3",
+},
+
+uploadText: {
+  fontSize: 13,
+  fontWeight: "600",
+  color: clr.muted,
+},
+
+previewImage: {
+  width: 50,
+  height: 50,
+  borderRadius: radius.sm,
+  borderWidth: 2,
+  borderColor: clr.accent2,
+},
+clearBtn: {
+  marginTop: 12,
+  alignSelf: "flex-start",
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+},
+clearSelectionBtn: {
+  marginTop: 15,
+  paddingVertical: 8,
+  paddingHorizontal: 14,
+  alignSelf: "flex-start",
+  borderRadius: 8,
+  backgroundColor: "#f1f5f9",
+},
 });

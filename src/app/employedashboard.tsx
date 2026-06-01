@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
   Text,
@@ -101,23 +102,51 @@ export default function EmployeeComplaintDashboard() {
   const [actionLoading, setActionLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    // TODO: Add your auth check here
-    fetchComplaints();
-  }, []);
+ useEffect(() => {
+  fetchComplaints();
+}, []);
 
-  const fetchComplaints = async () => {
-    try {
-      // Replace with your actual API call
-      // const token = await AsyncStorage.getItem('token');
-      // const res = await fetch(`${API_URL}/complaints/employee`, { headers: { Authorization: `Bearer ${token}` } });
-      // const data = await res.json();
-      setComplaints([]); // Replace with real data
-    } catch (err) {
-      console.error(err);
-      Alert.alert('Error', 'Failed to load complaints');
+const API_URL = "http://10.144.180.158:3001"; // your backend IP
+
+const fetchComplaints = async () => {
+  try {
+    const token = await AsyncStorage.getItem("token");
+
+    const res = await fetch(
+      `${API_URL}/complaints/employee`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await res.json();
+
+    if (!Array.isArray(data)) {
+      setComplaints([]);
+      return;
     }
-  };
+
+    setComplaints(
+      data.map((c: any) => ({
+        ...c,
+        id: c._id || c.id,
+        userName: c.citizenId?.name || "Unknown Citizen",
+        urgency: c.urgency || "Normal",
+        status: c.status || "Pending",
+        date: c.createdAt
+          ? new Date(c.createdAt).toLocaleDateString()
+          : "-",
+        details: c.details,
+        reposts: c.reposts || 0,
+      }))
+    );
+  } catch (err) {
+    console.error(err);
+    Alert.alert("Error", "Failed to load complaints");
+  }
+};
 
   const refreshComplaints = async () => {
     setRefreshing(true);
