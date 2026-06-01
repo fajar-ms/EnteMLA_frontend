@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useRouter } from 'expo-router';
+
 import {
   View,
   Text,
@@ -12,6 +14,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // ==================== TYPES ====================
 
@@ -66,6 +69,7 @@ export default function CitizenDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const router = useRouter();
 
   // Form States
   const [title, setTitle] = useState("");
@@ -76,28 +80,40 @@ export default function CitizenDashboard() {
   const [visibility, setVisibility] = useState("Public");
 
   // Logout
-  const handleLogout = () => {
-    Alert.alert("Logout", "Are you sure?", [
-      { text: "Cancel" },
-      { text: "Logout", onPress: () => console.log("Logged out") },
-    ]);
-  };
-
+  
+  // ← Add this near your other hooks
+ const handleLogout = async () => {
+        await AsyncStorage.multiRemove(['user', 'role', 'token']);
+        setUser(null);
+        
+        router.replace('/');
+    };
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const token = "your-token-here"; // Replace with AsyncStorage.getItem('token')
+        const token = await AsyncStorage.getItem("token");
 
-        const userRes = await fetch("http://localhost:3001/users/me/profile", {
+console.log("TOKEN =", token);
+ // Replace with AsyncStorage.getItem('token')
+ if (!token) {
+      Alert.alert("Error", "No token found");
+      return;
+    }
+
+        const userRes = await fetch("http://10.144.180.158:3001/users/me/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
+          console.log("Status:", userRes.status);
         const userData: User = await userRes.json();
         setUser(userData);
 
-        const compRes = await fetch("http://localhost:3001/complaints/my-complaints", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+       const compRes = await fetch(
+  "http://10.144.180.158:3001/complaints/my-complaints",
+  {
+    headers: { Authorization: `Bearer ${token}` },
+  }
+);
         const compData = await compRes.json();
 
         if (Array.isArray(compData)) {
@@ -135,7 +151,7 @@ export default function CitizenDashboard() {
     };
 
     try {
-      const res = await fetch("http://localhost:3001/complaints", {
+      const res = await fetch( "http://10.144.180.158:3001/complaints", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
