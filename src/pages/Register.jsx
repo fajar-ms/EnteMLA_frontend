@@ -38,6 +38,7 @@ const constituencyMap = {
     { value: "aluva", label: "Aluva" },
     { value: "kalamassery", label: "Kalamassery" },
     { value: "thrippunithura", label: "Thrippunithura" },
+    { value: "kochi", label: "Kochi" }
   ],
   thrissur: [
     { value: "guruvayur", label: "Guruvayur" },
