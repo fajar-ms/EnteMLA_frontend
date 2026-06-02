@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from 'expo-router';
 import {
   View,
   Text,
@@ -90,12 +92,18 @@ export default function MlaComplaintDashboard() {
   const insets = useSafeAreaInsets();
 
   const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [urgencyFilter, setUrgencyFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
   const [comment, setComment] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [showUrgencyModal, setShowUrgencyModal] = useState(false);
+const [showStatusModal, setShowStatusModal] = useState(false);
+const router = useRouter();
 
   const [filters, setFilters] = useState({
     urgency: '',
@@ -109,16 +117,53 @@ export default function MlaComplaintDashboard() {
   }, []);
 
   const fetchData = async () => {
-    setLoading(true);
-    try {
-      // TODO: Replace with your actual API + AsyncStorage
+  setLoading(true);
+  try {
+    const token = await AsyncStorage.getItem("token");
+
+    const API_URL = "http://10.144.180.158:3001";
+
+    const res = await fetch(`${API_URL}/complaints/employee`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await res.json();
+
+    console.log("API RESPONSE:", data);
+
+    if (!Array.isArray(data)) {
       setComplaints([]);
-    } catch (err) {
-      setError('Could not connect to server');
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
+
+    setComplaints(
+      data.map((c: any) => ({
+        id: c._id || c.id,
+        userName: c.citizenId?.name || "Unknown",
+        title: c.title,
+        category: c.category,
+        ward: c.ward,
+        urgency: c.urgency || "Normal",
+        status: c.status || "Pending",
+        date: c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "-",
+        reposts: c.reposts || 0,
+        details: c.details,
+        description: c.description,
+        comment: c.comment,
+      }))
+    );
+
+  } catch (err) {
+    console.log("FETCH ERROR:", err);
+    setError("Could not connect to server");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const refreshData = async () => {
     setRefreshing(true);
@@ -133,18 +178,45 @@ export default function MlaComplaintDashboard() {
   const clearFilters = () => {
     setFilters({ urgency: '', category: '', ward: '', status: '' });
   };
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.multiRemove(['user', 'role', 'token']);
+      router.replace('/');
+    } catch (err) {
+      Alert.alert('Error', 'Logout failed');
+    }
+  };
 
-  const filteredComplaints = useMemo(() => {
-    return complaints
-      .filter(c => !filters.urgency || c.urgency === filters.urgency)
-      .filter(c => !filters.category || c.category === filters.category)
-      .filter(c => !filters.ward || c.ward === filters.ward)
-      .filter(c => !filters.status || c.status === filters.status)
-      .sort((a, b) => {
-        const urgencyScore = (u: string) => (u === 'Urgent' ? 1 : u === 'Medium' ? 2 : 3);
-        return urgencyScore(a.urgency) - urgencyScore(b.urgency) || (b.reposts || 0) - (a.reposts || 0);
-      });
-  }, [complaints, filters]);
+ const filteredComplaints = useMemo(() => {
+  return complaints
+    // SEARCH FILTER
+    .filter(c => {
+      const q = search.toLowerCase();
+      return (
+        !q ||
+        c.userName?.toLowerCase().includes(q) ||
+        c.title?.toLowerCase().includes(q) ||
+        c.category?.toLowerCase().includes(q)
+      );
+    })
+
+    // URGENCY FILTER
+    .filter(c => !urgencyFilter || c.urgency === urgencyFilter)
+
+    // STATUS FILTER
+    .filter(c => !statusFilter || c.status === statusFilter)
+
+    // SORT
+    .sort((a, b) => {
+      const urgencyScore = (u: string) =>
+        u === 'Urgent' ? 1 : u === 'Medium' ? 2 : 3;
+
+      return (
+        urgencyScore(a.urgency) - urgencyScore(b.urgency) ||
+        (b.reposts || 0) - (a.reposts || 0)
+      );
+    });
+}, [complaints, search, urgencyFilter, statusFilter]);
 
   const totalComplaints = complaints.length;
   const urgentIssues = complaints.filter(c => c.urgency === 'Urgent').length;
@@ -187,19 +259,17 @@ export default function MlaComplaintDashboard() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.brand}>
-            <View style={styles.logo}>
-              <MaterialIcons name="account-balance" size={28} color="#fff" />
-            </View>
+            
             <View>
               <Text style={styles.headerTitle}>MLA Complaint Dashboard</Text>
               <Text style={styles.subtitle}>Constituency Portal</Text>
             </View>
           </View>
 
-          <TouchableOpacity style={styles.logoutBtn}>
-            <MaterialIcons name="logout" size={24} color="#fff" />
+          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+            <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
-        </View>
+                  </View>
 
         {/* Stats */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.statsScroll}>
@@ -209,34 +279,50 @@ export default function MlaComplaintDashboard() {
           <StatCard label="Resolved" value={resolvedCount} color={clr.success} icon="check-circle" />
           <StatCard label="Trending" value={trendingComplaints} color={clr.gold} icon="repeat" />
         </ScrollView>
+<View style={styles.filterContainer}>
+  
+  {/* Search */}
+  <TextInput
+    style={styles.searchInput}
+    placeholder="Search by citizen, title or category..."
+    value={search}
+    onChangeText={setSearch}
+  />
 
-        {/* Filters */}
-        <View style={styles.filterContainer}>
-          {/* Add more filter fields as needed */}
-          <View style={styles.filterRow}>
-            <View style={styles.filterItem}>
-              <Text style={styles.filterLabel}>Urgency</Text>
-              <View style={styles.picker}>
-                <TextInput style={styles.pickerText} value={filters.urgency || 'All'} editable={false} />
-                <MaterialIcons name="arrow-drop-down" size={24} color="#666" />
-              </View>
-            </View>
+  {/* Filters Row */}
+  <View style={styles.pickerRow}>
 
-            <View style={styles.filterItem}>
-              <Text style={styles.filterLabel}>Status</Text>
-              <View style={styles.picker}>
-                <TextInput style={styles.pickerText} value={filters.status || 'All'} editable={false} />
-                <MaterialIcons name="arrow-drop-down" size={24} color="#666" />
-              </View>
-            </View>
-          </View>
+    {/* Urgency Filter */}
+    <TouchableOpacity
+      style={styles.select}
+      onPress={() => setShowUrgencyModal(true)}
+    >
+      <Text style={styles.selectText}>
+        {urgencyFilter || "All Urgency"}
+      </Text>
+      <MaterialIcons name="arrow-drop-down" size={24} color="#7ABCD6" />
+    </TouchableOpacity>
 
-          {Object.values(filters).some(Boolean) && (
-            <TouchableOpacity style={styles.clearBtn} onPress={clearFilters}>
-              <Text style={styles.clearText}>Clear Filters</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+    {/* Status Filter */}
+    <TouchableOpacity
+      style={styles.select}
+      onPress={() => setShowStatusModal(true)}
+    >
+      <Text style={styles.selectText}>
+        {statusFilter || "All Status"}
+      </Text>
+      <MaterialIcons name="arrow-drop-down" size={24} color="#7ABCD6" />
+    </TouchableOpacity>
+  </View>
+
+  {/* Count */}
+  <Text style={styles.countText}>
+    <Text style={{ fontWeight: "800", color: '#1D1E22', }}>
+      {filteredComplaints.length}
+    </Text>{" "}
+    of {complaints.length} records
+  </Text>
+</View>
 
         {/* Complaints List */}
         <FlatList
@@ -261,6 +347,66 @@ export default function MlaComplaintDashboard() {
           ListEmptyComponent={<Text style={styles.emptyText}>No complaints found</Text>}
         />
       </ScrollView>
+<Modal visible={showUrgencyModal} transparent animationType="fade">
+  <TouchableOpacity
+    style={styles.modalOverlay}
+    onPress={() => setShowUrgencyModal(false)}
+  >
+    <View style={styles.dropdown}>
+      
+      <TouchableOpacity onPress={() => { setUrgencyFilter(""); setShowUrgencyModal(false); }}>
+        <Text style={styles.dropdownItem}>All Urgency</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setUrgencyFilter("Urgent"); setShowUrgencyModal(false); }}>
+        <Text style={styles.dropdownItem}>Urgent</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setUrgencyFilter("Medium"); setShowUrgencyModal(false); }}>
+        <Text style={styles.dropdownItem}>Medium</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setUrgencyFilter("Normal"); setShowUrgencyModal(false); }}>
+        <Text style={styles.dropdownItem}>Normal</Text>
+      </TouchableOpacity>
+
+    </View>
+  </TouchableOpacity>
+</Modal>
+
+<Modal visible={showStatusModal} transparent animationType="fade">
+  <TouchableOpacity
+    style={styles.modalOverlay}
+    onPress={() => setShowStatusModal(false)}
+  >
+    <View style={styles.dropdown}>
+
+      <TouchableOpacity onPress={() => { setStatusFilter(""); setShowStatusModal(false); }}>
+        <Text style={styles.dropdownItem}>All Status</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setStatusFilter("Pending"); setShowStatusModal(false); }}>
+        <Text style={styles.dropdownItem}>Pending</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setStatusFilter("In Progress"); setShowStatusModal(false); }}>
+        <Text style={styles.dropdownItem}>In Progress</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setStatusFilter("Resolved"); setShowStatusModal(false); }}>
+        <Text style={styles.dropdownItem}>Resolved</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setStatusFilter("Rejected"); setShowStatusModal(false); }}>
+        <Text style={styles.dropdownItem}>Rejected</Text>
+      </TouchableOpacity>
+
+    </View>
+  </TouchableOpacity>
+</Modal>
+
+
+
 
       {/* Detail Modal */}
       <Modal visible={!!selectedComplaint} animationType="slide">
@@ -340,6 +486,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  searchInput: {
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: clr.border,
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 15,
+    marginBottom: 12,
+  },
   brand: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   logo: {
     width: 50,
@@ -351,7 +506,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: { color: '#fff', fontSize: 20, fontWeight: '700' },
   subtitle: { color: '#B0D4F0', fontSize: 12 },
-  logoutBtn: { padding: 8 },
+  
 
   statsScroll: { padding: 12 },
   statCard: {
@@ -443,4 +598,64 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   emptyText: { textAlign: 'center', marginTop: 50, color: clr.muted, fontSize: 16 },
+  countText: {
+  marginTop: 10,
+  fontSize: 12,
+  color: '#6B7C93',
+  fontWeight: "600",
+},
+
+modalOverlay: {
+  flex: 1,
+  backgroundColor: "rgba(0,0,0,0.3)",
+  justifyContent: "center",
+  alignItems: "center",
+},
+
+dropdown: {
+  width: 220,
+  backgroundColor: "#fff",
+  borderRadius: 12,
+  padding: 10,
+  elevation: 5,
+},
+
+dropdownItem: {
+  padding: 12,
+  fontSize: 15,
+  borderBottomWidth: 1,
+  borderBottomColor: "#eee",
+},
+
+select: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  flex: 1,
+  backgroundColor: "#fff",
+  borderWidth: 1,
+  borderColor: clr.border,
+  borderRadius: 10,
+  padding: 12,
+  marginHorizontal: 4,
+},
+pickerRow: { flexDirection: 'row', gap: 12 },
+
+selectText: {
+  fontSize: 14,
+  color:'#1D1E22',
+},
+logoutBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: "#fff",
+    borderWidth: 1.5,
+    borderColor: "#C8DFF0",
+  },
+  logoutText: { fontWeight: "700", fontSize: 14 },
+  
 });
