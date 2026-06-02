@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from 'expo-router';
 import {
   View,
   Text,
@@ -101,6 +102,10 @@ export default function EmployeeComplaintDashboard() {
   const [replies, setReplies] = useState<Record<string, string>>({});
   const [actionLoading, setActionLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
+  const [showUrgencyModal, setShowUrgencyModal] = useState(false);
+const [showStatusModal, setShowStatusModal] = useState(false);
+  
 
  useEffect(() => {
   fetchComplaints();
@@ -184,6 +189,14 @@ const fetchComplaints = async () => {
       Alert.alert('Error', 'Failed to send reply');
     }
   };
+ const handleLogout = async () => {
+  try {
+    await AsyncStorage.multiRemove(['user', 'role', 'token']);
+    router.replace('/');
+  } catch (err) {
+    Alert.alert('Error', 'Logout failed');
+  }
+};
 
   const filtered = useMemo(() => {
     let data = complaints.filter(c => {
@@ -216,9 +229,9 @@ const fetchComplaints = async () => {
               <Text style={styles.headerSubtitle}>Employee View</Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.logoutBtn}>
-            <MaterialIcons name="logout" size={24} color="#fff" />
-          </TouchableOpacity>
+          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+  <Text style={styles.logoutText}>Logout</Text>
+</TouchableOpacity>
         </View>
 
         {/* Stats */}
@@ -228,43 +241,51 @@ const fetchComplaints = async () => {
           <StatCard label="Medium" value={countByUrgency("Medium")} icon="info" />
           <StatCard label="Normal" value={countByUrgency("Normal")} icon="check-circle" />
         </ScrollView>
+<View style={styles.filterContainer}>
+  
+  {/* Search */}
+  <TextInput
+    style={styles.searchInput}
+    placeholder="Search by citizen, title or category..."
+    value={search}
+    onChangeText={setSearch}
+  />
 
-        {/* Filters */}
-        <View style={styles.filterContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search by citizen, title or category..."
-            value={search}
-            onChangeText={setSearch}
-          />
+  {/* Filters Row */}
+  <View style={styles.pickerRow}>
 
-          <View style={styles.pickerRow}>
-            <View style={styles.pickerWrapper}>
-              <Text style={styles.pickerLabel}>Urgency</Text>
-              <View style={styles.select}>
-                <TextInput
-                  style={styles.selectText}
-                  value={urgencyFilter || "All"}
-                  editable={false}
-                />
-                <MaterialIcons name="arrow-drop-down" size={24} color="#666" />
-              </View>
-            </View>
+    {/* Urgency Filter */}
+    <TouchableOpacity
+      style={styles.select}
+      onPress={() => setShowUrgencyModal(true)}
+    >
+      <Text style={styles.selectText}>
+        {urgencyFilter || "All Urgency"}
+      </Text>
+      <MaterialIcons name="arrow-drop-down" size={24} color="#7ABCD6" />
+    </TouchableOpacity>
 
-            <View style={styles.pickerWrapper}>
-              <Text style={styles.pickerLabel}>Status</Text>
-              <View style={styles.select}>
-                <TextInput
-                  style={styles.selectText}
-                  value={statusFilter || "All"}
-                  editable={false}
-                />
-                <MaterialIcons name="arrow-drop-down" size={24} color="#666" />
-              </View>
-            </View>
-          </View>
-        </View>
+    {/* Status Filter */}
+    <TouchableOpacity
+      style={styles.select}
+      onPress={() => setShowStatusModal(true)}
+    >
+      <Text style={styles.selectText}>
+        {statusFilter || "All Status"}
+      </Text>
+      <MaterialIcons name="arrow-drop-down" size={24} color="#7ABCD6" />
+    </TouchableOpacity>
+  </View>
 
+  {/* Count */}
+  <Text style={styles.countText}>
+    <Text style={{ fontWeight: "800", color: COLORS.textPrimary }}>
+      {filtered.length}
+    </Text>{" "}
+    of {complaints.length} records
+  </Text>
+</View>
+       
         {/* Complaint List */}
         <View style={styles.listContainer}>
           {filtered.map((c) => (
@@ -289,6 +310,63 @@ const fetchComplaints = async () => {
           ))}
         </View>
       </ScrollView>
+      {/* Urgency Filter Modal */}
+<Modal visible={showUrgencyModal} transparent animationType="fade">
+  <TouchableOpacity
+    style={styles.modalOverlay}
+    onPress={() => setShowUrgencyModal(false)}
+  >
+    <View style={styles.dropdown}>
+
+      <TouchableOpacity onPress={() => { setUrgencyFilter(""); setShowUrgencyModal(false); }}>
+        <Text style={styles.dropdownItem}>All Urgency</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setUrgencyFilter("Urgent"); setShowUrgencyModal(false); }}>
+        <Text style={styles.dropdownItem}>Urgent</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setUrgencyFilter("Medium"); setShowUrgencyModal(false); }}>
+        <Text style={styles.dropdownItem}>Medium</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setUrgencyFilter("Normal"); setShowUrgencyModal(false); }}>
+        <Text style={styles.dropdownItem}>Normal</Text>
+      </TouchableOpacity>
+
+    </View>
+  </TouchableOpacity>
+</Modal>
+<Modal visible={showStatusModal} transparent animationType="fade">
+  <TouchableOpacity
+    style={styles.modalOverlay}
+    onPress={() => setShowStatusModal(false)}
+  >
+    <View style={styles.dropdown}>
+
+      <TouchableOpacity onPress={() => { setStatusFilter(""); setShowStatusModal(false); }}>
+        <Text style={styles.dropdownItem}>All Status</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setStatusFilter("Pending"); setShowStatusModal(false); }}>
+        <Text style={styles.dropdownItem}>Pending</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setStatusFilter("In Progress"); setShowStatusModal(false); }}>
+        <Text style={styles.dropdownItem}>In Progress</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setStatusFilter("Resolved"); setShowStatusModal(false); }}>
+        <Text style={styles.dropdownItem}>Resolved</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => { setStatusFilter("Rejected"); setShowStatusModal(false); }}>
+        <Text style={styles.dropdownItem}>Rejected</Text>
+      </TouchableOpacity>
+
+    </View>
+  </TouchableOpacity>
+</Modal>
 
       {/* Detail Modal */}
       <Modal visible={!!selectedComplaint} animationType="slide">
@@ -373,7 +451,7 @@ const styles = StyleSheet.create({
   brand: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   headerTitle: { color: '#fff', fontSize: 18, fontWeight: '700' },
   headerSubtitle: { color: '#B0E0F0', fontSize: 12 },
-  logoutBtn: { padding: 8 },
+  
   statsContainer: { padding: 12 },
   statCard: {
     backgroundColor: '#fff',
@@ -483,4 +561,48 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
   },
+  logoutBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: "#fff",
+    borderWidth: 1.5,
+    borderColor: "#C8DFF0",
+  },
+  logoutText: { fontWeight: "700", fontSize: 14 },
+  countText: {
+  marginTop: 10,
+  fontSize: 12,
+  color: COLORS.textMuted,
+  fontWeight: "600",
+},
+
+modalOverlay: {
+  flex: 1,
+  backgroundColor: "rgba(0,0,0,0.3)",
+  justifyContent: "center",
+  alignItems: "center",
+},
+
+dropdown: {
+  width: 220,
+  backgroundColor: "#fff",
+  borderRadius: 12,
+  padding: 10,
+  elevation: 5,
+},
+
+dropdownItem: {
+  padding: 12,
+  fontSize: 15,
+  borderBottomWidth: 1,
+  borderBottomColor: "#eee",
+},
+
+
+
+
 });
