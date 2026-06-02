@@ -319,6 +319,39 @@ useEffect(() => {
             <Text style={styles.detailsText}>{selectedComplaint.details}</Text>
           </View>
         )}
+        {selectedComplaint.replies &&
+ selectedComplaint.replies.length > 0 && (
+  <View style={styles.detailsBox}>
+    <Text
+      style={{
+        fontWeight: "bold",
+        marginBottom: 10,
+      }}
+    >
+    Updates
+    </Text>
+
+    {selectedComplaint.replies.map(
+      (reply: any, index: number) => (
+        <View
+          key={index}
+          style={{
+            backgroundColor: "#f1f5f9",
+            padding: 10,
+            borderRadius: 8,
+            marginBottom: 8,
+          }}
+        >
+          <Text style={{ fontWeight: "600" }}>
+            {reply.username}
+          </Text>
+
+          <Text>{reply.text}</Text>
+        </View>
+      )
+    )}
+  </View>
+)}
 
         <TouchableOpacity 
           style={styles.clearSelectionBtn}

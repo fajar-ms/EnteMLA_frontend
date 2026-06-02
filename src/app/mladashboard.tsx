@@ -235,17 +235,21 @@ const router = useRouter();
     const token = await AsyncStorage.getItem("token");
     const API_URL = "http://10.144.180.158:3001";
 
-    const res = await fetch(`${API_URL}/complaints/status`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        complaintId: selectedComplaint.id,
-        status: newStatus,
-      }),
-    });
+    const res = await  fetch(
+  `${API_URL}/complaints/${selectedComplaint.id}/status`,
+  {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      status: newStatus,
+      comment: replies[selectedComplaint.id] || "",
+    }),
+  }
+);
+    
 
     const data = await res.json();
 
@@ -281,18 +285,21 @@ const router = useRouter();
     const token = await AsyncStorage.getItem("token");
     const API_URL = "http://10.144.180.158:3001";
 
-    const res = await fetch(`${API_URL}/complaints/reply`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        complaintId: selectedComplaint.id,
-        message,
-      }),
-    });
-
+    const res = await fetch(
+  `${API_URL}/complaints/${selectedComplaint.id}/reply`,
+  {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      replyText: replies[selectedComplaint.id],
+      fromRole: "MLA",
+      username: "MLA",
+    }),
+  }
+    );
     const data = await res.json();
 
     if (!res.ok) throw new Error(data.message || "Failed");
@@ -496,6 +503,35 @@ const router = useRouter();
               <Text style={styles.details}>
                 {selectedComplaint.details || selectedComplaint.description || 'No description provided.'}
               </Text>
+              <Text style={styles.sectionLabel}>Reply to Citizen</Text>
+
+<TextInput
+  style={styles.textArea}
+  multiline
+  placeholder="Type your reply here..."
+  value={replies[selectedComplaint.id] || ""}
+  onChangeText={(text) =>
+    setReplies(prev => ({
+      ...prev,
+      [selectedComplaint.id]: text,
+    }))
+  }
+/>
+
+<TouchableOpacity
+  style={{
+    backgroundColor: "#1A6BAF",
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 15,
+    alignItems: "center",
+  }}
+  onPress={handleSendReply}
+>
+  <Text style={{ color: "#fff", fontWeight: "700" }}>
+    Send Reply
+  </Text>
+</TouchableOpacity>
 
               <Text style={styles.sectionLabel}>Add Update / Remark</Text>
               <TextInput

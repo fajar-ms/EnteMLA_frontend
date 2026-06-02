@@ -167,17 +167,20 @@ const fetchComplaints = async () => {
   try {
     const token = await AsyncStorage.getItem("token");
 
-    const res = await fetch(`${API_URL}/complaints/status`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        complaintId: selectedComplaint.id,
-        status: newStatus,
-      }),
-    });
+    const res = await await fetch(
+  `${API_URL}/complaints/${selectedComplaint.id}/status`,
+  {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      status: newStatus,
+      comment: replies[selectedComplaint.id] || "",
+    }),
+  }
+);
 
     const data = await res.json();
 
@@ -212,17 +215,21 @@ const fetchComplaints = async () => {
   try {
     const token = await AsyncStorage.getItem("token");
 
-    const res = await fetch(`${API_URL}/complaints/reply`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        complaintId: selectedComplaint.id,
-        message,
-      }),
-    });
+    const res = await fetch(
+  `${API_URL}/complaints/${selectedComplaint.id}/reply`,
+  {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      replyText: replies[selectedComplaint.id],
+      fromRole: "Employee",
+      username: "Employee",
+    }),
+  }
+);
 
     const data = await res.json();
 
