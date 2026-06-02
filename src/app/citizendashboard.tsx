@@ -447,7 +447,7 @@ useEffect(() => {
 
     <TouchableOpacity style={styles.submitBtn} onPress={handleAddComplaint}>
       <Text style={styles.submitText}>Submit Complaint</Text>
-      <FontAwesome name="paper-plane" size={16} color="#fff" />
+      <FontAwesome name="paper-plane" size={13} color="#fff" />
     </TouchableOpacity>
   </View>
 </View>
@@ -624,15 +624,16 @@ const styles = StyleSheet.create({
   pickerRow: { flexDirection: "row", gap: 10 },
 
   submitBtn: {
-    backgroundColor: clr.primary,
-    padding: 14,
-    borderRadius: radius.sm,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 10,
-    marginTop: 10,
-  },
+  backgroundColor: clr.primary,
+  paddingVertical: 10,
+  paddingHorizontal: 12,
+  borderRadius: radius.sm,
+  flexDirection: "row",
+  justifyContent: "center",
+  alignItems: "center",
+  gap: 6,
+  flex: 1, // important
+},
   submitText: { color: "#fff", fontWeight: "700", fontSize: 15 },
 
   complaintCard: {
@@ -742,19 +743,21 @@ uploadSubmitRow: {
   alignItems: "center",
   justifyContent: "space-between",
   marginTop: 10,
+  gap: 10,
 },
 
 uploadBtn: {
   flexDirection: "row",
   alignItems: "center",
-  gap: 8,
-  paddingHorizontal: 16,
-  paddingVertical: 12,
-  borderWidth: 1.5,
+  gap: 6,
+  paddingHorizontal: 10,
+  paddingVertical: 8,
+  borderWidth: 1.2,
   borderColor: clr.accent2,
   borderStyle: "dashed",
   borderRadius: radius.sm,
   backgroundColor: "#F5ECE3",
+  flex: 1, // important
 },
 
 uploadText: {

@@ -160,35 +160,86 @@ const fetchComplaints = async () => {
   };
 
   const updateStatus = async (newStatus: Complaint['status']) => {
-    if (!selectedComplaint) return;
-    setActionLoading(true);
+  if (!selectedComplaint) return;
 
-    try {
-      // TODO: Add API call here
-      setComplaints(prev =>
-        prev.map(c =>
-          c.id === selectedComplaint.id ? { ...c, status: newStatus } : c
-        )
-      );
-      setSelectedComplaint(prev => prev ? { ...prev, status: newStatus } : null);
-    } catch (err) {
-      Alert.alert('Error', 'Failed to update status');
-    } finally {
-      setActionLoading(false);
-    }
-  };
+  setActionLoading(true);
 
+  try {
+    const token = await AsyncStorage.getItem("token");
+
+    const res = await fetch(`${API_URL}/complaints/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        complaintId: selectedComplaint.id,
+        status: newStatus,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message || "Failed to update");
+
+    // update UI after success
+    setComplaints(prev =>
+      prev.map(c =>
+        c.id === selectedComplaint.id ? { ...c, status: newStatus } : c
+      )
+    );
+
+    setSelectedComplaint(prev =>
+      prev ? { ...prev, status: newStatus } : null
+    );
+
+    Alert.alert("Success", `Status updated to ${newStatus}`);
+
+  } catch (err) {
+    console.log(err);
+    Alert.alert("Error", "Failed to update status");
+  } finally {
+    setActionLoading(false);
+  }
+};
   const handleSendReply = async () => {
-    if (!selectedComplaint || !replies[selectedComplaint.id]) return;
+  if (!selectedComplaint) return;
 
-    try {
-      // TODO: Add API call
-      Alert.alert('Success', 'Reply sent successfully');
-      setReplies(prev => ({ ...prev, [selectedComplaint.id]: '' }));
-    } catch (err) {
-      Alert.alert('Error', 'Failed to send reply');
-    }
-  };
+  const message = replies[selectedComplaint.id];
+  if (!message?.trim()) return;
+
+  try {
+    const token = await AsyncStorage.getItem("token");
+
+    const res = await fetch(`${API_URL}/complaints/reply`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        complaintId: selectedComplaint.id,
+        message,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message || "Failed");
+
+    Alert.alert("Success", "Reply sent to citizen");
+
+    // clear input
+    setReplies(prev => ({ ...prev, [selectedComplaint.id]: "" }));
+
+  } catch (err) {
+    console.log(err);
+    Alert.alert("Error", "Reply not sent");
+  }
+};
+
+ 
  const handleLogout = async () => {
   try {
     await AsyncStorage.multiRemove(['user', 'role', 'token']);

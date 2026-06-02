@@ -97,6 +97,7 @@ export default function MlaComplaintDashboard() {
    const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+   const [replies, setReplies] = useState<Record<string, string>>({});
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
   const [comment, setComment] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
@@ -225,25 +226,89 @@ const router = useRouter();
   const trendingComplaints = complaints.filter(c => (c.reposts || 0) >= 5).length;
 
   const isCaseClosed = selectedComplaint?.status === 'Resolved' || selectedComplaint?.status === 'Rejected';
+ const updateStatus = async (newStatus: Complaint['status']) => {
+  if (!selectedComplaint) return;
 
-  const updateStatus = async (newStatus: string) => {
-    if (!selectedComplaint) return;
-    setActionLoading(true);
+  setActionLoading(true);
 
-    try {
-      // TODO: Add API call here
-      setComplaints(prev =>
-        prev.map(c => (c.id === selectedComplaint.id ? { ...c, status: newStatus as any, comment } : c))
-      );
-      setSelectedComplaint(prev => (prev ? { ...prev, status: newStatus as any, comment } : null));
-      setComment('');
-      Alert.alert('Success', `Status updated to ${newStatus}`);
-    } catch {
-      Alert.alert('Error', 'Failed to update status');
-    } finally {
-      setActionLoading(false);
-    }
-  };
+  try {
+    const token = await AsyncStorage.getItem("token");
+    const API_URL = "http://10.144.180.158:3001";
+
+    const res = await fetch(`${API_URL}/complaints/status`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        complaintId: selectedComplaint.id,
+        status: newStatus,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message || "Failed to update");
+
+    // update UI after success
+    setComplaints(prev =>
+      prev.map(c =>
+        c.id === selectedComplaint.id ? { ...c, status: newStatus } : c
+      )
+    );
+
+    setSelectedComplaint(prev =>
+      prev ? { ...prev, status: newStatus } : null
+    );
+
+    Alert.alert("Success", `Status updated to ${newStatus}`);
+
+  } catch (err) {
+    console.log(err);
+    Alert.alert("Error", "Failed to update status");
+  } finally {
+    setActionLoading(false);
+  }
+};
+  const handleSendReply = async () => {
+  if (!selectedComplaint) return;
+
+  const message = replies[selectedComplaint.id];
+  if (!message?.trim()) return;
+
+  try {
+    const token = await AsyncStorage.getItem("token");
+    const API_URL = "http://10.144.180.158:3001";
+
+    const res = await fetch(`${API_URL}/complaints/reply`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        complaintId: selectedComplaint.id,
+        message,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message || "Failed");
+
+    Alert.alert("Success", "Reply sent to citizen");
+
+    // clear input
+    setReplies(prev => ({ ...prev, [selectedComplaint.id]: "" }));
+
+  } catch (err) {
+    console.log(err);
+    Alert.alert("Error", "Reply not sent");
+  }
+};
+
+  
 
   if (loading) {
     return (
