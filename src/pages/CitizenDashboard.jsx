@@ -354,14 +354,14 @@ export default function CitizenDashboard() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const userResponse = await fetch("http://localhost:3001/users/me/profile", {
+        const userResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/me/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!userResponse.ok) throw new Error("Unauthorized");
         const userData = await userResponse.json();
         setUser(userData);
 
-        const complaintResponse = await fetch("http://localhost:3001/complaints/my-complaints", {
+        const complaintResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints/my-complaints`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const complaintData = await complaintResponse.json();
@@ -417,7 +417,7 @@ export default function CitizenDashboard() {
       citizenId: user?._id,
     };
     try {
-      const response = await fetch("http://localhost:3001/complaints", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(complaintPayload),

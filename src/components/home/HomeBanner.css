@@ -1,0 +1,76 @@
+/* Container sizing constraint */
+.home-banner-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 16px auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+/* Force standard responsive aspect ratios instead of static pixel heights */
+.carousel-item-wrapper {
+  position: relative;
+  width: 100%;
+  background-color: #f8fafc;
+  border-radius: 16px;
+  overflow: hidden;
+  /* Default mobile aspect ratio (16:9) */
+  aspect-ratio: 16 / 9; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  /* Using contain prevents crests, logos, and emblems from clipping off-screen */
+  object-fit: contain; 
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* Elegant responsive overlay caption */
+.custom-legend {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.85) !important;
+  color: #ffffff !important;
+  padding: 8px 16px !important;
+  font-size: 14px !important;
+  font-weight: 600;
+  border-radius: 8px;
+  margin: 0;
+  white-space: nowrap;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Wide screen tablet styling changes */
+@media (min-width: 768px) {
+  .home-banner-container {
+    margin: 32px auto;
+    padding: 0 24px;
+  }
+  
+  .carousel-item-wrapper {
+    /* Slightly wider layout aspect ratio on tablets */
+    aspect-ratio: 21 / 9; 
+  }
+  
+  .custom-legend {
+    font-size: 16px !important;
+    bottom: 24px;
+  }
+}
+
+/* Desktop layout optimizations */
+@media (min-width: 1024px) {
+  .carousel-item-wrapper {
+    /* Cinema banner strip layout aspect ratio on wide monitors */
+    aspect-ratio: 3 / 1; 
+  }
+}
