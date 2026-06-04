@@ -6,6 +6,7 @@ import {
   FaPaperPlane, FaUpload, FaTrash, FaRetweet, FaFileAlt,
   FaBan, FaComments
 } from "react-icons/fa";
+import "./CitizenDashboard.css";
 
 const clr = {
   bg: "#E8F4FB",
@@ -385,6 +386,21 @@ export default function CitizenDashboard() {
     fetchData();
   }, []);
 
+  const filteredComplaints = complaints.filter(c =>
+  ((c.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (c.id || "").toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Adjust this value based on layout density goals
+
+  // Calculate Paginated Chunk
+  const totalItems = filteredComplaints.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredComplaints.slice(indexOfFirstItem, indexOfLastItem);
+
   const handleDeleteComplaint = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this complaint?");
     if (!confirmDelete) return;
@@ -435,42 +451,57 @@ export default function CitizenDashboard() {
   };
 
   // Add this near your clr, radius, and cardStyle declarations
-const typography = {
-  family: "'Plus Jakarta Sans', sans-serif",
-  
-  // Base font styles for common text types
-  body: {
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    fontSize: 18,
-    fontWeight: 500,
-  },
-  caption: {
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    fontSize: 20,
-    fontWeight: 500,
-  },
-  
-  // Section headers & labels
-  labelUppercase: {
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    fontSize: 10,
-    fontWeight: 800,
-    letterSpacing: "0.9px",
-    textTransform: "uppercase",
-  },
-  subLabelUppercase: {
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
-    fontSize: 12,
-    fontWeight: 800,
-    letterSpacing: "0.6px",
-    textTransform: "uppercase",
-  }
-};
+  const typography = {
+    family: "'Plus Jakarta Sans', sans-serif",
 
-  const filteredComplaints = complaints.filter(c =>
-    ((c.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (c.id || "").toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+    // Base font styles for common text types
+    body: {
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontSize: 18,
+      fontWeight: 500,
+    },
+    caption: {
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontSize: 20,
+      fontWeight: 500,
+    },
+
+    // Section headers & labels
+    labelUppercase: {
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontSize: 10,
+      fontWeight: 800,
+      letterSpacing: "0.9px",
+      textTransform: "uppercase",
+    },
+    subLabelUppercase: {
+      fontFamily: "'Plus Jakarta Sans', sans-serif",
+      fontSize: 12,
+      fontWeight: 800,
+      letterSpacing: "0.6px",
+      textTransform: "uppercase",
+    }
+  };
+  // 1. Move forward one page safely
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  // 2. Move backward one page safely
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+
+  // 3. Jump directly to a specific page index number
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+
 
   if (loading) {
     return (
@@ -482,40 +513,24 @@ const typography = {
 
   return (
     <>
-      <style>{fontStyle}</style>
-      <div
-        className="cd-page-wrap"
-        style={{
-          minHeight: "100vh",
-          background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
-          padding: "28px 32px",
-          color: clr.text,
-          ...typography.body, // Applied base typography to the container
-        }}
-      >
+      <div className="cd-page-wrap">
 
         {/* ── Header ── */}
         <div className="cd-header">
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }} className="cd-header-logo">
-            {/* Logo mark */}
-            <div style={{
-              width: 44, height: 44, borderRadius: radius.md, flexShrink: 0,
-              background: "linear-gradient(145deg, #EAF5FC 0%, #409ac4 50%, #C8E8F5 100%)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 4px 16px rgba(233,233,237,0.35)",
-            }}>
+          <div className="cd-header-logo">
+            <div className="cd-logo-mark">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
             </div>
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: clr.success, boxShadow: `0 0 0 3px ${clr.successBg}` }} />
-                <span style={{ ...typography.labelUppercase, color: clr.success }}>Active Session</span>
+              <div className="cd-session-badge-row">
+                <div className="cd-session-dot" />
+                <span className="cd-session-text">Active Session</span>
               </div>
-              <h1 style={{ fontFamily: typography.family, fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: "-0.5px", color: clr.text }}>Citizen Dashboard</h1>
-              <p style={{ ...typography.caption, color: clr.hint, margin: 0 }}>MLA Portal · Civic Complaint System</p>
+              <h1 className="cd-main-title">Citizen Dashboard</h1>
+              <p className="cd-sub-caption">MLA Portal · Civic Complaint System</p>
             </div>
           </div>
 
@@ -527,20 +542,7 @@ const typography = {
               </svg>
               <span className="btn-label">Home</span>
             </a>
-            <button
-              onClick={handleLogout}
-              className="cd-logout-btn"
-              style={{
-                display: "flex", alignItems: "center", gap: 8, padding: "0 18px",
-                height: 42, borderRadius: radius.md,
-                border: `1.5px solid ${clr.border}`,
-                background: clr.card, color: clr.text,
-                fontFamily: typography.family, fontSize: 12, fontWeight: 700, cursor: "pointer",
-                boxShadow: shadow, transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = clr.dangerBg; e.currentTarget.style.borderColor = "#9eb9db"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = clr.card; e.currentTarget.style.borderColor = clr.border; }}
-            >
+            <button onClick={handleLogout} className="cd-logout-btn">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
                 <polyline points="16 17 21 12 16 7" />
@@ -551,180 +553,54 @@ const typography = {
           </div>
         </div>
 
-        {/* ── ROW 1: Profile | Track Details ── */}
-        <div className="cd-row1">
-
+        {/* ── ROW 1: Profile (Now single column since tracking is a popup) ── */}
+        <div className="cd-row1 profile-only-layout">
           {/* Profile Card */}
-          <div
-            className="cd-card"
-            style={{
-              ...cardStyle,
-              position: "relative", overflow: "hidden",
-              background: "linear-gradient(135deg, #FFFFFF 60%, #f6f5f5 100%)",
-            }}
-          >
-            <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: "radial-gradient(circle, #EEF2FF, transparent 70%)", pointerEvents: "none" }} />
-            <p style={labelSt}>My Profile</p>
-            <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "16px 0 18px" }}>
-              <Avatar name={user?.name} size={56} />
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontFamily: typography.family, fontSize: 18, fontWeight: 800, lineHeight: 1.2, color: clr.text, wordBreak: "break-word" }}>{user?.name}</div>
-                <span style={{
-                  display: "inline-flex", marginTop: 6, alignItems: "center", gap: 5,
-                  fontFamily: typography.family, fontSize: 10, fontWeight: 700, color: clr.blueText,
-                  background: "#F5ECE3", padding: "3px 10px", borderRadius: 99,
-                  border: `1px solid ${clr.accent2}`,
-                  wordBreak: "break-all",
-                }}>
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="12" cy="12" r="9" /></svg>
+          <div className="cd-card cd-profile-card">
+            <div className="cd-profile-radial-deco" />
+            <p className="cd-label-heading">My Profile</p>
+            <div className="cd-profile-identity-block">
+              <Avatar name={user?.name} size={60} />
+              <div className="cd-profile-identity-text">
+                <div className="cd-user-display-name">{user?.name || "Anonymous Citizen"}</div>
+                <span className="cd-user-id-badge">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                    <circle cx="12" cy="12" r="9" />
+                  </svg>
                   ID: {user?._id || "N/A"}
                 </span>
               </div>
             </div>
-            <div style={{ borderTop: `1.5px solid ${clr.border}`, paddingTop: 16, display: "flex", flexDirection: "column", gap: 11 }}>
+
+            <div className="cd-profile-details-list">
               {[
-                { icon: <FaEnvelope size={13} color={clr.accent1} />, val: user?.email },
-                { icon: <FaPhone size={13} color={clr.accent1} />, val: user?.phone },
-                { icon: <FaMapMarkerAlt size={13} color={clr.accent1} />, val: user?.district },
-                { icon: <FaLandmark size={13} color={clr.accent1} />, val: user?.constituencyId },
-                { icon: <FaLocationArrow size={13} color={clr.accent1} />, val: user?.place }
+                { icon: <FaEnvelope size={14} />, val: user?.email, label: "Email Address" },
+                { icon: <FaPhone size={14} />, val: user?.phone, label: "Phone Number" },
+                { icon: <FaMapMarkerAlt size={14} />, val: user?.district, label: "District Region" },
+                { icon: <FaLandmark size={14} />, val: user?.constituencyId, label: "Constituency ID" },
+                { icon: <FaLocationArrow size={14} />, val: user?.place, label: "Registered Place" }
               ].map((item, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }} className="cd-profile-info-row">
-                  <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}>{item.icon}</span>
-                  <span style={{ fontFamily: typography.family, fontSize: 13, color: clr.muted, fontWeight: 500, wordBreak: "break-word", minWidth: 0 }}>{item.val || "N/A"}</span>
+                <div key={i} className="cd-profile-info-row">
+                  <span className="cd-profile-icon" title={item.label}>{item.icon}</span>
+                  <div className="cd-profile-data-column">
+                    <span className="cd-profile-data-value">{item.val || "Not Provided"}</span>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Track Details Card */}
-          <div
-            className="cd-card"
-            style={{
-              ...cardStyle,
-              background: "linear-gradient(135deg, #FFFFFF 60%, #fdfbf9 100%)",
-              display: "flex", flexDirection: "column", position: "relative", overflow: "hidden",
-            }}
-          >
-            <div style={{ position: "absolute", bottom: -20, left: -20, width: 100, height: 100, borderRadius: "50%", background: "#FFFFFF", pointerEvents: "none" }} />
-            <p style={labelSt}>Track Complaint</p>
-            <div style={{ position: "relative", margin: "14px 0 12px" }}>
-              <svg width="14" height="14" viewBox="0 0 15 15" fill="none" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}>
-                <circle cx="6.5" cy="6.5" r="5" stroke={clr.hint} strokeWidth="1.5" />
-                <path d="M10.5 10.5L13.5 13.5" stroke={clr.hint} strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-              <input type="text" placeholder="Search by ID or title…" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                style={{ ...inputBase(false), paddingLeft: 36, background: "#FFFDF9", fontFamily: typography.family }} />
-            </div>
-            <div style={{
-              flex: 1, background: "rgba(238,242,255,0.4)", backdropFilter: "blur(4px)",
-              border: `1.5px solid ${clr.border}`, borderRadius: radius.md,
-              padding: 16, minHeight: 140,
-              display: "flex", flexDirection: "column", justifyContent: selectedComplaint ? "flex-start" : "center",
-            }}>
-              {selectedComplaint ? (
-                <div>
-                  <div style={{ fontFamily: typography.family, fontSize: 15, fontWeight: 800, marginBottom: 4, color: clr.text, overflowWrap: "break-word", wordBreak: "break-word" }}>
-                    {selectedComplaint.title}
-                  </div>
-                  <div style={{ ...typography.caption, color: clr.hint, marginBottom: 12, overflowWrap: "break-word", wordBreak: "break-word" }}>
-                    ID: <strong style={{ color: clr.accent1 }}>{selectedComplaint.id}</strong> · {selectedComplaint.category} · {selectedComplaint.date}
-                  </div>
-
-                  <div style={{ height: 1, background: clr.border, marginBottom: 12 }} />
-
-                  {selectedComplaint.status === "Rejected" && selectedComplaint.rejectionReasons?.length > 0 && (
-                    <div style={{
-                      background: "#FFF1F2", border: "1.5px solid #FECDD3",
-                      borderRadius: radius.sm, padding: "12px 14px", marginBottom: "16px",
-                      borderLeft: "4px solid #E11D48", boxShadow: "0 2px 8px rgba(225,29,72,0.05)"
-                    }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                        <span style={{ display: "flex", alignItems: "center" }}><FaBan size={14} color="#BE123C" /></span>
-                        <span style={{ ...typography.labelUppercase, fontSize: "10px", color: "#9F1239", letterSpacing: "0.5px" }}>
-                          Rejection Reason
-                        </span>
-                      </div>
-                      <p style={{ margin: 0, fontFamily: typography.family, fontSize: "12px", color: "#BE123C", fontWeight: "600", lineHeight: "1.5" }}>
-                        {selectedComplaint.rejectionReasons[selectedComplaint.rejectionReasons.length - 1].text}
-                      </p>
-                      <div style={{ ...typography.labelUppercase, fontSize: "10px", color: "#FB7185", marginTop: "8px" }}>
-                        By: {selectedComplaint.rejectionReasons[0].adminName} ({selectedComplaint.rejectionReasons[0].adminRole})
-                      </div>
-                    </div>
-                  )}
-
-                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                    <div>
-                      <div style={{ ...typography.subLabelUppercase, color: clr.hint, marginBottom: 6 }}>Status</div>
-                      <StatusBadge status={selectedComplaint.status} />
-                    </div>
-                    <div>
-                      <div style={{ ...typography.subLabelUppercase, color: clr.hint, marginBottom: 6 }}>Urgency</div>
-                      <UrgencyBadge level={selectedComplaint.urgency} />
-                    </div>
-                  </div>
-
-                  {selectedComplaint.details && (
-                    <div style={{ marginTop: 12, padding: "10px 13px", background: "#fff", border: `1.5px solid ${clr.border}`, borderRadius: radius.sm }}>
-                      <p style={{ ...typography.body, fontSize: 12, color: clr.muted, margin: 0, lineHeight: 1.8, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "break-word" }}>
-                        {selectedComplaint.details}
-                      </p>
-                    </div>
-                  )}
-
-                  <div style={{ marginTop: 14 }}>
-                    <div style={{ ...typography.subLabelUppercase, color: clr.hint, marginBottom: 6 }}>
-                      Updates / MLA Replies
-                    </div>
-                    <div style={{ maxHeight: 140, overflowY: "auto" }}>
-                      {selectedComplaint.replies && selectedComplaint.replies.length > 0 ? (
-                        selectedComplaint.replies.map((r, i) => (
-                          <div key={i} style={{ ...typography.body, fontSize: 12, background: "#FFFDF9", border: `1px solid ${clr.border}`, borderRadius: 8, padding: "6px 10px", marginBottom: 6 }}>
-                            <strong style={{ color: clr.primary }}>{r.from}:</strong> {r.text}
-                          </div>
-                        ))
-                      ) : (
-                        <span style={{ ...typography.caption, color: clr.hint }}>No MLA replies yet</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#F5ECE3", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={clr.accent1} strokeWidth="1.8">
-                      <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-                    </svg>
-                  </div>
-                  <p style={{ ...typography.body, fontSize: 12, color: clr.hint, margin: 0, lineHeight: 1.8 }}>Click a complaint below<br />to view its full details</p>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
 
-        {/* ── ROW 2: Complaint Form ── */}
-        <div
-          className="cd-card"
-          style={{
-            ...cardStyle, marginBottom: 16,
-            background: "linear-gradient(160deg, #FFFFFF 70%, #faf7f3 100%)",
-            position: "relative", overflow: "hidden",
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
+        {/* ── ROW 2: Complaint Form Card ── */}
+        <div className="cd-card lodge-complaint-card">
+          <div className="cd-card-header-row">
             <div>
-              <p style={{ ...labelSt, marginBottom: 4 }}>Lodge a Complaint</p>
-              <p style={{ ...typography.body, fontSize: 12, color: clr.hint, margin: 0 }}>Fill in the details and submit your civic issue</p>
+              <p className="cd-label-heading">Lodge a Complaint</p>
+              <p className="cd-sublabel-text">Fill in the details and submit your civic issue</p>
             </div>
             {submitSuccess && (
-              <span style={{
-                fontFamily: typography.family, fontSize: 12, fontWeight: 700, color: clr.successText,
-                background: clr.successBg, padding: "6px 16px", borderRadius: 99,
-                border: "1px solid #A7F3D0", display: "flex", alignItems: "center", gap: 6,
-              }}>
-                <span style={{ width: 7, height: 7, borderRadius: "50%", background: clr.success }} />
+              <span className="cd-toast-success-badge">
+                <span className="cd-toast-dot" />
                 Submitted successfully
               </span>
             )}
@@ -733,13 +609,22 @@ const typography = {
           <form onSubmit={handleAddComplaint}>
             <div className="cd-form-grid">
               <div>
-                <label style={labelSt}>Complaint Title</label>
-                <input style={{ ...inputBase(!!errors.title), fontFamily: typography.family }} value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Street light not working" />
+                <label className="cd-label-heading">Complaint Title</label>
+                <input
+                  style={inputBase(!!errors.title)}
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  placeholder="e.g. Street light not working"
+                />
                 <FieldError msg={errors.title} />
               </div>
               <div>
-                <label style={labelSt}>Category</label>
-                <select style={{ ...inputBase(!!errors.category), fontFamily: typography.family }} value={category} onChange={e => setCategory(e.target.value)}>
+                <label className="cd-label-heading">Category</label>
+                <select
+                  style={inputBase(!!errors.category)}
+                  value={category}
+                  onChange={e => setCategory(e.target.value)}
+                >
                   <option value="">Select…</option>
                   <option>Electricity</option>
                   <option>Roads & Infrastructure</option>
@@ -748,13 +633,24 @@ const typography = {
                   <option value="Other">Other</option>
                 </select>
                 {category === "Other" && (
-                  <input type="text" placeholder="Enter custom category" value={customCategory} onChange={(e) => setCustomCategory(e.target.value)} style={{ ...inputBase(false), marginTop: 8, fontFamily: typography.family }} />
+                  <input
+                    type="text"
+                    placeholder="Enter custom category"
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    style={inputBase(false)}
+                    className="cd-custom-category-input"
+                  />
                 )}
                 <FieldError msg={errors.category} />
               </div>
               <div>
-                <label style={labelSt}>Urgency</label>
-                <select style={{ ...inputBase(!!errors.urgency), fontFamily: typography.family }} value={urgency} onChange={e => setUrgency(e.target.value)}>
+                <label className="cd-label-heading">Urgency</label>
+                <select
+                  style={inputBase(!!errors.urgency)}
+                  value={urgency}
+                  onChange={e => setUrgency(e.target.value)}
+                >
                   <option value="">Select…</option>
                   <option>Normal</option>
                   <option>Medium</option>
@@ -763,8 +659,8 @@ const typography = {
                 <FieldError msg={errors.urgency} />
               </div>
               <div>
-                <label style={labelSt}>Visibility</label>
-                <select style={{ ...inputBase(false), fontFamily: typography.family }} value={visibility} onChange={e => setVisibility(e.target.value)}>
+                <label className="cd-label-heading">Visibility</label>
+                <select style={inputBase(false)} value={visibility} onChange={e => setVisibility(e.target.value)}>
                   <option value="">Select…</option>
                   <option>Public</option>
                   <option>Private</option>
@@ -772,26 +668,51 @@ const typography = {
               </div>
             </div>
 
-            <div style={{ marginBottom: 18 }}>
-              <label style={labelSt}>Complaint Details</label>
-              <textarea rows={3} value={details} onChange={e => setDetails(e.target.value)}
+            <div className="cd-textarea-block">
+              <label className="cd-label-heading">Complaint Details</label>
+              <textarea
+                rows={4}
+                value={details}
+                onChange={e => setDetails(e.target.value)}
                 placeholder="Describe the issue — location, duration, impact…"
-                style={{ ...inputBase(!!errors.details), resize: "vertical", lineHeight: 1.7, fontFamily: typography.family }} />
+                style={inputBase(!!errors.details)}
+              />
               <FieldError msg={errors.details} />
             </div>
 
+            {file && (
+              <div className="cd-evidence-preview-panel cd-fade-in-animation">
+                <div className="cd-preview-meta-side">
+                  <div className="cd-file-icon-wrap">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A6BAF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
+                    </svg>
+                  </div>
+                  <div className="cd-preview-text-details">
+                    <span className="cd-preview-label">Staged Attachment File</span>
+                    <span className="cd-preview-filename">{file.name}</span>
+                  </div>
+                </div>
+                <div className="cd-preview-thumbnail-side" onClick={() => setImageModal(true)} title="Click to view fullscreen">
+                  <img src={previewImage} alt="Evidence attachment preview" />
+                  <div className="cd-thumbnail-overlay">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
+                      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                    </svg>
+                    <span>Expand</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="cd-form-footer">
-              <label style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                fontFamily: typography.family, fontSize: 12, color: clr.muted, fontWeight: 600,
-                border: `1.5px dashed ${clr.accent2}`, borderRadius: radius.sm,
-                padding: "8px 16px", cursor: "pointer", background: "#F5ECE3",
-                transition: "all 0.2s",
-              }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={clr.accent1} strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
+              <label className="cd-evidence-upload-trigger">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
                 </svg>
-                Upload Evidence
+                <span>{file ? "Change Evidence File" : "Upload Evidence Image"}</span>
                 <input hidden type="file" accept="image/*" onChange={(e) => {
                   const selectedFile = e.target.files[0];
                   if (selectedFile) {
@@ -801,209 +722,228 @@ const typography = {
                 }} />
               </label>
 
-              {file && (
-                <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                  <p style={{ ...typography.body, fontSize: 11, color: clr.success, margin: 0 }}>📎 {file.name}</p>
-                  <img src={previewImage} alt="Preview" onClick={() => setImageModal(true)}
-                    style={{ width: 48, height: 48, objectFit: "cover", borderRadius: radius.sm, border: `2px solid ${clr.accent2}`, cursor: "pointer", boxShadow: shadow }} />
-                </div>
-              )}
-
-              <button
-                type="submit"
-                className="cd-submit-btn"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 9, padding: "10px 26px",
-                  borderRadius: radius.sm,
-                  background: `linear-gradient(135deg, ${clr.primary})`,
-                  color: "#fff", fontFamily: typography.family, fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer",
-                  boxShadow: "0 4px 16px rgba(79,70,229,0.35)",
-                  transition: "all 0.2s",
-                }}
-                onMouseEnter={e => e.currentTarget.style.transform = "translateY(-1px)"}
-                onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
-              >
-                Submit Complaint
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>
+              <button type="submit" className="cd-submit-btn">
+                <span>Submit Complaint</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="22" y1="2" x2="11" y2="13" />
+                  <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                </svg>
               </button>
             </div>
           </form>
         </div>
 
-        {/* ── ROW 3: My Complaints ── */}
-        <div
-          className="cd-card"
-          style={{ ...cardStyle, background: "#FFFFFF", position: "relative", overflow: "hidden" }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+        {/* ── ROW 3: Complaints List View Ledger ── */}
+        <div className="complaints-card-container">
+          <div className="complaints-section-header">
             <div>
-              <p style={labelSt}>My Complaints</p>
-              <p style={{ ...typography.caption, color: clr.hint, margin: "3px 0 0" }}>{filteredComplaints.length} complaint{filteredComplaints.length !== 1 ? "s" : ""} found</p>
+              <h3 className="complaints-main-title">My Complaints Ledger</h3>
+              <p className="complaints-count-subtitle">
+                Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, totalItems)} of {totalItems} records managed
+              </p>
             </div>
           </div>
 
           {loading ? (
-            <div style={{ padding: "40px 0", textAlign: "center", color: clr.hint, fontFamily: typography.family, fontSize: 13, fontWeight: 600 }}>
-              <div style={{ width: 32, height: 32, border: `3px solid ${clr.accent2}`, borderTopColor: clr.primary, borderRadius: "50%", margin: "0 auto 12px", animation: "spin 0.8s linear infinite" }} />
-              Loading complaints…
+            <div className="complaints-loading-state">
+              <div className="complaints-spinner" />
+              <p>Retrieving updated complaint records...</p>
             </div>
-          ) : filteredComplaints.length === 0 ? (
-            <div style={{ padding: "40px 0", textAlign: "center" }}>
-              <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#F5ECE3", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={clr.accent1} strokeWidth="1.8">
-                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" />
+          ) : totalItems === 0 ? (
+            <div className="complaints-empty-state">
+              <div className="complaints-empty-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="1.8">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
                 </svg>
               </div>
-              <p style={{ fontFamily: typography.family, fontSize: 13, color: clr.hint, margin: 0, fontWeight: 600 }}>No complaints found. Submit one above.</p>
+              <p>No complaints filed under this profile. Utilize the submission portal above to start.</p>
             </div>
           ) : (
-            <div className="cd-complaints-grid">
-              {filteredComplaints.map(c => (
-                <div key={c.id} onClick={() => setSelectedComplaint(c)}
-                  style={{
-                    padding: "15px 17px",
-                    border: `1.5px solid ${selectedComplaint?.id === c.id ? clr.primary : clr.border}`,
-                    borderRadius: radius.md,
-                    background: selectedComplaint?.id === c.id
-                      ? "linear-gradient(135deg, #D6EDF8, #C0E0F5)"
-                      : "#FFFFFF",
-                    cursor: "pointer",
-                    transition: "all 0.18s",
-                    boxShadow: selectedComplaint?.id === c.id ? `0 4px 16px rgba(79,70,229,0.15)` : "none",
-                  }}
-                  onMouseEnter={e => { if (selectedComplaint?.id !== c.id) { e.currentTarget.style.borderColor = clr.accent1; e.currentTarget.style.boxShadow = shadowHover; } }}
-                  onMouseLeave={e => { if (selectedComplaint?.id !== c.id) { e.currentTarget.style.borderColor = clr.border; e.currentTarget.style.boxShadow = "none"; } }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 7 }}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <span style={{
-                        fontFamily: typography.family, fontSize: 13, fontWeight: 700, lineHeight: 1.4, color: clr.text,
-                        display: "-webkit-box", WebkitLineClamp: 2,
-                        WebkitBoxOrient: "vertical", overflow: "hidden", wordBreak: "break-word",
-                      }}>
-                        {c.title}
-                      </span>
+            <div className="complaints-list-wrapper">
+              {currentItems.map((c) => {
+                const isSelected = selectedComplaint?.id === c.id;
+                return (
+                  <div
+                    key={c.id}
+                    className={`complaint-list-row ${isSelected ? 'is-selected' : ''}`}
+                    onClick={() => setSelectedComplaint(c)}
+                  >
+                    <div className="complaint-col-meta">
+                      <span className="complaint-id">#{(c.id || "").slice(-6).toUpperCase()}</span>
+                      <span className="complaint-date">{c.date}</span>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 7, flexShrink: 0 }}>
+
+                    <div className="complaint-col-main">
+                      <h4 className="complaint-row-title">{c.title}</h4>
+                      <div className="complaint-row-subtext">
+                        <span className="complaint-category">{c.category}</span>
+                        {c.evidence && (
+                          <span className="complaint-attachment-pill" onClick={(e) => { e.stopPropagation(); setPreviewImage(c.evidence); setImageModal(true); }}>
+                            📎 View Evidence
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="complaint-col-metrics">
+                      <div className="repost-indicator" title={`${c.reposts || 0} citizen reposts`}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <polyline points="17 1 21 5 17 9" /><path d="M3 11V9a4 4 0 014-4h14" />
+                          <polyline points="7 23 3 19 7 15" /><path d="M21 13v2a4 4 0 01-4 4H3" />
+                        </svg>
+                        <span>{c.reposts || 0}</span>
+                      </div>
+                      {(c.comments || c.replies || []).length > 0 && (
+                        <div className="discussion-indicator">
+                          <span>{(c.comments || c.replies).length} updates</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="complaint-col-status">
+                      <StatusBadge status={c.status} />
                       <UrgencyBadge level={c.urgency} />
+
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDeleteComplaint(c.id); }}
-                        style={{ border: "none", background: "transparent", cursor: "pointer", padding: 3, display: "flex", alignItems: "center", borderRadius: 6, transition: "background 0.15s" }}
-                        title="Delete Complaint"
-                        onMouseEnter={e => e.currentTarget.style.background = "#FFF1F2"}
-                        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                        className="complaint-row-delete-btn"
+                        title="Delete Record permanently"
                       >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={clr.danger} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <polyline points="3 6 5 6 21 6" />
                           <path d="M19 6L18.1 19.5A2 2 0 0116.1 21H7.9A2 2 0 015.9 19.5L5 6" />
-                          <path d="M10 11V17" /><path d="M14 11V17" />
-                          <path d="M9 6V4A1 1 0 0110 3H14A1 1 0 0115 4V6" />
+                          <path d="M10 11V17M14 11V17" />
                         </svg>
                       </button>
                     </div>
                   </div>
+                );
+              })}
 
-                  <div style={{ ...typography.labelUppercase, fontSize: 10, color: clr.hint, marginBottom: 10, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {c.category} · {c.date}
+              {totalPages > 1 && (
+                <div className="complaints-pagination-nav">
+                  <button className="pag-nav-btn" disabled={currentPage === 1} onClick={handlePrevPage}>
+                    Previous
+                  </button>
+                  <div className="pag-pages-group">
+                    {Array.from({ length: totalPages }, (_, index) => {
+                      const pageNum = index + 1;
+                      return (
+                        <button
+                          key={pageNum}
+                          className={`pag-page-btn ${currentPage === pageNum ? 'is-active' : ''}`}
+                          onClick={() => handlePageChange(pageNum)}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
                   </div>
-
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <StatusBadge status={c.status} />
-                    <span style={{ fontFamily: typography.family, fontSize: 9, color: clr.accent2, fontWeight: 700, letterSpacing: "0.5px" }}>#{(c.id || "").slice(-6).toUpperCase()}</span>
-                  </div>
-
-                  {/* Repost Count */}
-                  <div style={{
-                    marginTop: 10, display: "flex", alignItems: "center", justifyContent: "space-between",
-                    padding: "8px 10px", borderRadius: radius.sm,
-                    background: selectedComplaint?.id === c.id ? "rgba(176,137,104,0.08)" : "#FFFDF9",
-                    border: `1px solid ${clr.border}`,
-                    flexWrap: "wrap", gap: 6,
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: clr.primaryLight, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={clr.primary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="17 1 21 5 17 9" />
-                          <path d="M3 11V9a4 4 0 014-4h14" />
-                          <polyline points="7 23 3 19 7 15" />
-                          <path d="M21 13v2a4 4 0 01-4 4H3" />
-                        </svg>
-                      </div>
-                      <div>
-                        <div style={{ ...typography.labelUppercase, fontSize: 10, color: clr.hint }}>Reposts</div>
-                        <div style={{ fontFamily: typography.family, fontSize: 14, fontWeight: 800, color: clr.text, marginTop: 1 }}>{c.reposts || 0}</div>
-                      </div>
-                    </div>
-                    {c.reposts > 0 && (
-                      <span style={{
-                        fontFamily: typography.family, fontSize: 10, fontWeight: 700, padding: "4px 8px", borderRadius: 999,
-                        background: "#F5ECE3", color: clr.primary, border: `1px solid ${clr.accent2}`,
-                      }}>
-                        Community Supported
-                      </span>
-                    )}
-                  </div>
-
-                  {c.evidence && (
-                    <div style={{ ...typography.body, fontSize: 11, color: clr.success, marginTop: 7, fontWeight: 600 }}>📎 {c.evidence}</div>
-                  )}
-
-                  {/* Updates & Public Discussion */}
-                  <div style={{ marginTop: 10 }}>
-                    <div style={{ ...typography.subLabelUppercase, color: clr.hint, marginBottom: 5 }}>
-                      Updates & Public Discussion
-                    </div>
-                    <div style={{ maxHeight: 160, overflowY: "auto" }}>
-                      {(c.comments || c.replies || []).length > 0 ? (
-                        (c.comments || c.replies || []).map((reply, i) => (
-                          <div key={i} style={{ ...typography.body, fontSize: 11, background: "#FFFDF9", border: `1px solid ${clr.border}`, borderRadius: 7, padding: "8px 10px", marginBottom: 6 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
-                              <strong style={{ color: clr.primary }}>{reply.username || reply.from || "Anonymous"}</strong>
-                              <span style={{
-                                fontFamily: typography.family, fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 999,
-                                background: (reply.role || "").toLowerCase() === "mla" ? "#EEF2FF" : (reply.role || "").toLowerCase() === "employee" ? "#ECFDF5" : "#FFF7ED",
-                                color: (reply.role || "").toLowerCase() === "mla" ? "#4338CA" : (reply.role || "").toLowerCase() === "employee" ? "#065F46" : "#9A3412",
-                              }}>
-                                {reply.role || "Citizen"}
-                              </span>
-                            </div>
-                            <div style={{ color: clr.text, lineHeight: 1.5 }}>{reply.text}</div>
-                            {reply.createdAt && (
-                              <div style={{ ...typography.caption, fontSize: 9, color: clr.hint, marginTop: 4 }}>{new Date(reply.createdAt).toLocaleString()}</div>
-                            )}
-                          </div>
-                        ))
-                      ) : (
-                        <span style={{ ...typography.caption, fontSize: 10 }}>No updates yet</span>
-                      )}
-                    </div>
-                  </div>
+                  <button className="pag-nav-btn" disabled={currentPage === totalPages} onClick={handleNextPage}>
+                    Next
+                  </button>
                 </div>
-              ))}
+              )}
+            </div>
+          )}
+
+          {/* Full Image Portal Lightbox */}
+          {imageModal && (
+            <div onClick={() => setImageModal(false)} className="complaint-modal-overlay">
+              <button onClick={() => setImageModal(false)} className="complaint-modal-close">×</button>
+              <img src={previewImage} alt="Verification Evidence Preview" className="complaint-modal-img" />
             </div>
           )}
         </div>
-
-        {/* Image Modal */}
-        {imageModal && (
-          <div onClick={() => setImageModal(false)} style={{
-            position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
-            background: "rgba(15,10,50,0.65)", backdropFilter: "blur(6px)",
-            display: "flex", justifyContent: "center", alignItems: "center", zIndex: 9999,
-          }}>
-            <button onClick={() => setImageModal(false)} style={{
-              position: "absolute", top: 20, right: 20,
-              background: "#fff", border: "none", borderRadius: "50%",
-              width: 42, height: 42, fontSize: 22, fontWeight: "bold", cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-            }}>×</button>
-            <img src={previewImage} alt="Full Preview" style={{
-              maxWidth: "88%", maxHeight: "88%", borderRadius: radius.lg,
-              boxShadow: "0 24px 64px rgba(0,0,0,0.4)",
-            }} />
-          </div>
-        )}
       </div>
+
+      {/* ── POPUP COMPONENT OVERLAY: Track Complaint ── */}
+      {selectedComplaint && (
+        <div className="cd-modal-backdrop zone-animation" onClick={() => setSelectedComplaint(null)}>
+          <div className="cd-popup-card-window" onClick={(e) => e.stopPropagation()}>
+            <div className="cd-track-bg-deco" />
+
+            <div className="cd-track-card-header-row">
+              <p className="cd-label-heading">Track Complaint Status</p>
+              <button className="cd-track-close-btn" onClick={() => setSelectedComplaint(null)} title="Close window">
+                ✕
+              </button>
+            </div>
+
+            {/* <div className="cd-search-input-wrapper">
+              <input
+                type="text"
+                placeholder="Search by ID or title…"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="cd-track-search-field"
+              />
+            </div> */}
+
+            <div className="cd-track-status-monitor has-content">
+              <div className="cd-monitor-inner">
+                <div className="cd-monitor-header">
+                  <h4 className="cd-monitor-title">{selectedComplaint.title}</h4>
+                  <div className="cd-monitor-meta">
+                    ID: <strong className="cd-highlight-id">{(selectedComplaint.id || "").toUpperCase()}</strong> · {selectedComplaint.category} · {selectedComplaint.date}
+                  </div>
+                </div>
+
+                <div className="cd-divider-line" />
+
+                {selectedComplaint.status === "Rejected" && selectedComplaint.rejectionReasons?.length > 0 && (
+                  <div className="cd-rejection-notice-box">
+                    <div className="cd-rejection-title-row">
+                      <FaBan size={14} color="#BE123C" />
+                      <span className="cd-rejection-alert-tag">Rejection Reason</span>
+                    </div>
+                    <p className="cd-rejection-explanation">
+                      {selectedComplaint.rejectionReasons[selectedComplaint.rejectionReasons.length - 1].text}
+                    </p>
+                    <div className="cd-rejection-attribution">
+                      By: {selectedComplaint.rejectionReasons[0].adminName} ({selectedComplaint.rejectionReasons[0].adminRole})
+                    </div>
+                  </div>
+                )}
+
+                <div className="cd-monitor-badges-row">
+                  <div className="cd-badge-group">
+                    <div className="cd-badge-tiny-label">Current Status</div>
+                    <StatusBadge status={selectedComplaint.status} />
+                  </div>
+                  <div className="cd-badge-group">
+                    <div className="cd-badge-tiny-label">Urgency Priority</div>
+                    <UrgencyBadge level={selectedComplaint.urgency} />
+                  </div>
+                </div>
+
+                {selectedComplaint.details && (
+                  <div className="cd-monitor-details-bubble">
+                    <p className="cd-monitor-details-text">{selectedComplaint.details}</p>
+                  </div>
+                )}
+
+                <div className="cd-monitor-replies-section">
+                  <div className="cd-badge-tiny-label">Official Updates / MLA Replies</div>
+                  <div className="cd-monitor-replies-scroll-zone">
+                    {selectedComplaint.replies && selectedComplaint.replies.length > 0 ? (
+                      selectedComplaint.replies.map((r, i) => (
+                        <div key={i} className="cd-reply-item-bubble">
+                          <strong className="cd-reply-author">{r.from}:</strong>
+                          <span className="cd-reply-body-text">{r.text}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <span className="cd-replies-empty-msg">No official remarks or responses recorded yet.</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
