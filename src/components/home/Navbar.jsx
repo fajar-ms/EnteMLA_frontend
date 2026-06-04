@@ -28,6 +28,11 @@ const Navbar = () => {
 
   const role = localStorage.getItem("role");
   const user = localStorage.getItem("user");
+
+  const userData = user ? JSON.parse(user) : null;
+  console.log("Role:", role);
+  console.log("User Data:", userData);
+
   const [profileOpen, setProfileOpen] = useState(false);
   const handleDashboard = () => {
     if (role === "citizen") {
@@ -190,15 +195,6 @@ const Navbar = () => {
                     >
                       Citizen
                     </Link>
-
-                    {/* <Link
-                    to="/register"
-                    onClick={() =>
-                      localStorage.setItem("role", "employee")
-                    }
-                  >
-                    Employee
-                  </Link> */}
                   </div>
                 )}
               </div>
@@ -222,8 +218,11 @@ const Navbar = () => {
                 </div>
 
                 <span className="profile-name">
-                  {JSON.parse(user)?.name || "User"}
-                </span>
+  {userData?.name ||
+   userData?.employee_name ||
+   userData?.emp_name ||
+   "User"}
+</span>
 
                 <span className="arrow">▼</span>
               </button>
@@ -231,22 +230,27 @@ const Navbar = () => {
               {profileOpen && (
                 <div className="profile-dropdown">
 
-                  <div className="profile-info">
-                    <p>
-                      <strong>
-                        {JSON.parse(user)?.name}
-                      </strong>
-                    </p>
+                 <div className="profile-info">
+  <p>
+    <strong>
+      {userData?.name ||
+       userData?.employee_name ||
+       userData?.emp_name ||
+       "User"}
+    </strong>
+  </p>
 
-                    <p>
-                      {JSON.parse(user)?.email}
-                    </p>
+  <p>
+    {userData?.email ||
+     userData?.employee_email ||
+     userData?.email_id ||
+     ""}
+  </p>
 
-                    <p className="role-text">
-                      {role?.toUpperCase()}
-                    </p>
-                  </div>
-
+  <p className="role-text">
+    {role?.toUpperCase()}
+  </p>
+</div>
                   <hr />
 
                   <button onClick={handleLogout}>
