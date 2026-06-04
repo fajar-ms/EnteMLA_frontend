@@ -554,7 +554,7 @@ export default function CitizenDashboard() {
         </div>
 
         {/* ── ROW 1: Profile (Now single column since tracking is a popup) ── */}
-        <div className="cd-row1 profile-only-layout">
+        <div className="cd-row1">
           {/* Profile Card */}
           <div className="cd-card cd-profile-card">
             <div className="cd-profile-radial-deco" />
@@ -576,12 +576,13 @@ export default function CitizenDashboard() {
               {[
                 { icon: <FaEnvelope size={14} />, val: user?.email, label: "Email Address" },
                 { icon: <FaPhone size={14} />, val: user?.phone, label: "Phone Number" },
-                { icon: <FaMapMarkerAlt size={14} />, val: user?.district, label: "District Region" },
-                { icon: <FaLandmark size={14} />, val: user?.constituencyId, label: "Constituency ID" },
-                { icon: <FaLocationArrow size={14} />, val: user?.place, label: "Registered Place" }
+                { icon: <FaMapMarkerAlt size={14} />, val: user?.district, label: "District" },
+                { icon: <FaLandmark size={14} />, val: user?.constituencyId, label: "Constituency " },
+                { icon: <FaLocationArrow size={14} />, val: user?.place, label: "Place" }
               ].map((item, i) => (
                 <div key={i} className="cd-profile-info-row">
                   <span className="cd-profile-icon" title={item.label}>{item.icon}</span>
+                  <span className="profile-label">{item.label}</span>
                   <div className="cd-profile-data-column">
                     <span className="cd-profile-data-value">{item.val || "Not Provided"}</span>
                   </div>
@@ -589,8 +590,45 @@ export default function CitizenDashboard() {
               ))}
             </div>
           </div>
-        </div>
+        <div className="cd-card cd-instructions-card">
+          <div className="instruction-header">
+            <div className="instruction-icon">
+              <FaIdBadge />
+            </div>
 
+            <div>
+              <p className="cd-label-heading">Instructions</p>
+              <div className="instruction-title-line"></div>
+            </div>
+          </div>
+
+          <div className="instruction-list">
+            {[
+              "Fill in the specified details of your problem in the respective fields.",
+              "Upload supporting evidence or documents related to your complaint.",
+              "Click Submit Complaint to register your case.",
+              "Once submitted, the complaint will be forwarded to the concerned MLA.",
+              "You can track the status of your complaint through this portal.",
+              "Visit this page regularly to view the latest updates and progress."
+            ].map((text, index) => (
+              <div key={index} className="instruction-item">
+                <div className="instruction-number">
+                  {index + 1}
+                </div>
+
+                <div className="instruction-text">
+                  {text}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="instruction-tip">
+            💡 Please provide accurate information and valid evidence to help us resolve your issue faster.
+          </div>
+        </div>
+        </div>
+              
         {/* ── ROW 2: Complaint Form Card ── */}
         <div className="cd-card lodge-complaint-card">
           <div className="cd-card-header-row">
