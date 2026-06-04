@@ -29,27 +29,32 @@ const Hero = () => {
           </p>
         </header>
 
-        <div className="hero-content-split">
-          {/* LEFT: PRIMARY ACTIONS & STATS */}
-          <section className="main-actions">
+        <div className="hero-layout">
 
-            {showMlaCard ? (
-              <MyMlaCard />
-            ) : (
-              <div className="guest-card">
-                <h3>Welcome to EnteMLA</h3>
+  {/* Top Card */}
+  <div className="top-card">
+    {showMlaCard ? (
+      <MyMlaCard />
+    ) : (
+      <div className="guest-card">
+        <h3>Welcome to EnteMLA</h3>
+        <p>
+          A transparent platform for citizens to register grievances,
+          monitor complaint progress, and strengthen communication
+          with elected representatives.
+        </p>
+      </div>
+    )}
+  </div>
 
-                <p>
-                  A transparent platform for citizens to register
-                  grievances, monitor complaint progress, and
-                  strengthen communication with elected representatives.
-                </p>
-              </div>
-            )}
+  {/* Bottom Split Section */}
+  <div className="hero-content-split">
 
-          </section>
+    {/* Left 50% */}
+    <div className="banner-side">
+      <HomeBanner />
+    </div>
 
-          <HomeBanner />
 
           <aside className="side-brief">
 
@@ -86,6 +91,7 @@ const Hero = () => {
 
         </div>
       </div>
+    </div>
     </div>
   );
 };
