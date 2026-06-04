@@ -93,7 +93,34 @@
   width: 1px; height: 60px;
   background: linear-gradient(to bottom, transparent, rgba(186, 230, 253, 0.4));
 }
+/* Strong premium glow */
+.about-page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
 
+  background:
+    radial-gradient(circle at 18% 20%,
+      rgba(45, 212, 191, 0.22),
+      transparent 30%),
+
+    radial-gradient(circle at 82% 18%,
+      rgba(56, 189, 248, 0.2),
+      transparent 32%),
+
+    radial-gradient(circle at 50% 78%,
+      rgba(103, 232, 249, 0.18),
+      transparent 35%),
+
+    radial-gradient(circle at center,
+      rgba(255, 255, 255, 0.6),
+      transparent 55%);
+
+  filter: blur(55px);
+
+  pointer-events: none;
+  z-index: 0;
+}
 .hero-glow { display: none; }
 
 .hero-title {
