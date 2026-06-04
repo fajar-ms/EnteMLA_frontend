@@ -1,177 +1,179 @@
-/* ====================== MLA CARD ====================== */
+/* ==========================================
+   PROFESSIONAL & CLASSIC MLA CARD STYLING
+   ========================================== */
 
 .mla-card {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    #f9ffff 100%
-  );
-  border-radius: 20px;
-  border: 2px solid rgba(20, 184, 166, 0.25);
-  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.08);
-  transition: all 0.3s ease;
+  max-width: 800px; /* Reduced from 1200px for a more readable, elegant card size */
+  margin: 2.5rem auto;
+  padding: 2.5rem;
+  background: #ffffff;
+  border-radius: 12px; /* Classic subtle rounding instead of bubbly 20px */
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
   position: relative;
-  overflow: hidden;
+  transition: all 0.25s ease-in-out;
 }
 
+/* Elegant, understated top accent line instead of a loud gradient */
 .mla-card::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
-  height: 5px;
+  height: 4px;
   width: 100%;
-  background: linear-gradient(
-    90deg,
-    #14b8a6,
-    #06b6d4
-  );
+  background: #0f172a; /* Formal Dark Slate */
 }
 
 .mla-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(20, 184, 166, 0.45);
-  box-shadow: 0 12px 32px rgba(20, 184, 166, 0.12);
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
-/* Header */
-
-.mla-card h2 {
-  margin-bottom: 1.8rem;
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: #0c2f47;
-  background: linear-gradient(
-    135deg,
-    #0c2f47 0%,
-    #0369a1 50%,
-    #14b8a6 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Header Layout Mechanics */
+.mla-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
-/* Details Grid */
+.mla-profile-main {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
 
+/* Formal Portrait Styling */
+.mla-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px; /* Sharp, classical framing instead of circles */
+  object-fit: cover;
+  border: 1px solid #cbd5e1;
+  padding: 4px; /* Creates an elegant white gap between border and image */
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Typography Hierarchy */
+.mla-header-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.mla-pretitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.25rem;
+}
+
+.mla-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+  margin: 0 0 0.5rem 0;
+}
+
+.mla-constituency {
+  font-size: 1rem;
+  color: #475569;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Classic Badge Style */
+.mla-badge {
+  align-self: flex-start;
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+
+/* Details Section (Grid Layout) */
 .mla-details {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(250px, 1fr)
-  );
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
 .mla-info {
-  background: rgba(20, 184, 166, 0.05);
-  border: 1px solid rgba(20, 184, 166, 0.15);
-  border-radius: 14px;
-  padding: 1rem 1.2rem;
-  transition: all 0.3s ease;
+  background: #f8fafc; /* Minimal tint instead of teal tint */
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.25rem;
+  transition: background-color 0.2s ease;
 }
 
 .mla-info:hover {
-  background: rgba(20, 184, 166, 0.08);
-  border-color: rgba(20, 184, 166, 0.3);
+  background: #f1f5f9;
 }
 
 .mla-label {
   display: block;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #0f766e;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
 }
 
 .mla-value {
-  font-size: 1rem;
-  color: #0c2f47;
-  font-weight: 600;
-  word-break: break-word;
+  font-size: 1.05rem;
+  color: #0f172a;
+  font-weight: 500;
 }
 
-/* Responsive */
+.mla-value a {
+  color: #1e40af; /* Formal link navy */
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
 
+.mla-value a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Responsive Overrides */
 @media (max-width: 768px) {
   .mla-card {
     margin: 1.5rem 16px;
-    padding: 1.5rem;
+    padding: 1.75rem;
   }
 
-  .mla-card h2 {
-    font-size: 1.5rem;
+  .mla-profile-main {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .mla-badge {
+    align-self: center;
+  }
+
+  .mla-name {
+    font-size: 1.6rem;
   }
 
   .mla-details {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .mla-card {
-    padding: 1.2rem;
-  }
-
-  .mla-card h2 {
-    font-size: 1.3rem;
-  }
-
-  .mla-value {
-    font-size: 0.95rem;
-  }
-}
-
-/* MLA Header */
-
-.mla-header {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.mla-photo {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid rgba(20, 184, 166, 0.3);
-  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.15);
-  flex-shrink: 0;
-}
-
-.mla-header-content h2 {
-  margin-bottom: 0.4rem;
-}
-
-.mla-header-content h3 {
-  font-size: 1.3rem;
-  color: #0c2f47;
-  margin-bottom: 0.3rem;
-  font-weight: 700;
-}
-
-.mla-header-content p {
-  color: #0f766e;
-  font-weight: 600;
-}
-
-/* Mobile */
-
-@media (max-width: 768px) {
-  .mla-header {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .mla-photo {
-    width: 90px;
-    height: 90px;
+    gap: 1rem;
   }
 }
