@@ -434,6 +434,39 @@ export default function CitizenDashboard() {
     }
   };
 
+  // Add this near your clr, radius, and cardStyle declarations
+const typography = {
+  family: "'Plus Jakarta Sans', sans-serif",
+  
+  // Base font styles for common text types
+  body: {
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 18,
+    fontWeight: 500,
+  },
+  caption: {
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 20,
+    fontWeight: 500,
+  },
+  
+  // Section headers & labels
+  labelUppercase: {
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 10,
+    fontWeight: 800,
+    letterSpacing: "0.9px",
+    textTransform: "uppercase",
+  },
+  subLabelUppercase: {
+    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    fontSize: 12,
+    fontWeight: 800,
+    letterSpacing: "0.6px",
+    textTransform: "uppercase",
+  }
+};
+
   const filteredComplaints = complaints.filter(c =>
     ((c.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
       (c.id || "").toLowerCase().includes(searchQuery.toLowerCase()))
@@ -456,9 +489,8 @@ export default function CitizenDashboard() {
           minHeight: "100vh",
           background: "linear-gradient(145deg, #EAF5FC 0%, #D6EDF8 50%, #C8E8F5 100%)",
           padding: "28px 32px",
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-          fontSize: 14,
           color: clr.text,
+          ...typography.body, // Applied base typography to the container
         }}
       >
 
@@ -480,10 +512,10 @@ export default function CitizenDashboard() {
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 2 }}>
                 <div style={{ width: 6, height: 6, borderRadius: "50%", background: clr.success, boxShadow: `0 0 0 3px ${clr.successBg}` }} />
-                <span style={{ fontSize: 10, fontWeight: 800, color: clr.success, letterSpacing: "0.9px", textTransform: "uppercase" }}>Active Session</span>
+                <span style={{ ...typography.labelUppercase, color: clr.success }}>Active Session</span>
               </div>
-              <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: "-0.5px", color: clr.text }}>Citizen Dashboard</h1>
-              <p style={{ fontSize: 11, color: clr.hint, margin: 0, fontWeight: 500 }}>MLA Portal · Civic Complaint System</p>
+              <h1 style={{ fontFamily: typography.family, fontSize: 22, fontWeight: 800, margin: 0, letterSpacing: "-0.5px", color: clr.text }}>Citizen Dashboard</h1>
+              <p style={{ ...typography.caption, color: clr.hint, margin: 0 }}>MLA Portal · Civic Complaint System</p>
             </div>
           </div>
 
@@ -503,7 +535,7 @@ export default function CitizenDashboard() {
                 height: 42, borderRadius: radius.md,
                 border: `1.5px solid ${clr.border}`,
                 background: clr.card, color: clr.text,
-                fontSize: 12, fontWeight: 700, cursor: "pointer",
+                fontFamily: typography.family, fontSize: 12, fontWeight: 700, cursor: "pointer",
                 boxShadow: shadow, transition: "all 0.2s",
               }}
               onMouseEnter={(e) => { e.currentTarget.style.background = clr.dangerBg; e.currentTarget.style.borderColor = "#9eb9db"; }}
@@ -536,10 +568,10 @@ export default function CitizenDashboard() {
             <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "16px 0 18px" }}>
               <Avatar name={user?.name} size={56} />
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.2, color: clr.text, wordBreak: "break-word" }}>{user?.name}</div>
+                <div style={{ fontFamily: typography.family, fontSize: 18, fontWeight: 800, lineHeight: 1.2, color: clr.text, wordBreak: "break-word" }}>{user?.name}</div>
                 <span style={{
                   display: "inline-flex", marginTop: 6, alignItems: "center", gap: 5,
-                  fontSize: 10, fontWeight: 700, color: clr.blueText,
+                  fontFamily: typography.family, fontSize: 10, fontWeight: 700, color: clr.blueText,
                   background: "#F5ECE3", padding: "3px 10px", borderRadius: 99,
                   border: `1px solid ${clr.accent2}`,
                   wordBreak: "break-all",
@@ -558,8 +590,8 @@ export default function CitizenDashboard() {
                 { icon: <FaLocationArrow size={13} color={clr.accent1} />, val: user?.place }
               ].map((item, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }} className="cd-profile-info-row">
-                  <span style={{ fontSize: 14, flexShrink: 0 }}>{item.icon}</span>
-                  <span style={{ fontSize: 13, color: clr.muted, fontWeight: 500, wordBreak: "break-word", minWidth: 0 }}>{item.val || "N/A"}</span>
+                  <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}>{item.icon}</span>
+                  <span style={{ fontFamily: typography.family, fontSize: 13, color: clr.muted, fontWeight: 500, wordBreak: "break-word", minWidth: 0 }}>{item.val || "N/A"}</span>
                 </div>
               ))}
             </div>
@@ -582,7 +614,7 @@ export default function CitizenDashboard() {
                 <path d="M10.5 10.5L13.5 13.5" stroke={clr.hint} strokeWidth="1.5" strokeLinecap="round" />
               </svg>
               <input type="text" placeholder="Search by ID or title…" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                style={{ ...inputBase(false), paddingLeft: 36, background: "#FFFDF9" }} />
+                style={{ ...inputBase(false), paddingLeft: 36, background: "#FFFDF9", fontFamily: typography.family }} />
             </div>
             <div style={{
               flex: 1, background: "rgba(238,242,255,0.4)", backdropFilter: "blur(4px)",
@@ -592,10 +624,10 @@ export default function CitizenDashboard() {
             }}>
               {selectedComplaint ? (
                 <div>
-                  <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 4, color: clr.text, overflowWrap: "break-word", wordBreak: "break-word" }}>
+                  <div style={{ fontFamily: typography.family, fontSize: 15, fontWeight: 800, marginBottom: 4, color: clr.text, overflowWrap: "break-word", wordBreak: "break-word" }}>
                     {selectedComplaint.title}
                   </div>
-                  <div style={{ fontSize: 11, color: clr.hint, marginBottom: 12, fontWeight: 500, overflowWrap: "break-word", wordBreak: "break-word" }}>
+                  <div style={{ ...typography.caption, color: clr.hint, marginBottom: 12, overflowWrap: "break-word", wordBreak: "break-word" }}>
                     ID: <strong style={{ color: clr.accent1 }}>{selectedComplaint.id}</strong> · {selectedComplaint.category} · {selectedComplaint.date}
                   </div>
 
@@ -608,15 +640,15 @@ export default function CitizenDashboard() {
                       borderLeft: "4px solid #E11D48", boxShadow: "0 2px 8px rgba(225,29,72,0.05)"
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                        <span style={{ fontSize: "16px" }}><FaBan size={14} color="#BE123C" /></span>
-                        <span style={{ fontWeight: 800, fontSize: "10px", color: "#9F1239", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                        <span style={{ display: "flex", alignItems: "center" }}><FaBan size={14} color="#BE123C" /></span>
+                        <span style={{ ...typography.labelUppercase, fontSize: "10px", color: "#9F1239", letterSpacing: "0.5px" }}>
                           Rejection Reason
                         </span>
                       </div>
-                      <p style={{ margin: 0, fontSize: "12px", color: "#BE123C", fontWeight: "600", lineHeight: "1.5" }}>
+                      <p style={{ margin: 0, fontFamily: typography.family, fontSize: "12px", color: "#BE123C", fontWeight: "600", lineHeight: "1.5" }}>
                         {selectedComplaint.rejectionReasons[selectedComplaint.rejectionReasons.length - 1].text}
                       </p>
-                      <div style={{ marginTop: "8px", fontSize: "10px", color: "#FB7185", fontWeight: 500 }}>
+                      <div style={{ ...typography.labelUppercase, fontSize: "10px", color: "#FB7185", marginTop: "8px" }}>
                         By: {selectedComplaint.rejectionReasons[0].adminName} ({selectedComplaint.rejectionReasons[0].adminRole})
                       </div>
                     </div>
@@ -624,36 +656,36 @@ export default function CitizenDashboard() {
 
                   <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
                     <div>
-                      <div style={{ fontSize: 9, color: clr.hint, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 6 }}>Status</div>
+                      <div style={{ ...typography.subLabelUppercase, color: clr.hint, marginBottom: 6 }}>Status</div>
                       <StatusBadge status={selectedComplaint.status} />
                     </div>
                     <div>
-                      <div style={{ fontSize: 9, color: clr.hint, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 6 }}>Urgency</div>
+                      <div style={{ ...typography.subLabelUppercase, color: clr.hint, marginBottom: 6 }}>Urgency</div>
                       <UrgencyBadge level={selectedComplaint.urgency} />
                     </div>
                   </div>
 
                   {selectedComplaint.details && (
                     <div style={{ marginTop: 12, padding: "10px 13px", background: "#fff", border: `1.5px solid ${clr.border}`, borderRadius: radius.sm }}>
-                      <p style={{ fontSize: 12, color: clr.muted, margin: 0, lineHeight: 1.8, fontWeight: 500, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "break-word" }}>
+                      <p style={{ ...typography.body, fontSize: 12, color: clr.muted, margin: 0, lineHeight: 1.8, whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "break-word" }}>
                         {selectedComplaint.details}
                       </p>
                     </div>
                   )}
 
                   <div style={{ marginTop: 14 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, color: clr.hint, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.6px" }}>
+                    <div style={{ ...typography.subLabelUppercase, color: clr.hint, marginBottom: 6 }}>
                       Updates / MLA Replies
                     </div>
                     <div style={{ maxHeight: 140, overflowY: "auto" }}>
                       {selectedComplaint.replies && selectedComplaint.replies.length > 0 ? (
                         selectedComplaint.replies.map((r, i) => (
-                          <div key={i} style={{ fontSize: 12, background: "#FFFDF9", border: `1px solid ${clr.border}`, borderRadius: 8, padding: "6px 10px", marginBottom: 6, fontWeight: 500 }}>
+                          <div key={i} style={{ ...typography.body, fontSize: 12, background: "#FFFDF9", border: `1px solid ${clr.border}`, borderRadius: 8, padding: "6px 10px", marginBottom: 6 }}>
                             <strong style={{ color: clr.primary }}>{r.from}:</strong> {r.text}
                           </div>
                         ))
                       ) : (
-                        <span style={{ fontSize: 11, color: clr.hint }}>No MLA replies yet</span>
+                        <span style={{ ...typography.caption, color: clr.hint }}>No MLA replies yet</span>
                       )}
                     </div>
                   </div>
@@ -665,7 +697,7 @@ export default function CitizenDashboard() {
                       <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
                     </svg>
                   </div>
-                  <p style={{ fontSize: 12, color: clr.hint, margin: 0, lineHeight: 1.8, fontWeight: 500 }}>Click a complaint below<br />to view its full details</p>
+                  <p style={{ ...typography.body, fontSize: 12, color: clr.hint, margin: 0, lineHeight: 1.8 }}>Click a complaint below<br />to view its full details</p>
                 </div>
               )}
             </div>
@@ -684,11 +716,11 @@ export default function CitizenDashboard() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
             <div>
               <p style={{ ...labelSt, marginBottom: 4 }}>Lodge a Complaint</p>
-              <p style={{ fontSize: 12, color: clr.hint, margin: 0, fontWeight: 500 }}>Fill in the details and submit your civic issue</p>
+              <p style={{ ...typography.body, fontSize: 12, color: clr.hint, margin: 0 }}>Fill in the details and submit your civic issue</p>
             </div>
             {submitSuccess && (
               <span style={{
-                fontSize: 12, fontWeight: 700, color: clr.successText,
+                fontFamily: typography.family, fontSize: 12, fontWeight: 700, color: clr.successText,
                 background: clr.successBg, padding: "6px 16px", borderRadius: 99,
                 border: "1px solid #A7F3D0", display: "flex", alignItems: "center", gap: 6,
               }}>
@@ -702,12 +734,12 @@ export default function CitizenDashboard() {
             <div className="cd-form-grid">
               <div>
                 <label style={labelSt}>Complaint Title</label>
-                <input style={inputBase(!!errors.title)} value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Street light not working" />
+                <input style={{ ...inputBase(!!errors.title), fontFamily: typography.family }} value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Street light not working" />
                 <FieldError msg={errors.title} />
               </div>
               <div>
                 <label style={labelSt}>Category</label>
-                <select style={inputBase(!!errors.category)} value={category} onChange={e => setCategory(e.target.value)}>
+                <select style={{ ...inputBase(!!errors.category), fontFamily: typography.family }} value={category} onChange={e => setCategory(e.target.value)}>
                   <option value="">Select…</option>
                   <option>Electricity</option>
                   <option>Roads & Infrastructure</option>
@@ -716,13 +748,13 @@ export default function CitizenDashboard() {
                   <option value="Other">Other</option>
                 </select>
                 {category === "Other" && (
-                  <input type="text" placeholder="Enter custom category" value={customCategory} onChange={(e) => setCustomCategory(e.target.value)} style={{ ...inputBase(false), marginTop: 8 }} />
+                  <input type="text" placeholder="Enter custom category" value={customCategory} onChange={(e) => setCustomCategory(e.target.value)} style={{ ...inputBase(false), marginTop: 8, fontFamily: typography.family }} />
                 )}
                 <FieldError msg={errors.category} />
               </div>
               <div>
                 <label style={labelSt}>Urgency</label>
-                <select style={inputBase(!!errors.urgency)} value={urgency} onChange={e => setUrgency(e.target.value)}>
+                <select style={{ ...inputBase(!!errors.urgency), fontFamily: typography.family }} value={urgency} onChange={e => setUrgency(e.target.value)}>
                   <option value="">Select…</option>
                   <option>Normal</option>
                   <option>Medium</option>
@@ -732,7 +764,7 @@ export default function CitizenDashboard() {
               </div>
               <div>
                 <label style={labelSt}>Visibility</label>
-                <select style={inputBase(false)} value={visibility} onChange={e => setVisibility(e.target.value)}>
+                <select style={{ ...inputBase(false), fontFamily: typography.family }} value={visibility} onChange={e => setVisibility(e.target.value)}>
                   <option value="">Select…</option>
                   <option>Public</option>
                   <option>Private</option>
@@ -744,14 +776,14 @@ export default function CitizenDashboard() {
               <label style={labelSt}>Complaint Details</label>
               <textarea rows={3} value={details} onChange={e => setDetails(e.target.value)}
                 placeholder="Describe the issue — location, duration, impact…"
-                style={{ ...inputBase(!!errors.details), resize: "vertical", lineHeight: 1.7 }} />
+                style={{ ...inputBase(!!errors.details), resize: "vertical", lineHeight: 1.7, fontFamily: typography.family }} />
               <FieldError msg={errors.details} />
             </div>
 
             <div className="cd-form-footer">
               <label style={{
                 display: "inline-flex", alignItems: "center", gap: 8,
-                fontSize: 12, color: clr.muted, fontWeight: 600,
+                fontFamily: typography.family, fontSize: 12, color: clr.muted, fontWeight: 600,
                 border: `1.5px dashed ${clr.accent2}`, borderRadius: radius.sm,
                 padding: "8px 16px", cursor: "pointer", background: "#F5ECE3",
                 transition: "all 0.2s",
@@ -771,7 +803,7 @@ export default function CitizenDashboard() {
 
               {file && (
                 <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                  <p style={{ fontSize: 11, color: clr.success, fontWeight: 600, margin: 0 }}>📎 {file.name}</p>
+                  <p style={{ ...typography.body, fontSize: 11, color: clr.success, margin: 0 }}>📎 {file.name}</p>
                   <img src={previewImage} alt="Preview" onClick={() => setImageModal(true)}
                     style={{ width: 48, height: 48, objectFit: "cover", borderRadius: radius.sm, border: `2px solid ${clr.accent2}`, cursor: "pointer", boxShadow: shadow }} />
                 </div>
@@ -784,7 +816,7 @@ export default function CitizenDashboard() {
                   display: "inline-flex", alignItems: "center", gap: 9, padding: "10px 26px",
                   borderRadius: radius.sm,
                   background: `linear-gradient(135deg, ${clr.primary})`,
-                  color: "#fff", fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer",
+                  color: "#fff", fontFamily: typography.family, fontSize: 13, fontWeight: 700, border: "none", cursor: "pointer",
                   boxShadow: "0 4px 16px rgba(79,70,229,0.35)",
                   transition: "all 0.2s",
                 }}
@@ -806,12 +838,12 @@ export default function CitizenDashboard() {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
             <div>
               <p style={labelSt}>My Complaints</p>
-              <p style={{ fontSize: 11, color: clr.hint, margin: "3px 0 0", fontWeight: 500 }}>{filteredComplaints.length} complaint{filteredComplaints.length !== 1 ? "s" : ""} found</p>
+              <p style={{ ...typography.caption, color: clr.hint, margin: "3px 0 0" }}>{filteredComplaints.length} complaint{filteredComplaints.length !== 1 ? "s" : ""} found</p>
             </div>
           </div>
 
           {loading ? (
-            <div style={{ padding: "40px 0", textAlign: "center", color: clr.hint, fontSize: 13, fontWeight: 600 }}>
+            <div style={{ padding: "40px 0", textAlign: "center", color: clr.hint, fontFamily: typography.family, fontSize: 13, fontWeight: 600 }}>
               <div style={{ width: 32, height: 32, border: `3px solid ${clr.accent2}`, borderTopColor: clr.primary, borderRadius: "50%", margin: "0 auto 12px", animation: "spin 0.8s linear infinite" }} />
               Loading complaints…
             </div>
@@ -822,7 +854,7 @@ export default function CitizenDashboard() {
                   <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" />
                 </svg>
               </div>
-              <p style={{ fontSize: 13, color: clr.hint, margin: 0, fontWeight: 600 }}>No complaints found. Submit one above.</p>
+              <p style={{ fontFamily: typography.family, fontSize: 13, color: clr.hint, margin: 0, fontWeight: 600 }}>No complaints found. Submit one above.</p>
             </div>
           ) : (
             <div className="cd-complaints-grid">
@@ -845,7 +877,7 @@ export default function CitizenDashboard() {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 7 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <span style={{
-                        fontSize: 13, fontWeight: 700, lineHeight: 1.4, color: clr.text,
+                        fontFamily: typography.family, fontSize: 13, fontWeight: 700, lineHeight: 1.4, color: clr.text,
                         display: "-webkit-box", WebkitLineClamp: 2,
                         WebkitBoxOrient: "vertical", overflow: "hidden", wordBreak: "break-word",
                       }}>
@@ -871,13 +903,13 @@ export default function CitizenDashboard() {
                     </div>
                   </div>
 
-                  <div style={{ fontSize: 10, color: clr.hint, marginBottom: 10, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <div style={{ ...typography.labelUppercase, fontSize: 10, color: clr.hint, marginBottom: 10, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {c.category} · {c.date}
                   </div>
 
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <StatusBadge status={c.status} />
-                    <span style={{ fontSize: 9, color: clr.accent2, fontWeight: 700, letterSpacing: "0.5px" }}>#{(c.id || "").slice(-6).toUpperCase()}</span>
+                    <span style={{ fontFamily: typography.family, fontSize: 9, color: clr.accent2, fontWeight: 700, letterSpacing: "0.5px" }}>#{(c.id || "").slice(-6).toUpperCase()}</span>
                   </div>
 
                   {/* Repost Count */}
@@ -898,13 +930,13 @@ export default function CitizenDashboard() {
                         </svg>
                       </div>
                       <div>
-                        <div style={{ fontSize: 10, fontWeight: 800, color: clr.hint, textTransform: "uppercase", letterSpacing: "0.5px" }}>Reposts</div>
-                        <div style={{ fontSize: 14, fontWeight: 800, color: clr.text, marginTop: 1 }}>{c.reposts || 0}</div>
+                        <div style={{ ...typography.labelUppercase, fontSize: 10, color: clr.hint }}>Reposts</div>
+                        <div style={{ fontFamily: typography.family, fontSize: 14, fontWeight: 800, color: clr.text, marginTop: 1 }}>{c.reposts || 0}</div>
                       </div>
                     </div>
                     {c.reposts > 0 && (
                       <span style={{
-                        fontSize: 10, fontWeight: 700, padding: "4px 8px", borderRadius: 999,
+                        fontFamily: typography.family, fontSize: 10, fontWeight: 700, padding: "4px 8px", borderRadius: 999,
                         background: "#F5ECE3", color: clr.primary, border: `1px solid ${clr.accent2}`,
                       }}>
                         Community Supported
@@ -913,22 +945,22 @@ export default function CitizenDashboard() {
                   </div>
 
                   {c.evidence && (
-                    <div style={{ fontSize: 11, color: clr.success, marginTop: 7, fontWeight: 600 }}>📎 {c.evidence}</div>
+                    <div style={{ ...typography.body, fontSize: 11, color: clr.success, marginTop: 7, fontWeight: 600 }}>📎 {c.evidence}</div>
                   )}
 
                   {/* Updates & Public Discussion */}
                   <div style={{ marginTop: 10 }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, color: clr.hint, marginBottom: 5, textTransform: "uppercase", letterSpacing: "0.6px" }}>
+                    <div style={{ ...typography.subLabelUppercase, color: clr.hint, marginBottom: 5 }}>
                       Updates & Public Discussion
                     </div>
                     <div style={{ maxHeight: 160, overflowY: "auto" }}>
                       {(c.comments || c.replies || []).length > 0 ? (
                         (c.comments || c.replies || []).map((reply, i) => (
-                          <div key={i} style={{ fontSize: 11, background: "#FFFDF9", border: `1px solid ${clr.border}`, borderRadius: 7, padding: "8px 10px", marginBottom: 6, fontWeight: 500 }}>
+                          <div key={i} style={{ ...typography.body, fontSize: 11, background: "#FFFDF9", border: `1px solid ${clr.border}`, borderRadius: 7, padding: "8px 10px", marginBottom: 6 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
                               <strong style={{ color: clr.primary }}>{reply.username || reply.from || "Anonymous"}</strong>
                               <span style={{
-                                fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 999,
+                                fontFamily: typography.family, fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 999,
                                 background: (reply.role || "").toLowerCase() === "mla" ? "#EEF2FF" : (reply.role || "").toLowerCase() === "employee" ? "#ECFDF5" : "#FFF7ED",
                                 color: (reply.role || "").toLowerCase() === "mla" ? "#4338CA" : (reply.role || "").toLowerCase() === "employee" ? "#065F46" : "#9A3412",
                               }}>
@@ -937,12 +969,12 @@ export default function CitizenDashboard() {
                             </div>
                             <div style={{ color: clr.text, lineHeight: 1.5 }}>{reply.text}</div>
                             {reply.createdAt && (
-                              <div style={{ fontSize: 9, color: clr.hint, marginTop: 4 }}>{new Date(reply.createdAt).toLocaleString()}</div>
+                              <div style={{ ...typography.caption, fontSize: 9, color: clr.hint, marginTop: 4 }}>{new Date(reply.createdAt).toLocaleString()}</div>
                             )}
                           </div>
                         ))
                       ) : (
-                        <span style={{ fontSize: 10, color: clr.hint, fontWeight: 500 }}>No updates yet</span>
+                        <span style={{ ...typography.caption, fontSize: 10 }}>No updates yet</span>
                       )}
                     </div>
                   </div>
