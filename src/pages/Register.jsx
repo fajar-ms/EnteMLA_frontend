@@ -3,80 +3,7 @@ import "./Register.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaUser, FaMobileAlt, FaEnvelope, FaMapMarkerAlt, FaLandmark, FaLocationArrow, FaLock, FaKey, FaEye, FaEyeSlash, FaTools } from "react-icons/fa";
-const constituencyMap = {
-  thiruvananthapuram: [
-    { value: "Kovalam", label: "Kovalam" },
-    { value: "vattiyoorkavu", label: "Vattiyoorkavu" },
-    { value: "thiruvananthapuram", label: "Thiruvananthapuram" },
-  ],
-  kollam: [
-    { value: "chavara", label: "Chavara" },
-    { value: "kundara", label: "Kundara" },
-    { value: "kollam", label: "Kollam" },
-  ],
-  pathanamthitta: [
-    { value: "adoor", label: "Adoor" },
-    { value: "thiruvalla", label: "Thiruvalla" },
-    { value: "pathanamthitta", label: "Pathanamthitta" },
-  ],
-  alappuzha: [
-    { value: "cherthala", label: "Cherthala" },
-    { value: "alappuzha", label: "Alappuzha" },
-    { value: "ambalappuzha", label: "Ambalappuzha" },
-  ],
-  kottayam: [
-    { value: "pala", label: "Pala" },
-    { value: "kottayam", label: "Kottayam" },
-    { value: "changanacherry", label: "Changanacherry" },
-  ],
-  idukki: [
-    { value: "devikulam", label: "Devikulam" },
-    { value: "udumbanchola", label: "Udumbanchola" },
-    { value: "thodupuzha", label: "Thodupuzha" },
-  ],
-  ernakulam: [
-    { value: "aluva", label: "Aluva" },
-    { value: "kalamassery", label: "Kalamassery" },
-    { value: "thrippunithura", label: "Thrippunithura" },
-    { value: "kochi", label: "Kochi" }
-  ],
-  thrissur: [
-    { value: "guruvayur", label: "Guruvayur" },
-    { value: "thrissur", label: "Thrissur" },
-    { value: "manalur", label: "Manalur" },
-    { value: "chalakkudy", label: "Chalakkudy" }
-  ],
-  palakkad: [
-    { value: "mannarkkad", label: "Mannarkkad" },
-    { value: "palakkad", label: "Palakkad" },
-    { value: "ottapalam", label: "Ottapalam" },
-  ],
-  malappuram: [
-    { value: "tirur", label: "Tirur" },
-    { value: "malappuram", label: "Malappuram" },
-    { value: "mankada", label: "Mankada" },
-  ],
-  kozhikode: [
-    { value: "beypore", label: "Beypore" },
-    { value: "kozhikode_north", label: "Kozhikode North" },
-    { value: "kozhikode_south", label: "Kozhikode South" },
-  ],
-  wayanad: [
-    { value: "mananthavady", label: "Mananthavady" },
-    { value: "sulthan_bathery", label: "Sulthan Bathery" },
-    { value: "kalpetta", label: "Kalpetta" },
-  ],
-  kannur: [
-    { value: "thalassery", label: "Thalassery" },
-    { value: "kannur", label: "Kannur" },
-    { value: "dharmadom", label: "Dharmadom" },
-  ],
-  kasaragod: [
-    { value: "manjeshwar", label: "Manjeshwar" },
-    { value: "kasaragod", label: "Kasaragod" },
-    { value: "udma", label: "Udma" },
-  ],
-};
+import { constituencyMap } from "../data/constituencyMap";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -146,14 +73,14 @@ const Register = () => {
           ← Back to Home
         </div>
         <div className="logo">
-            Ente<span>MLA</span>
+          Ente<span>MLA</span>
         </div>
         <h2>Create Account</h2>
-       <h3>
-  {selectedRole === "employee"
-    ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><FaTools size={14} /> Employee Register</span>
-    : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><FaUser size={14} /> Citizen Register</span>}
-</h3>
+        <h3>
+          {selectedRole === "employee"
+            ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><FaTools size={14} /> Employee Register</span>
+            : <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><FaUser size={14} /> Citizen Register</span>}
+        </h3>
         {/* <p>Direct registration enabled (OTP skipped)</p> */}
 
         <form onSubmit={handleSubmit}>
@@ -223,10 +150,10 @@ const Register = () => {
               required
             />
             <span className="eye-btn" onClick={() => setShowPassword(!showPassword)}>{showPassword ? (
-      <FaEyeSlash size={18} color="#0369a1" />
-    ) : (
-      <FaEye size={18} color="#0369a1" />
-    )}</span>
+              <FaEyeSlash size={18} color="#0369a1" />
+            ) : (
+              <FaEye size={18} color="#0369a1" />
+            )}</span>
           </div>
 
           {/* Confirm Password */}
@@ -237,7 +164,7 @@ const Register = () => {
 
           <button type="submit" className="register-btn">Create Account</button>
         </form>
-          <div className="signin-link">
+        <div className="signin-link">
           <p>
             Already registered?{" "}
             <span onClick={() => navigate("/login")}>

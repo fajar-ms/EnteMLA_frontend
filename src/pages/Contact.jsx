@@ -30,12 +30,12 @@ const Contact = () => {
     );
 
   console.log("selected district:", selected.district);
-console.log("departments:", departments);
-console.log(
-  "matched:",
-  departments[selected.district]
-);
-  
+  console.log("departments:", departments);
+  console.log(
+    "matched:",
+    departments[selected.district]
+  );
+
   return (
     <div className="contact-page">
       <Navbar />
@@ -70,22 +70,21 @@ console.log(
           </div>
 
           {(showAll
-              ? filteredConstituencies
-              : filteredConstituencies.slice(0, 8)
-            ).map((item) => (
+            ? filteredConstituencies
+            : filteredConstituencies.slice(0, 8)
+          ).map((item) => (
             <div
               key={item.id}
-              className={`constituency-item ${
-                selected.id === item.id
+              className={`constituency-item ${selected.id === item.id
                   ? "active"
                   : ""
-              }`}
+                }`}
               onClick={() => setSelected(item)}
             >
-             <FaLandmark className="icon" /> {item.constituency}
+              <FaLandmark className="icon" /> {item.constituency}
             </div>
-            
-                    ))}
+
+          ))}
 
           {filteredConstituencies.length > 8 && (
             <button
@@ -135,7 +134,7 @@ console.log(
               {selected.mla.email}
             </p>
 
-           
+
           </div>
 
           {/* DEPARTMENTS */}
@@ -146,7 +145,7 @@ console.log(
 
           <div className="dept-grid">
 
-           {(departments[selected.district] || []).map(
+            {(departments[selected.district] || []).map(
               (dept, index) => (
                 <div
                   key={index}
@@ -154,16 +153,16 @@ console.log(
                 >
                   <h4>{dept.title}</h4>
 
-                  
+
 
                   <p>
-                     <FaMapMarkerAlt className="dept-icon" />
+                    <FaMapMarkerAlt className="dept-icon" />
                     {dept.location}
                   </p>
 
                   <p>
                     <FaPhoneAlt className="dept-icon" />
-                     {dept.phone}
+                    {dept.phone}
                   </p>
 
                   <p>
@@ -171,7 +170,7 @@ console.log(
                     {dept.email}
                   </p>
 
-                 
+
                 </div>
               )
             )}

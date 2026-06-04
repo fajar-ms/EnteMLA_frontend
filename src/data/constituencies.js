@@ -1452,37 +1452,5 @@ location: "MLA Camp Office, Bangarakkunnu Road, Nellikkunnu, Kasaragod – 671 1
       location: "MLA Office, Main Road, Nilambur, Malappuram - 679329",
     }
   }
-
-
-
-
-
-
-
-
-
 ]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export default constituencies;
