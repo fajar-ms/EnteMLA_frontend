@@ -778,9 +778,9 @@ button:hover { opacity: 0.9; }
 
   .dashboard-actions {
 
-    width: 100%;
+    width: "auto";
 
-    display: grid;
+    display: flex;
 
     grid-template-columns: 1fr 1fr;
 
@@ -790,7 +790,7 @@ button:hover { opacity: 0.9; }
 
 
 
-  .dashboard-btn { width: 100%; padding: 11px 14px; font-size: 12.5px; }
+  .dashboard-btn { width: "auto"; padding: 7px 12px; font-size: 12.5px; }
 
 
 

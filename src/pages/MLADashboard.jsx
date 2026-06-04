@@ -468,8 +468,8 @@ useEffect(() => {
   <div
     style={{
       display: "flex",
-      gap: 12,
-      width: isMobile ? "100%" : "auto",
+      gap: 6,
+      width:  "auto",
     }}
   >
     <a
@@ -477,7 +477,7 @@ useEffect(() => {
       style={{
         flex: isMobile ? 1 : "unset",
         textDecoration: "none",
-        padding: "10px 16px",
+        padding: "7px 12px",
         borderRadius: 8,
       border: `1.5px solid #1A6BAF`,
         background: clr.paper,
@@ -488,7 +488,7 @@ useEffect(() => {
 
         alignItems: "center",
         justifyContent: "center",
-        gap: 8,
+        gap: 6,
       }}
     >
       Home
@@ -497,8 +497,8 @@ useEffect(() => {
     <button
       onClick={handleLogout}
       style={{
-        flex: isMobile ? 1 : "unset",
-        padding: "10px 16px",
+        flex:  "unset",
+        padding: "6px 8px",
         borderRadius: 8,
         border: `1.5px solid #1A6BAF`,
          background: "#ffffff",
