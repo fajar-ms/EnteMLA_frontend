@@ -56,42 +56,37 @@ const MyMlaCard = () => {
 
     return (
         <div className="mla-card">
-
             <div className="mla-header">
-
-                <img
-                    src={mla.photo}
-                    alt={mla.name}
-                    className="mla-photo"
-                />
-
-                <div className="mla-info">
-                    <span className="mla-label">Party</span>
-                    <span className="mla-value">{mla.party}</span>
+                <div className="mla-profile-main">
+                    <img
+                        src={mla.photo}
+                        alt={mla.name}
+                        className="mla-photo"
+                    />
+                    <div className="mla-header-content">
+                        <span className="mla-badge">{mla.party}</span>
+                        <span className="mla-pretitle">Your MLA</span>
+                        <h2 className="mla-name">{mla.name}</h2>
+                        <p className="mla-constituency">Constituency: {mla.constituencyId}</p>
+                    </div>
                 </div>
-
-                <div className="mla-header-content">
-                    <h2>Your MLA</h2>
-                    <h3>{mla.name}</h3>
-                    <p>{mla.constituencyId}</p>
-                </div>
-
             </div>
 
             <div className="mla-details">
-
                 <div className="mla-info">
-                    <span className="mla-label">Email</span>
-                    <span className="mla-value">{mla.email}</span>
+                    <span className="mla-label">Email Address</span>
+                    <span className="mla-value">
+                        <a href={`mailto:${mla.email}`}>{mla.email}</a>
+                    </span>
                 </div>
 
                 <div className="mla-info">
-                    <span className="mla-label">Phone</span>
-                    <span className="mla-value">{mla.phone}</span>
+                    <span className="mla-label">Phone Number</span>
+                    <span className="mla-value">
+                        <a href={`tel:${mla.phone}`}>{mla.phone}</a>
+                    </span>
                 </div>
-
             </div>
-
         </div>
     );
 };
