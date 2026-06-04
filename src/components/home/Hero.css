@@ -1,9 +1,80 @@
-/* ====================== HERO SECTION ====================== */
-.hero {
-  background: linear-gradient(135deg, #ffffff 0%, #f8ffff 50%, #f5ffff 100%);
-  padding: 80px 20px 60px;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid rgba(20, 184, 166, 0.1);
+.hero-banner {
+  position: relative;
+  height: 500px;
+  overflow: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-video {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  opacity: 0.25; /* very light */
+  z-index: 1;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.65);
+  z-index: 2;
+}
+
+.hero-header {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  max-width: 900px;
+}
+
+.hero-title {
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 800;
+  margin: 20px 0;
+}
+
+.hero-layout {
+  margin-top: 40px;
+}
+
+
+
+.hero-subtitle {
+  font-size: 1.4rem;
+  color: #0f766e;
+  max-width: 700px;
+}
+
+.label-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.gov-label,
+.constituency-label {
+  padding: 12px 24px;
+  border-radius: 999px;
+
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(10px);
+
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.division-line {
+  width: 2px;
+  height: 28px;
+  background: #7dd3c0;
 }
 
 .hero-grid {

@@ -28,7 +28,19 @@ import {
 
 const About = () => {
   const { t } = useTranslation();
-
+<div className="video-background">
+  <video
+    autoPlay
+    muted
+    loop
+    playsInline
+  >
+    <source
+      src="https://res.cloudinary.com/dw5bky38i/video/upload/v1780556713/14723614_3840_2160_60fps_mqjgun.mp4"
+      type="video/mp4"
+    />
+  </video>
+</div>
   return (
     <div className="about-page">
       <Navbar />

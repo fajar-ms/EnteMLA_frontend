@@ -14,20 +14,41 @@ const Hero = () => {
     role === "citizen" || role === "employee";
   return (
     <div className="hero">
-      <div className="hero-grid">
 
-        {/* TOP SECTION: HEADING & SUBTITLE */}
-        <header className="hero-header">
-          <div className="label-group">
-            <span className="gov-label">{t("gov_label")}</span>
-            <span className="division-line"></span>
-            <span className="constituency-label">{t("constituency")}</span>
-          </div>
-          <h1>{t("hero_title_main")}  {t("hero_title_sub")}</h1>
-          <p className="description">
-            {t("hero_description")}
-          </p>
-        </header>
+  {/* Video Banner */}
+  <div className="hero-banner">
+    <video
+      className="hero-video"
+      autoPlay
+      muted
+      loop
+      playsInline
+    >
+      <source
+        src="https://res.cloudinary.com/dw5bky38i/video/upload/v1780556713/14723614_3840_2160_60fps_mqjgun.mp4"
+        type="video/mp4"
+      />
+    </video>
+
+    <div className="hero-overlay"></div>
+
+    <div className="hero-header">
+      <div className="label-group">
+        <span className="gov-label">{t("gov_label")}</span>
+        <span className="division-line"></span>
+        <span className="constituency-label">{t("constituency")}</span>
+      </div>
+
+      <h1 className="hero-title">
+        {t("hero_title_main")} {t("hero_title_sub")}
+      </h1>
+
+      <p className="description">
+        {t("hero_description")}
+      </p>
+    </div>
+  </div>
+        
 
         <div className="hero-layout">
 
@@ -92,7 +113,7 @@ const Hero = () => {
         </div>
       </div>
     </div>
-    </div>
+    
   );
 };
 export default Hero;
