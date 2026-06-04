@@ -380,12 +380,12 @@ useEffect(() => {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: clr.bg, fontFamily: font.body, color: clr.text }}>
+    <div style={{ minHeight: "100vh", background: "#DCEEFB", fontFamily: font.body, color: clr.text }}>
      
 {/* ── HEADER ── */}
 <div
   style={{
-    background: clr.paper,
+    background: clr.bg,
     borderBottom: `1px solid ${clr.border}`,
     padding: isMobile ? "16px" : "18px 32px",
     display: "flex",
@@ -479,7 +479,7 @@ useEffect(() => {
         textDecoration: "none",
         padding: "10px 16px",
         borderRadius: 8,
-        border: `1px solid ${clr.border}`,
+      border: `1.5px solid #1A6BAF`,
         background: clr.paper,
         color: clr.textMid,
         fontSize: 13,
@@ -500,9 +500,9 @@ useEffect(() => {
         flex: isMobile ? 1 : "unset",
         padding: "10px 16px",
         borderRadius: 8,
-        border: "none",
-        background: clr.accent,
-        color: "#fff",
+        border: `1.5px solid #1A6BAF`,
+         background: "#ffffff",
+    color: clr.text,
         fontSize: 13,
         fontWeight: 700,
         cursor: "pointer",
