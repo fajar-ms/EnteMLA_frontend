@@ -704,9 +704,8 @@ button:hover { opacity: 0.9; }
 
 .dashboard-btn-home {
 
-  background: linear-gradient(135deg, #1A6B8A 0%, #a1bcc6 100%);
-
-  color: #ffffff;
+  background: #ffffff;
+  color:#0D2137;
 
   box-shadow: 0 2px 10px rgba(18, 78, 102, 0.25);
 
@@ -728,9 +727,8 @@ button:hover { opacity: 0.9; }
 
 .dashboard-btn-logout {
 
-  background: linear-gradient(135deg, #1A6B8A 0%, #a1bcc6 100%);
-
-  color: #ffffff;
+  background: #ffffff;
+  color:#0D2137;
 
   box-shadow: 0 2px 10px rgba(18, 78, 102, 0.25);
 
