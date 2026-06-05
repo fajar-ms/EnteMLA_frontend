@@ -55,20 +55,22 @@ const Hero = () => {
         <div className="hero-layout">
 
   {/* Top Card */}
-  <div className="top-card">
-    {showMlaCard ? (
-      <MyMlaCard />
-    ) : (
-      <div className="guest-card">
-        <h3>Welcome to EnteMLA</h3>
-        <p>
-          A transparent platform for citizens to register grievances,
-          monitor complaint progress, and strengthen communication
-          with elected representatives.
-        </p>
-      </div>
-    )}
+ <div className="top-card">
+
+  {/* Always visible to everyone */}
+  <div className="guest-card">
+    <h3>Welcome to EnteMLA</h3>
+    <p>
+      A transparent platform for citizens to register grievances, 
+      monitor complaint progress, and strengthen communication 
+      with elected representatives.
+    </p>
   </div>
+
+  {/* Only for citizen/employee - shows their specific MLA */}
+  {showMlaCard && <MyMlaCard />}
+
+</div>
 
   {/* Bottom Split Section */}
   <div className="hero-content-split">
