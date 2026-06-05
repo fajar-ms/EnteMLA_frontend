@@ -40,9 +40,7 @@ const Hero = () => {
       </div>
 
       <h1 className="hero-title">
-        <span className="gold-text">{t("hero_title_main")}</span>
-        <br />
-        {t("hero_title_sub")}
+        {t("hero_title_main")} {t("hero_title_sub")}
       </h1>
 
       <p className="description">
@@ -59,12 +57,8 @@ const Hero = () => {
 
   {/* Always visible to everyone */}
   <div className="guest-card">
-    <h3>Welcome to EnteMLA</h3>
-    <p>
-      A transparent platform for citizens to register grievances, 
-      monitor complaint progress, and strengthen communication 
-      with elected representatives.
-    </p>
+   <h3>{t("welcome_entemla")}</h3>
+  <p>{t("welcome_entemla_desc")}</p>
   </div>
 
   {/* Only for citizen/employee - shows their specific MLA */}
