@@ -40,7 +40,9 @@ const Hero = () => {
       </div>
 
       <h1 className="hero-title">
-        {t("hero_title_main")} {t("hero_title_sub")}
+        <span className="gold-text">{t("hero_title_main")}</span>
+        <br />
+        {t("hero_title_sub")}
       </h1>
 
       <p className="description">
