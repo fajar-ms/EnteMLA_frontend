@@ -6,10 +6,10 @@ import Navbar from "../components/home/Navbar";
 import { useTranslation } from "react-i18next";
 
 // React Icons
-import { 
-  FaListAlt, FaClock, FaSpinner, FaCheckCircle, FaFolderOpen, 
-  FaThumbsUp, FaComment, FaShare, FaTimes, FaChartBar, 
-  FaCalendar, FaTag 
+import {
+  FaListAlt, FaClock, FaSpinner, FaCheckCircle, FaFolderOpen,
+  FaThumbsUp, FaComment, FaShare, FaTimes, FaChartBar,
+  FaCalendar, FaTag
 } from "react-icons/fa";
 
 const ComplaintsList = () => {
@@ -25,6 +25,17 @@ const ComplaintsList = () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
+  const [popupMessage, setPopupMessage] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const showCustomPopup = (message) => {
+    setPopupMessage(message);
+    setShowPopup(true);
+
+    setTimeout(() => {
+      setShowPopup(false);
+      setPopupMessage("");
+    }, 2500);
+  };
 
   const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -61,40 +72,95 @@ const ComplaintsList = () => {
   // Improved Like with better error message
   const handleLike = async (id) => {
     try {
-      const res = await api.patch(`/complaints/${id}/like`);
-      console.log("Like Success:", res.data);
+      // Redirect to login if user is not logged in
+      if (!user || !user._id) return requireLogin();
 
-      setComplaints(prev => prev.map(item =>
-        item._id === id ? { ...item, likes: (item.likes || 0) + 1 } : item
-      ));
+      const response = await axios.patch(
+        `${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/like`,
+        {
+          userId: user._id,
+        }
+      );
 
-      if (selected && selected._id === id) {
-        setSelected(prev => ({ ...prev, likes: (prev.likes || 0) + 1 }));
+      // Show backend message
+      showCustomPopup(response.data.message);
+
+      // Update UI immediately
+      setComplaints((prev) =>
+        prev.map((complaint) =>
+          complaint._id === id
+            ? {
+              ...complaint,
+              likes: response.data.likes,
+              likedBy:
+                response.data.likedBy || complaint.likedBy,
+            }
+            : complaint
+        )
+      );
+
+      // Update selected complaint if modal is open
+      if (selectedForModal?._id === id) {
+        setSelectedForModal((prev) => ({
+          ...prev,
+          likes: response.data.likes,
+          likedBy:
+            response.data.likedBy || prev.likedBy,
+        }));
       }
     } catch (error) {
-      console.error("Like Error:", error.response?.data || error.message);
-      const msg = error.response?.data?.message || "Failed to like complaint";
-      alert(msg);
+      console.error("Error liking complaint:", error);
+
+      showCustomPopup(
+        error.response?.data?.message ||
+        "Failed to like complaint."
+      );
     }
   };
 
   // Improved Repost
   const handleRepost = async (id) => {
     try {
-      const res = await api.patch(`/complaints/${id}/repost`);
-      console.log("Repost Success:", res.data);
+      // If user is not logged in, go to login page
+      if (!user || !user._id) return requireLogin();
 
-      setComplaints(prev => prev.map(item =>
-        item._id === id ? { ...item, reposts: (item.reposts || 0) + 1 } : item
-      ));
+      const response = await axios.patch(
+        `${import.meta.env.VITE_API_BASE_URL}/complaints/${id}/repost`,
+        {
+          userId: user._id,
+        }
+      );
 
-      if (selected && selected._id === id) {
-        setSelected(prev => ({ ...prev, reposts: (prev.reposts || 0) + 1 }));
+      // Show backend message
+      showCustomPopup(response.data.message);
+
+      // Update complaint list immediately in UI
+      setComplaints((prev) =>
+        prev.map((complaint) =>
+          complaint._id === id
+            ? {
+              ...complaint,
+              repostedBy: response.data.repostedBy || complaint.repostedBy,
+            }
+            : complaint
+        )
+      );
+
+      // Also update selected complaint if modal is open
+      if (selectedForModal?._id === id) {
+        setSelectedForModal((prev) => ({
+          ...prev,
+          repostedBy:
+            response.data.repostedBy || prev.repostedBy,
+        }));
       }
     } catch (error) {
-      console.error("Repost Error:", error.response?.data || error.message);
-      const msg = error.response?.data?.message || "Failed to repost complaint";
-      alert(msg);
+      console.error("Error reposting complaint:", error);
+
+      showCustomPopup(
+        error.response?.data?.message ||
+        "Failed to repost complaint."
+      );
     }
   };
 
@@ -140,66 +206,66 @@ const ComplaintsList = () => {
   };
 
   if (error)
-  return (
-    <div className="loading-container">
-      <div className="login-alert-box">
-        <h2>Please login to view complaints</h2>
+    return (
+      <div className="loading-container">
+        <div className="login-alert-box">
+          <h2>Please login to view complaints</h2>
 
-        <button
-          className="login-redirect-btn"
-          onClick={() => setAuthPopup(true)}
-        >
-          Login →
-        </button>
-      </div>
-
-      {/* ROLE POPUP */}
-      {authPopup && (
-        <div className="auth-popup-overlay">
-          <div className="auth-popup">
-            <h3>Select Your Role</h3>
-
-            <button
-              onClick={() => {
-                localStorage.setItem("role", "citizen");
-                navigate("/login");
-              }}
-            >
-              Citizen
-            </button>
-
-            <button
-              onClick={() => {
-                localStorage.setItem("role", "employee");
-                navigate("/login");
-              }}
-            >
-              Employee
-            </button>
-
-            <button
-              onClick={() => {
-                localStorage.setItem("role", "mla");
-                navigate("/login");
-              }}
-            >
-              MLA
-            </button>
-
-            <button
-              className="close-popup-btn"
-              onClick={() => {
-                setAuthPopup(false);
-                navigate("/");
-              }}
-            >
-              Cancel
-            </button>
-          </div>
+          <button
+            className="login-redirect-btn"
+            onClick={() => setAuthPopup(true)}
+          >
+            Login →
+          </button>
         </div>
-      )}
-    </div>
-  );
+
+        {/* ROLE POPUP */}
+        {authPopup && (
+          <div className="auth-popup-overlay">
+            <div className="auth-popup">
+              <h3>Select Your Role</h3>
+
+              <button
+                onClick={() => {
+                  localStorage.setItem("role", "citizen");
+                  navigate("/login");
+                }}
+              >
+                Citizen
+              </button>
+
+              <button
+                onClick={() => {
+                  localStorage.setItem("role", "employee");
+                  navigate("/login");
+                }}
+              >
+                Employee
+              </button>
+
+              <button
+                onClick={() => {
+                  localStorage.setItem("role", "mla");
+                  navigate("/login");
+                }}
+              >
+                MLA
+              </button>
+
+              <button
+                className="close-popup-btn"
+                onClick={() => {
+                  setAuthPopup(false);
+                  navigate("/");
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
 
   return (
     <div className="page-wrapper">
@@ -228,9 +294,9 @@ const ComplaintsList = () => {
             <h3><FaFolderOpen className="section-icon" /> Complaint Queue</h3>
             <div className="queue-scroll-container">
               {complaints.map(c => (
-                <div 
-                  key={c._id} 
-                  className={`item ${selected?._id === c._id ? "active" : ""}`} 
+                <div
+                  key={c._id}
+                  className={`item ${selected?._id === c._id ? "active" : ""}`}
                   onClick={() => handleSelect(c)}
                 >
                   <div className="badge-row">
@@ -358,6 +424,11 @@ const ComplaintsList = () => {
               {commentError && <p className="error-text">{commentError}</p>}
             </div>
           </div>
+        </div>
+      )}
+      {showPopup && (
+        <div className="custom-popup">
+          {popupMessage}
         </div>
       )}
     </div>

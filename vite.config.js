@@ -9,6 +9,7 @@ export default defineConfig({
     tailwindcss(), // 2. Add it to your plugins array
   ],
   server: {
+    host: true,
     port: 5173,
   },
 })

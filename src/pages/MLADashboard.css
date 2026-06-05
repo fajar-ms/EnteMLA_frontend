@@ -1,0 +1,244 @@
+/* ── Table Container Wrapper ── */
+.table-scroll-container {
+  flex: 1;
+  background: var(--clr-card, #FFFFFF);
+  border: 1px solid var(--clr-border, #C8DFF0);
+  border-radius: 6px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Core Table Element ── */
+.dashboard-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+/* ── Headers ── */
+.table-header-row {
+  background: var(--clr-paper, #F4F9FC);
+  border-bottom: 1px solid var(--clr-border, #C8DFF0);
+  color: var(--clr-muted, #2A5F80);
+  font-weight: 600;
+}
+
+.table-header-cell {
+  padding: 14px 18px;
+}
+
+/* ── Rows & Columns ── */
+.table-body-row {
+  border-bottom: 1px solid var(--clr-borderLight, #E1EEF6);
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.15s;
+  border-left: 4px solid transparent;
+}
+
+/* Row Modifier States */
+.table-body-row.is-selected {
+  background: var(--clr-primaryLight, #D6EDF8);
+}
+
+.table-body-row.has-high-reposts {
+  border-left: 4px solid var(--clr-accent, #D9534F); /* Fallback to danger accent if needed */
+}
+
+/* Cell Variants */
+.cell-citizen {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.cell-text {
+  padding: 14px 18px;
+  color: var(--clr-textMid, #334E68);
+}
+
+.cell-mono {
+  padding: 14px 18px;
+  font-family: monospace; /* Fallback to standard mono if font.mono variable isn't injected globally */
+  font-size: 12px;
+}
+
+.cell-badge {
+  padding: 14px 18px;
+}
+
+.cell-empty-state {
+  padding: 30px;
+  color: var(--clr-muted, #2A5F80);
+  text-align: center;
+}
+
+/* ── Repost Inline Badge ── */
+.repost-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--clr-primaryLight, #D6EDF8);
+  color: var(--clr-primary, #1A6BAF);
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.repost-icon-spacing {
+  margin-right: 4px;
+}
+
+/* ── Pagination Navigation Panel ── */
+.table-pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-top: 1px solid var(--clr-border, #C8DFF0);
+  background: var(--clr-paper, #F4F9FC);
+  margin-top: auto;
+}
+
+.pagination-counter-text {
+  font-size: 12px;
+  color: var(--clr-hint, #5A9BB8);
+}
+
+.pagination-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Pagination Buttons Base Styles */
+.pagination-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px solid var(--clr-border, #C8DFF0);
+  background: var(--clr-card, #FFFFFF);
+  color: var(--clr-text, #0D2137);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pagination-btn:disabled {
+  background: transparent;
+  color: var(--clr-hint, #5A9BB8);
+  cursor: not-allowed;
+}
+
+/* Numeric Buttons Modifier */
+.pagination-number-btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  background: var(--clr-card, #FFFFFF);
+  color: var(--clr-textMid, #334E68);
+}
+
+.pagination-number-btn.is-active {
+  font-weight: 700;
+  border-color: var(--clr-primary, #1A6BAF);
+  background: var(--clr-primary, #1A6BAF);
+  color: #FFFFFF;
+}
+.mla-detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 999;
+}
+
+.mla-detail-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 420px;
+  height: 100vh;
+  background: #fff;
+  z-index: 1000;
+  overflow-y: auto;
+  border-left: 1px solid #c8dff0;
+  box-shadow: -10px 0 35px rgba(0, 0, 0, 0.15);
+
+  animation: slideInRight 0.25s ease;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.mla-panel-header {
+  padding: 24px;
+  background: linear-gradient(
+    135deg,
+    #1a6baf 0%,
+    #6eb5e7 100%
+  );
+  color: white;
+}
+
+.panel-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+.mla-panel-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.mla-panel-header p {
+  margin-top: 8px;
+  opacity: 0.85;
+}
+
+.panel-badges {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.panel-content {
+  padding: 20px;
+}
+
+.panel-content h4 {
+  margin-top: 18px;
+  margin-bottom: 6px;
+  color: #1a6baf;
+}
+
+.close-panel-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+}

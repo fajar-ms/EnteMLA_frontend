@@ -420,36 +420,80 @@ export default function CitizenDashboard() {
 
   const handleAddComplaint = async (e) => {
     e.preventDefault();
+
     if (!title || !category || !urgency || !details) {
-      alert("Please fill in all required fields (Title, Category, Urgency, and Details) before submitting.");
+      alert(
+        "Please fill in all required fields (Title, Category, Urgency, and Details) before submitting."
+      );
       return;
     }
-    const complaintPayload = {
-      title,
-      category: category === "Other" ? customCategory : category,
-      urgency,
-      details,
-      visibility: visibility || "Public",
-      citizenId: user?._id,
-    };
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(complaintPayload),
-      });
+      const formData = new FormData();
+
+      formData.append("title", title);
+      formData.append(
+        "category",
+        category === "Other" ? customCategory : category
+      );
+      formData.append("urgency", urgency);
+      formData.append("details", details);
+      formData.append(
+        "visibility",
+        visibility || "Public"
+      );
+      formData.append(
+        "citizenId",
+        user?._id
+      );
+
+      if (file) {
+        formData.append("evidence", file);
+      }
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/complaints`,
+        {
+          method: "POST",
+          body: formData, // no JSON.stringify
+        }
+      );
+
       if (response.ok) {
-        const savedComplaint = await response.json();
-        setComplaints(prev => [{ ...savedComplaint, id: savedComplaint._id, date: new Date().toLocaleDateString() }, ...prev]);
-        setTitle(""); setCategory(""); setDetails(""); setUrgency("");
+        const savedComplaint =
+          await response.json();
+
+        setComplaints((prev) => [
+          {
+            ...savedComplaint,
+            id: savedComplaint._id,
+            date: new Date().toLocaleDateString(),
+          },
+          ...prev,
+        ]);
+
+        setTitle("");
+        setCategory("");
+        setCustomCategory("");
+        setDetails("");
+        setUrgency("");
+        setVisibility("");
+        setFile(null);
+        setPreviewImage(null);
+
         setSubmitSuccess(true);
-        setTimeout(() => setSubmitSuccess(false), 3000);
+        setTimeout(
+          () => setSubmitSuccess(false),
+          3000
+        );
       }
     } catch (error) {
-      alert("Submission failed. Check backend connection.");
+      console.error(error);
+      alert(
+        "Submission failed. Check backend connection."
+      );
     }
   };
-
   // Add this near your clr, radius, and cardStyle declarations
   const typography = {
     family: "'Plus Jakarta Sans', sans-serif",
@@ -554,7 +598,7 @@ export default function CitizenDashboard() {
         </div>
 
         {/* ── ROW 1: Profile (Now single column since tracking is a popup) ── */}
-        <div className="cd-row1 profile-only-layout">
+        <div className="cd-row1">
           {/* Profile Card */}
           <div className="cd-card cd-profile-card">
             <div className="cd-profile-radial-deco" />
@@ -576,17 +620,55 @@ export default function CitizenDashboard() {
               {[
                 { icon: <FaEnvelope size={14} />, val: user?.email, label: "Email Address" },
                 { icon: <FaPhone size={14} />, val: user?.phone, label: "Phone Number" },
-                { icon: <FaMapMarkerAlt size={14} />, val: user?.district, label: "District Region" },
-                { icon: <FaLandmark size={14} />, val: user?.constituencyId, label: "Constituency ID" },
-                { icon: <FaLocationArrow size={14} />, val: user?.place, label: "Registered Place" }
+                { icon: <FaMapMarkerAlt size={14} />, val: user?.district, label: "District" },
+                { icon: <FaLandmark size={14} />, val: user?.constituencyId, label: "Constituency " },
+                { icon: <FaLocationArrow size={14} />, val: user?.place, label: "Place" }
               ].map((item, i) => (
                 <div key={i} className="cd-profile-info-row">
                   <span className="cd-profile-icon" title={item.label}>{item.icon}</span>
+                  <span className="profile-label">{item.label}</span>
                   <div className="cd-profile-data-column">
                     <span className="cd-profile-data-value">{item.val || "Not Provided"}</span>
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+          <div className="cd-card cd-instructions-card">
+            <div className="instruction-header">
+              <div className="instruction-icon">
+                <FaIdBadge />
+              </div>
+
+              <div>
+                <p className="cd-label-heading">Instructions</p>
+                <div className="instruction-title-line"></div>
+              </div>
+            </div>
+
+            <div className="instruction-list">
+              {[
+                "Fill in the specified details of your problem in the respective fields.",
+                "Upload supporting evidence or documents related to your complaint.",
+                "Click Submit Complaint to register your case.",
+                "Once submitted, the complaint will be forwarded to the concerned MLA.",
+                "You can track the status of your complaint through this portal.",
+                "Visit this page regularly to view the latest updates and progress."
+              ].map((text, index) => (
+                <div key={index} className="instruction-item">
+                  <div className="instruction-number">
+                    {index + 1}
+                  </div>
+
+                  <div className="instruction-text">
+                    {text}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="instruction-tip">
+              💡 Please provide accurate information and valid evidence to help us resolve your issue faster.
             </div>
           </div>
         </div>
@@ -871,16 +953,6 @@ export default function CitizenDashboard() {
               </button>
             </div>
 
-            {/* <div className="cd-search-input-wrapper">
-              <input
-                type="text"
-                placeholder="Search by ID or title…"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="cd-track-search-field"
-              />
-            </div> */}
-
             <div className="cd-track-status-monitor has-content">
               <div className="cd-monitor-inner">
                 <div className="cd-monitor-header">
@@ -892,20 +964,27 @@ export default function CitizenDashboard() {
 
                 <div className="cd-divider-line" />
 
-                {selectedComplaint.status === "Rejected" && selectedComplaint.rejectionReasons?.length > 0 && (
-                  <div className="cd-rejection-notice-box">
-                    <div className="cd-rejection-title-row">
-                      <FaBan size={14} color="#BE123C" />
-                      <span className="cd-rejection-alert-tag">Rejection Reason</span>
+                {selectedComplaint.status === "Rejected" &&
+                  selectedComplaint.rejectionReason && (
+                    <div className="cd-rejection-notice-box">
+                      <div className="cd-rejection-title-row">
+                        <FaBan size={14} color="#BE123C" />
+                        <span className="cd-rejection-alert-tag">
+                          Rejection Reason
+                        </span>
+                      </div>
+
+                      <p className="cd-rejection-explanation">
+                        {selectedComplaint.rejectionReason}
+                      </p>
+
+                      <div className="cd-rejection-attribution">
+                        By: {selectedComplaint.rejectedByName}
+                        {selectedComplaint.rejectedByRole &&
+                          ` (${selectedComplaint.rejectedByRole})`}
+                      </div>
                     </div>
-                    <p className="cd-rejection-explanation">
-                      {selectedComplaint.rejectionReasons[selectedComplaint.rejectionReasons.length - 1].text}
-                    </p>
-                    <div className="cd-rejection-attribution">
-                      By: {selectedComplaint.rejectionReasons[0].adminName} ({selectedComplaint.rejectionReasons[0].adminRole})
-                    </div>
-                  </div>
-                )}
+                  )}
 
                 <div className="cd-monitor-badges-row">
                   <div className="cd-badge-group">
@@ -925,17 +1004,51 @@ export default function CitizenDashboard() {
                 )}
 
                 <div className="cd-monitor-replies-section">
-                  <div className="cd-badge-tiny-label">Official Updates / MLA Replies</div>
+                  <div className="cd-badge-tiny-label">
+                    Official Updates / MLA Replies
+                  </div>
+
                   <div className="cd-monitor-replies-scroll-zone">
-                    {selectedComplaint.replies && selectedComplaint.replies.length > 0 ? (
+
+                    {/* MLA/Admin Comment */}
+                    {selectedComplaint.comment && (
+                      <div className="cd-reply-item-bubble cd-official-reply">
+                        <strong className="cd-reply-author">
+                          MLA Office:
+                        </strong>
+                        <span className="cd-reply-body-text">
+                          {selectedComplaint.comment}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Citizen Replies */}
+                    {selectedComplaint.replies &&
+                      selectedComplaint.replies.length > 0 ? (
                       selectedComplaint.replies.map((r, i) => (
-                        <div key={i} className="cd-reply-item-bubble">
-                          <strong className="cd-reply-author">{r.from}:</strong>
-                          <span className="cd-reply-body-text">{r.text}</span>
+                        <div
+                          key={i}
+                          className="cd-reply-item-bubble"
+                        >
+                          <strong className="cd-reply-author">
+                            {r.username || r.from}
+                          </strong>
+
+                          <strong className="cd-reply-author">
+                            ({r.role || r.from}):
+                          </strong>
+
+                          <span className="cd-reply-body-text">
+                            {r.text}
+                          </span>
                         </div>
                       ))
                     ) : (
-                      <span className="cd-replies-empty-msg">No official remarks or responses recorded yet.</span>
+                      !selectedComplaint.comment && (
+                        <span className="cd-replies-empty-msg">
+                          No official remarks or responses recorded yet.
+                        </span>
+                      )
                     )}
                   </div>
                 </div>

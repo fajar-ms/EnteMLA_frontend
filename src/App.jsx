@@ -14,6 +14,7 @@ import CitizenDashboard from "./pages/CitizenDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import MLADashboard from "./pages/MLADashboard";
 import RoleSelect from "./pages/RoleSelect";
+import MlaBanner from "./pages/MlaBanner";
 
 
 
@@ -25,7 +26,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<Home />} />
-          
+
           <Route path="/contact" element={<Contact />} />
           <Route path="/About" element={<About />} />
           <Route path="/QA" element={<QA />} />
@@ -33,12 +34,16 @@ function App() {
           <Route path="/Register" element={<Register />} />
           <Route path="/RegisterEmp" element={<RegisterEmp />} />
           <Route path="/Complaint" element={<Complaint />} />
-               <Route path="/role" element={<RoleSelect />} />
-                <Route path="/login" element={<Login />} />
+          <Route path="/role" element={<RoleSelect />} />
+          <Route path="/login" element={<Login />} />
 
           <Route path="/citizen" element={<CitizenDashboard />} />
           <Route path="/employee" element={<EmployeeDashboard />} />
           <Route path="/mla" element={<MLADashboard />} />
+          <Route
+            path="/mla/banner"
+            element={<MlaBanner />}
+          />
 
         </Routes>
 

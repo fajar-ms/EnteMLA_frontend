@@ -165,10 +165,145 @@
 /* ── Layout Grid Systems ── */
 .cd-row1 {
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
+  grid-template-columns: 1.7fr 1fr;
   gap: 24px;
-  margin-bottom: 24px;
-  align-items: start;
+  align-items: stretch;
+  margin-bottom:24px;
+}
+
+.cd-profile-card,
+.cd-instructions-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cd-instructions-card {
+  height: 100%;
+  background: #ffffff;
+  border: 1.5px solid #c8dff0;
+  border-radius: 20px;
+}
+
+.cd-instructions-content {
+  margin-top: 12px;
+}
+
+.cd-instructions-content ol {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.cd-instructions-content li {
+  margin-bottom: 12px;
+  color: #2a5f80;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.cd-instructions-content li:last-child {
+  margin-bottom: 0;
+}
+.cd-instructions-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.instruction-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.instruction-item {
+  padding: 10px 0;
+}
+
+.instruction-number {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+}
+
+.instruction-text {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.instruction-tip {
+  margin-top: 12px;
+  padding: 10px 12px;
+}
+.instruction-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    #1A8FA8,
+    #1A6BAF
+  );
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.instruction-title-line {
+  width: 60px;
+  height: 3px;
+  background: #1A6BAF;
+  border-radius: 20px;
+  margin-top: 6px;
+}
+
+.instruction-list {
+  flex: 1;
+}
+
+.instruction-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;   /* reduced from 14px */
+  border-bottom: 1px solid #E5EEF7;
+}
+
+.instruction-item:last-child {
+  border-bottom: none;
+}
+
+.instruction-number {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  font-size: 15px;
+}
+
+.instruction-text {
+  font-size: 14px;
+  line-height: 1;  /* reduced from 1.7 */
+  color: #2A5F80;
+}
+
+.instruction-tip {
+  margin-top: -25px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #EEF7FD;
+  border: 1px solid #C8DFF0;
+  color: #1A6BAF;
+  font-size: 13px;
+  font-weight: 100;
+}
+
+/* Tablet & Mobile */
+@media (max-width: 900px) {
+  .cd-row1 {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Profile Structure Card */
@@ -176,6 +311,12 @@
   background: linear-gradient(135deg, #FFFFFF 60%, #F8FAFC 100%) !important;
   position: relative;
   overflow: hidden;
+}
+.cd-profile-card,
+.cd-instructions-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* .cd-profile-radial-deco {
@@ -220,31 +361,97 @@
   border-radius: 99px;
   border: 1px solid #B8D9EE;
 }
-
-.cd-profile-details-list {
-  border-top: 1.5px solid #E2E8F0;
-  padding-top: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+/* Profile List */
+.cd-profile-details-list{
+  margin-top: 18px;
+  border-top: 1px solid #dce9f5;
+  padding-top: 12px;
 }
 
+/* Row */
+.profile-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid #eef4f9;
+}
+
+/* Left Side */
+.profile-label-side{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:220px;
+}
+
+.profile-icon{
+  width:28px;
+  height:28px;
+  border-radius:8px;
+  background:#eef5fb;
+  color:#4f6d8c;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+
+.profile-label{
+  font-size:12px;
+  color:#526b84;
+  font-weight:500;
+}
+
+/* Right Side */
+.profile-value{
+  flex:1;
+  text-align:left;
+  font-size:13px;
+  font-weight:600;
+  color:#1e293b;
+}
+
+/* Last Row */
+.profile-row:last-child{
+  border-bottom:none;
+}
+
+/* Space between each row */
 .cd-profile-info-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  margin-bottom: 1px; /* Increase vertical gap */
 }
 
+/* Fixed width for labels */
+.profile-label {
+  width: 140px;        /* All values start from same point */
+  min-width: 140px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+/* Value column */
+.cd-profile-data-column {
+  flex: 1;
+}
+
+/* Value text */
+.cd-profile-data-value {
+  font-weight: 600;
+  color: #0D2137;
+}
+
+/* Icon box */
 .cd-profile-icon {
-  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
   display: flex;
   align-items: center;
-  color: #5A7B9A;
-  background: #F1F5F9;
-  width: 28px;
-  height: 28px;
   justify-content: center;
-  border-radius: 8px;
 }
 
 .cd-profile-data-value {
@@ -252,6 +459,17 @@
   color: #334155;
   font-weight: 600;
   word-break: break-word;
+}
+.cd-profile-card {
+  padding: 20px 24px;
+}
+
+.cd-profile-details-list {
+  gap: 10px;
+}
+
+.cd-profile-info-row {
+  padding: 4px 0;
 }
 
 /* ── Track System Module ── */
@@ -1121,4 +1339,13 @@
     opacity: 1;
     transform: scale(1) translateY(0);
   }
+}
+.cd-official-reply {
+  background: #eaf4fb;
+  border-left: 4px solid #1a6b8a;
+}
+
+.cd-official-reply .cd-reply-author {
+  color: #1a6b8a;
+  font-weight: 700;
 }

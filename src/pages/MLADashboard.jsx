@@ -1,36 +1,8 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "./MLADashboard.css";
+import { font, selectSt, clr, styles } from "../theme/mla-style";
 import { FaClipboardList, FaExclamationCircle, FaClock, FaCheckCircle, FaRetweet } from "react-icons/fa";
-
-// ── Design Tokens ──────────────────────────────────────────────
-const clr = {
-  bg: "#E8F4FB",
-  paper: "#FFFFFF",
-  card: "#FFFFFF",
-  border: "#C8DFF0",
-  borderLight: "#DAEDF8",
-  text: "#0D2137",
-  textMid: "#1A3A55",
-  muted: "#4A7A9B",
-  hint: "#7AAEC8",
-  primary: "#1A6BAF",
-  primaryLight: "#E0F0FA",
-  accent: "#1565C0",
-  accentLight: "#E3F0FC",
-  gold: "#1A7BB5",
-  goldLight: "#DCF0FB",
-  success: "#1A8A5A",
-  successLight: "#E0F5EC",
-  warning: "#1A7AAF",
-  warningLight: "#DCF0FB",
-  inProgress: "#1A55A0",
-  inProgressLight: "#E0ECFA",
-};
-const font = {
-  display: "'Playfair Display', Georgia, serif",
-  body: "'DM Sans', 'Segoe UI', sans-serif",
-  mono: "'JetBrains Mono', monospace",
-};
 
 // ── Atoms ──────────────────────────────────────────────────────
 const UrgencyBadge = ({ level }) => {
@@ -142,7 +114,7 @@ const StatCard = ({ label, value, color, icon, sub }) => (
       overflow: "hidden",
     }}
   >
-    <div style={{ position: "absolute", top: 12, right: 16, fontSize: 28, opacity: 0.4, lineHeight: 1,color }}>
+    <div style={{ position: "absolute", top: 12, right: 16, fontSize: 28, opacity: 0.4, lineHeight: 1, color }}>
       {icon}
     </div>
     <div style={{ fontSize: 10, fontFamily: font.body, fontWeight: 700, color: clr.muted, letterSpacing: "1.2px", textTransform: "uppercase", marginBottom: 8 }}>
@@ -155,19 +127,7 @@ const StatCard = ({ label, value, color, icon, sub }) => (
   </div>
 );
 
-const selectSt = {
-  width: "100%",
-  padding: "8px 10px",
-  fontSize: 12,
-  color: clr.text,
-  background: clr.paper,
-  border: `1px solid ${clr.border}`,
-  borderRadius: 4,
-  outline: "none",
-  fontFamily: font.body,
-  cursor: "pointer",
-  letterSpacing: "0.3px",
-};
+
 
 const labelSt = {
   fontSize: 9,
@@ -194,16 +154,32 @@ export default function MlaComplaintDashboard() {
   const [actionLoading, setActionLoading] = useState(false);
   const [comment, setComment] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  // 1. Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Change this number to control rows per page
 
-useEffect(() => {
-  const handleResize = () => {
-    setIsMobile(window.innerWidth <= 768);
-  };
+  // 2. Reset back to page 1 whenever filters change so you don't get stuck on an empty page
 
-  window.addEventListener("resize", handleResize);
 
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
+  // 3. Slice the data chunk for the current active page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const [imageModal, setImageModal] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+
+
+  // 4. Calculate total number of pages
+
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const [filters, setFilters] = useState({
     urgency: "",
@@ -222,6 +198,7 @@ useEffect(() => {
   useEffect(() => {
     setLoading(true);
     const token = localStorage.getItem("token");
+
 
     Promise.all([
       fetch(`${import.meta.env.VITE_API_BASE_URL}/complaints/employee`, {
@@ -254,10 +231,6 @@ useEffect(() => {
 
         setComplaints(formattedComplaints);
         setUsers(Array.isArray(usersData) ? usersData : []);
-
-        if (formattedComplaints.length > 0) {
-          setSelectedComplaint(formattedComplaints[0]);
-        }
         setLoading(false);
       })
       .catch(() => {
@@ -309,15 +282,31 @@ useEffect(() => {
       });
   }, [complaints, filters]);
 
+  const currentComplaintsPage = filteredComplaints.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredComplaints.length / itemsPerPage);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredComplaints.length]);
+
   const totalComplaints = complaints.length;
   const urgentIssues = complaints.filter((c) => c.urgency === "Urgent").length;
   const pendingCount = complaints.filter((c) => c.status === "Pending").length;
   const resolvedCount = complaints.filter((c) => c.status === "Resolved").length;
+  const currentUser = JSON.parse(
+    localStorage.getItem("user")
+  );
 
   // Evaluates if the current item is closed under Resolved or Rejected criteria
   const isCaseClosed = selectedComplaint?.status === "Resolved" || selectedComplaint?.status === "Rejected";
 
-  const updateStatus = async (newStatus) => {
+  const updateStatus = async (
+    newStatus,
+    rejectionReason = ""
+  ) => {
     if (!selectedComplaint) return;
     setActionLoading(true);
 
@@ -334,6 +323,13 @@ useEffect(() => {
           body: JSON.stringify({
             status: newStatus,
             comment,
+            rejectionReason,
+            rejectedBy: {
+              adminId: currentUser._id,
+              adminName: currentUser.name,
+              adminRole: currentUser.role,
+              mlaId: currentUser.mlaId,
+            },
             userId: selectedComplaint.citizenId?._id || selectedComplaint.citizenId,
           }),
         }
@@ -343,7 +339,7 @@ useEffect(() => {
         setComplaints((prev) =>
           prev.map((c) =>
             c.id === selectedComplaint.id
-              ? { ...c, status: newStatus, comment }
+              ? { ...c, status: newStatus, comment, rejectionReason }
               : c
           )
         );
@@ -352,6 +348,7 @@ useEffect(() => {
           ...prev,
           status: newStatus,
           comment,
+          rejectionReason,
         }));
         setComment("");
         alert(`Status successfully updated to ${newStatus}`);
@@ -363,6 +360,23 @@ useEffect(() => {
     } finally {
       setActionLoading(false);
     }
+  };
+
+  const handleRejectComplaint = async () => {
+    if (!rejectionReason.trim()) {
+      toast.error(
+        "Please enter a rejection reason"
+      );
+      return;
+    }
+
+    await updateStatus(
+      "Rejected",
+      rejectionReason
+    );
+
+    setShowRejectModal(false);
+    setRejectionReason("");
   };
 
   // Handles adding updates to the timeline log without moving state out of In Progress / Pending
@@ -381,145 +395,160 @@ useEffect(() => {
 
   return (
     <div style={{ minHeight: "100vh", background: clr.bg, fontFamily: font.body, color: clr.text }}>
-     
-{/* ── HEADER ── */}
-<div
-  style={{
-    background: clr.paper,
-    borderBottom: `1px solid ${clr.border}`,
-    padding: isMobile ? "16px" : "18px 32px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: isMobile ? "flex-start" : "center",
-    flexDirection: isMobile ? "column" : "row",
-    gap: isMobile ? 16 : 0,
-  }}
->
-  {/* LEFT */}
-  <div
-    style={{
-      display: "flex",
-      alignItems: "center",
-      gap: 14,
-    }}
-  >
-    {/* LOGO */}
-    <div
-      style={{
-        width: 52,
-        height: 52,
-        borderRadius: 14,
-        background: clr.primary,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        boxShadow: "0 6px 18px rgba(26,107,175,0.25)",
-        flexShrink: 0,
-      }}
-    >
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="#ffffff"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M3 21h18" />
-        <path d="M5 21V7l7-4 7 4v14" />
-        <path d="M9 10h.01" />
-        <path d="M15 10h.01" />
-        <path d="M9 14h.01" />
-        <path d="M15 14h.01" />
-      </svg>
-    </div>
 
-    {/* TITLE */}
-    <div>
-      <h1
+      {/* ── HEADER ── */}
+      <div
         style={{
-          margin: 0,
-          fontSize: isMobile ? 22 : 30,
-          fontFamily: font.display,
-          color: clr.text,
-          fontWeight: 700,
-          lineHeight: 1.1,
+          background: clr.paper,
+          borderBottom: `1px solid ${clr.border}`,
+          padding: isMobile ? "16px" : "18px 32px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: isMobile ? "flex-start" : "center",
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? 16 : 0,
         }}
       >
-        MLA Complaint Dashboard
-      </h1>
+        {/* LEFT */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+          }}
+        >
+          {/* LOGO */}
+          <div
+            style={{
+              width: 52,
+              height: 52,
+              borderRadius: 14,
+              background: clr.primary,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 6px 18px rgba(26,107,175,0.25)",
+              flexShrink: 0,
+            }}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 21h18" />
+              <path d="M5 21V7l7-4 7 4v14" />
+              <path d="M9 10h.01" />
+              <path d="M15 10h.01" />
+              <path d="M9 14h.01" />
+              <path d="M15 14h.01" />
+            </svg>
+          </div>
 
-      <p
-        style={{
-          margin: "6px 0 0",
-          color: clr.muted,
-          fontSize: 13,
-          fontWeight: 500,
-        }}
-      >
-        Constituency Administration Portal
-      </p>
-    </div>
-  </div>
+          {/* TITLE */}
+          <div>
+            <h1
+              style={{
+                margin: 0,
+                fontSize: isMobile ? 22 : 30,
+                fontFamily: font.display,
+                color: clr.text,
+                fontWeight: 700,
+                lineHeight: 1.1,
+              }}
+            >
+              MLA Complaint Dashboard
+            </h1>
 
-  {/* RIGHT BUTTONS */}
-  <div
-    style={{
-      display: "flex",
-      gap: 12,
-      width: isMobile ? "100%" : "auto",
-    }}
-  >
-    <a
-      href="/"
-      style={{
-        flex: isMobile ? 1 : "unset",
-        textDecoration: "none",
-        padding: "10px 16px",
-        borderRadius: 8,
-        border: `1px solid ${clr.border}`,
-        background: clr.paper,
-        color: clr.textMid,
-        fontSize: 13,
-        fontWeight: 700,
-        display: "flex",
+            <p
+              style={{
+                margin: "6px 0 0",
+                color: clr.muted,
+                fontSize: 13,
+                fontWeight: 500,
+              }}
+            >
+              Constituency Administration Portal
+            </p>
+          </div>
+        </div>
 
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-      }}
-    >
-      Home
-    </a>
+        {/* RIGHT BUTTONS */}
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            width: isMobile ? "100%" : "auto",
+          }}
+        >
+          <a
+            href="/"
+            style={{
+              flex: isMobile ? 1 : "unset",
+              textDecoration: "none",
+              padding: "10px 16px",
+              borderRadius: 8,
+              border: `1px solid ${clr.border}`,
+              background: clr.paper,
+              color: clr.textMid,
+              fontSize: 13,
+              fontWeight: 700,
+              display: "flex",
 
-    <button
-      onClick={handleLogout}
-      style={{
-        flex: isMobile ? 1 : "unset",
-        padding: "10px 16px",
-        borderRadius: 8,
-        border: "none",
-        background: clr.accent,
-        color: "#fff",
-        fontSize: 13,
-        fontWeight: 700,
-        cursor: "pointer",
-      }}
-    >
-      Logout
-    </button>
-  </div>
-</div>
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
+          >
+            Home
+          </a>
+          <button
+            onClick={() => navigate("/mla/banner")}
+            style={{
+              padding: "10px 16px",
+              borderRadius: 8,
+              border: "none",
+              background: clr.primary,
+              color: "#fff",
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            Manage Banners
+          </button>
+
+          <button
+            onClick={handleLogout}
+            style={{
+              flex: isMobile ? 1 : "unset",
+              padding: "10px 16px",
+              borderRadius: 8,
+              border: "none",
+              background: clr.accent,
+              color: "#fff",
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      </div>
 
 
 
       <main
-  style={{
-    padding: isMobile ? "16px" : "24px 32px",
-  }}
->
+        style={{
+          padding: isMobile ? "16px" : "24px 32px",
+        }}
+      >
         {error && (
           <div style={{ padding: 14, background: clr.accentLight, color: clr.accent, border: `1px solid ${clr.accent}`, borderRadius: 4, marginBottom: 20, fontSize: 14 }}>
             {error}
@@ -528,39 +557,39 @@ useEffect(() => {
 
         {/* Stats Grid */}
         <div
-  style={{
-    display: "grid",
-    gridTemplateColumns: isMobile ? "1fr" : "repeat(5, 1fr)",
-    gap: 16,
-    marginBottom: 24,
-  }}
->
-          <StatCard label="Total Complaints" value={totalComplaints} color={clr.primary}  icon={<FaClipboardList />} />
-          <StatCard label="Urgent Issues" value={urgentIssues} color={clr.accent} icon={<FaExclamationCircle />}  />
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(5, 1fr)",
+            gap: 16,
+            marginBottom: 24,
+          }}
+        >
+          <StatCard label="Total Complaints" value={totalComplaints} color={clr.primary} icon={<FaClipboardList />} />
+          <StatCard label="Urgent Issues" value={urgentIssues} color={clr.accent} icon={<FaExclamationCircle />} />
           <StatCard label="Pending" value={pendingCount} color={clr.warning} icon={<FaClock />} />
           <StatCard label="Resolved" value={resolvedCount} color={clr.success} icon={<FaCheckCircle />} />
           <StatCard
             label="Trending Issues"
             value={trendingComplaints}
             color={clr.gold}
-            icon={<FaRetweet />} 
+            icon={<FaRetweet />}
           />
         </div>
 
         {/* Dynamic Filters Bar */}
         <div
-  style={{
-    background: clr.paper,
-    border: `1px solid ${clr.border}`,
-    borderRadius: 6,
-    padding: "16px 20px",
-    marginBottom: 24,
-    display: "grid",
-    gridTemplateColumns: isMobile ? "1fr" : "repeat(5, 1fr)",
-    gap: 16,
-    alignItems: "flex-end",
-  }}
->
+          style={{
+            background: clr.paper,
+            border: `1px solid ${clr.border}`,
+            borderRadius: 6,
+            padding: "16px 20px",
+            marginBottom: 24,
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(5, 1fr)",
+            gap: 16,
+            alignItems: "flex-end",
+          }}
+        >
           <div style={{ flex: 1 }}>
             <label style={labelSt}>Urgency</label>
             <select value={filters.urgency} onChange={(e) => setFilter("urgency", e.target.value)} style={selectSt}>
@@ -581,7 +610,7 @@ useEffect(() => {
             </select>
           </div>
 
-          <div style={{ flex: 1 }}>
+          {/* <div style={{ flex: 1 }}>
             <label style={labelSt}>Ward</label>
             <select value={filters.ward} onChange={(e) => setFilter("ward", e.target.value)} style={selectSt}>
               <option value="">All Wards / Regions</option>
@@ -589,7 +618,7 @@ useEffect(() => {
                 <option key={w} value={w}>{w}</option>
               ))}
             </select>
-          </div>
+          </div> */}
 
           <div style={{ flex: 1 }}>
             <label style={labelSt}>Status</label>
@@ -615,66 +644,73 @@ useEffect(() => {
         <div>
 
           {/* Complaints Table Container */}
-          <div style={{ flex: 1, background: clr.card, border: `1px solid ${clr.border}`, borderRadius: 6, overflow: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: 13 }}>
+          <div className="table-scroll-container">
+            <table className="dashboard-data-table">
               <thead>
-                <tr style={{ background: clr.paper, borderBottom: `1px solid ${clr.border}`, color: clr.muted, fontWeight: 600 }}>
-                  <th style={{ padding: "14px 18px" }}>Citizen</th>
-                  <th style={{ padding: "14px 18px" }}>Complaint Title</th>
-                  <th style={{ padding: "14px 18px" }}>Ward</th>
-                  <th style={{ padding: "14px 18px" }}>Urgency</th>
-                  <th style={{ padding: "14px 18px" }}>Status</th>
-                  <th style={{ padding: "14px 18px" }}>Reposts</th>
+                <tr className="table-header-row">
+                  <th className="table-header-cell">Citizen</th>
+                  <th className="table-header-cell">Complaint Title</th>
+                  <th className="table-header-cell">Evidence</th>
+                  <th className="table-header-cell">Urgency</th>
+                  <th className="table-header-cell">Status</th>
+                  <th className="table-header-cell">Reposts</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredComplaints.length === 0 ? (
+                {currentComplaintsPage.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ padding: 30, color: clr.muted, textAlign: "center" }}>
+                    <td colSpan="6" className="cell-empty-state">
                       No regional complaints found matching active filter scope.
                     </td>
                   </tr>
                 ) : (
-                  filteredComplaints.map((c) => {
+                  currentComplaintsPage.map((c) => {
                     const isSelected = selectedComplaint?.id === c.id;
+                    const isHighPublicAttention = (c.reposts || 0) >= 10;
+
                     return (
                       <tr
                         key={c.id}
                         onClick={() => setSelectedComplaint(c)}
-                        style={{
-                          borderBottom: `1px solid ${clr.borderLight}`,
-                          cursor: "pointer",
-                          background: isSelected ? clr.primaryLight : "transparent",
-                          transition: "background 0.15s",
-                          borderLeft:
-                            (c.reposts || 0) >= 10
-                              ? `4px solid ${clr.accent}`
-                              : "4px solid transparent",
-                        }}
+                        className={`table-body-row 
+                ${isSelected ? 'is-selected' : ''} 
+                ${isHighPublicAttention ? 'has-high-reposts' : ''}
+              `}
                       >
-                        <td style={{ padding: "14px 18px", display: "flex", alignItems: "center", gap: 10, fontWeight: 500 }}>
+                        <td className="cell-citizen">
                           <AvatarCircle name={c.userName} />
                           {c.userName}
                         </td>
-                        <td style={{ padding: "14px 18px", color: clr.textMid }}>{c.title}</td>
-                        <td style={{ padding: "14px 18px", fontFamily: font.mono, fontSize: 12 }}>{c.ward}</td>
-                        <td style={{ padding: "14px 18px" }}><UrgencyBadge level={c.urgency} /></td>
-                        <td style={{ padding: "14px 18px" }}><StatusBadge status={c.status} /></td>
-                        <td style={{ padding: "14px 18px" }}>
-                          <div
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: 6,
-                              background: clr.primaryLight,
-                              color: clr.primary,
-                              padding: "5px 10px",
-                              borderRadius: 20,
-                              fontSize: 12,
-                              fontWeight: 700,
-                            }}
-                          >
-                            <FaRetweet style={{ marginRight: 4 }} />  {c.reposts || 0}
+                        <td className="cell-text">{c.title}</td>
+                        <td className="cell-text">
+                          {c.evidence ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPreviewImage(c.evidence);
+                                setImageModal(true);
+                              }}
+                              style={{
+                                padding: "6px 12px",
+                                borderRadius: "8px",
+                                border: "none",
+                                background: "#EAF4FB",
+                                color: "#124E66",
+                                cursor: "pointer",
+                                fontWeight: 600,
+                              }}
+                            >
+                              📎 View
+                            </button>
+                          ) : (
+                            <span style={{ color: "#94A3B8" }}>No Evidence</span>
+                          )}
+                        </td>
+                        <td className="cell-badge"><UrgencyBadge level={c.urgency} /></td>
+                        <td className="cell-badge"><StatusBadge status={c.status} /></td>
+                        <td className="cell-badge">
+                          <div className="repost-count-badge">
+                            <FaRetweet className="repost-icon-spacing" /> {c.reposts || 0}
                           </div>
                         </td>
                       </tr>
@@ -683,6 +719,77 @@ useEffect(() => {
                 )}
               </tbody>
             </table>
+
+            {imageModal && (
+              <div
+                onClick={() => setImageModal(false)}
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  background: "rgba(0,0,0,0.8)",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  zIndex: 9999,
+                }}
+              >
+                <img
+                  src={previewImage}
+                  alt="Evidence Preview"
+                  style={{
+                    maxWidth: "90vw",
+                    maxHeight: "90vh",
+                    objectFit: "contain",
+                  }}
+                />
+              </div>
+            )}
+
+            {/* ── PAGINATION CONTROLS PANELS ── */}
+            {totalPages > 1 && (
+              <div className="table-pagination-bar">
+                {/* Items Counter Status text */}
+                <span className="pagination-counter-text">
+                  Showing <b>{indexOfFirstItem + 1}</b> to <b>{Math.min(indexOfLastItem, filteredComplaints.length)}</b> of <b>{filteredComplaints.length}</b> items
+                </span>
+
+                {/* Navigation button arrays */}
+                <div className="pagination-controls-group">
+                  {/* Previous Button */}
+                  <button
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    className="pagination-btn"
+                  >
+                    Previous
+                  </button>
+
+                  {/* Numeric Page Buttons Layout Map */}
+                  {Array.from({ length: totalPages }, (_, idx) => {
+                    const pageNum = idx + 1;
+                    const isActive = currentPage === pageNum;
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        className={`pagination-btn pagination-number-btn ${isActive ? 'is-active' : ''}`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  {/* Next Button */}
+                  <button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    className="pagination-btn"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Details Management Side Panel */}
@@ -834,6 +941,70 @@ useEffect(() => {
                   </div>
                 </div>
 
+                {/* Evidence Preview */}
+                {selectedComplaint.evidence && (
+                  <div style={{ marginBottom: 20 }}>
+                    <span style={labelSt}>Evidence</span>
+
+                    <div
+                      style={{
+                        background: clr.card,
+                        border: `1px solid ${clr.borderLight}`,
+                        borderRadius: 8,
+                        padding: 12,
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "100%",
+                          height: 260,
+                          background: clr.bg,
+                          borderRadius: 6,
+                          overflow: "hidden",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          setPreviewImage(selectedComplaint.evidence);
+                          setImageModal(true);
+                        }}
+                      >
+                        <img
+                          src={selectedComplaint.evidence}
+                          alt="Complaint Evidence"
+                          style={{
+                            maxWidth: "100%",
+                            maxHeight: "100%",
+                            objectFit: "contain",
+                          }}
+                        />
+                      </div>
+
+                      <button
+                        onClick={() =>
+                          window.open(selectedComplaint.evidence, "_blank")
+                        }
+                        style={{
+                          marginTop: 12,
+                          width: "100%",
+                          padding: "10px",
+                          background: clr.primary,
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: 6,
+                          cursor: "pointer",
+                          fontSize: 13,
+                          fontWeight: 600,
+                        }}
+                      >
+                        Open Full Image
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Existing Comment */}
                 {selectedComplaint.comment && (
                   <div style={{ marginBottom: 20 }}>
@@ -969,7 +1140,7 @@ useEffect(() => {
 
                     <button
                       disabled={isCaseClosed || actionLoading}
-                      onClick={() => updateStatus("Rejected")}
+                      onClick={() => setShowRejectModal(true)}
                       style={{
                         padding: "12px",
                         background: clr.card,
@@ -985,6 +1156,67 @@ useEffect(() => {
                       Reject Complaint
                     </button>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showRejectModal && (
+            <div style={styles.overlay}>
+              <div style={styles.modalCard}>
+                <h3 style={styles.title}>Reject Complaint</h3>
+
+                <p style={styles.description}>
+                  Please provide a reason for rejecting this complaint.
+                </p>
+
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  rows={5}
+                  placeholder="Type the rejection reason here..."
+                  style={{
+                    ...styles.textarea,
+                    border: `1px solid ${clr?.border || "#cbd5e1"}`, // Keeps dynamic color logic intact
+                  }}
+                />
+
+                <div style={styles.buttonContainer}>
+                  <button
+                    onClick={() => {
+                      setShowRejectModal(false);
+                      setRejectionReason("");
+                    }}
+                    style={styles.cancelButton}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#f1f5f9";
+                      e.currentTarget.style.color = "#0f172a";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "transparent";
+                      e.currentTarget.style.color = "#475569";
+                    }}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={handleRejectComplaint}
+                    disabled={!rejectionReason.trim()}
+                    style={{
+                      ...styles.confirmButton,
+                      background: rejectionReason.trim() ? "#dc2626" : "#fca5a5",
+                      cursor: rejectionReason.trim() ? "pointer" : "not-allowed",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (rejectionReason.trim()) e.currentTarget.style.background = "#b91c1c";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (rejectionReason.trim()) e.currentTarget.style.background = "#dc2626";
+                    }}
+                  >
+                    Confirm Rejection
+                  </button>
                 </div>
               </div>
             </div>

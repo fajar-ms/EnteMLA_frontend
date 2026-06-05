@@ -1,0 +1,330 @@
+/* ==========================================================================
+   Admin Banner Page - Classic & Professional Stylesheet
+   ========================================================================== */
+
+/* Main Page Container Layout */
+.admin-banner-page {
+    font-family: 'system-ui', -apple-system, "Segoe UI", Roboto, sans-serif;
+    background-color: #f8fafc; /* Classic soft dashboard backdrop */
+    min-height: 100vh;
+    padding: 40px 24px;
+    color: #1e293b;
+    box-sizing: border-box;
+}
+
+/* Centralized Content constraints */
+.admin-banner-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* ==========================================================================
+   FORM CARD ARCHITECTURE
+   ========================================================================== */
+.banner-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 32px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.banner-title {
+    margin: 0 0 24px 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0f172a;
+    letter-spacing: -0.025em;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 12px;
+}
+
+/* Form inputs & grid controls */
+.banner-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: span 2;
+}
+
+/* Global Form Elements Design */
+.banner-form input[type="text"],
+.banner-form textarea {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #334155;
+    outline: none;
+    box-sizing: border-box;
+    transition: all 0.15s ease;
+}
+
+.banner-form input[type="text"]:focus,
+.banner-form textarea:focus {
+    border-color: #6366f1; /* Professional Indigo focus accent */
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* File Upload input custom styling */
+.banner-form input[type="file"] {
+    font-size: 0.85rem;
+    color: #64748b;
+    padding: 8px 0;
+}
+
+.banner-form input[type="file"]::file-selector-button {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: 12px;
+    transition: background-color 0.15s ease;
+}
+
+.banner-form input[type="file"]::file-selector-button:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
+}
+
+/* Media Preview Card Block */
+.banner-preview {
+    grid-column: span 2;
+    background-color: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 6px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.preview-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #64748b;
+}
+
+.banner-preview img {
+    max-width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Form submission action */
+.submit-btn {
+    grid-column: span 2;
+    justify-self: end;
+    background-color: #0f172a; /* Executive Deep Slate */
+    color: #ffffff;
+    border: none;
+    padding: 10px 24px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: background-color 0.15s ease;
+}
+
+.submit-btn:hover {
+    background-color: #1e293b;
+}
+
+/* ==========================================================================
+   DATA TABLE DESIGN
+   ========================================================================== */
+.table-title {
+    margin: 16px 0 0 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.table-wrapper {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Clean edge boundaries */
+}
+
+.banner-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.banner-table th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    padding: 14px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.banner-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    vertical-align: middle;
+}
+
+/* Keep rows neatly highlighted on hover */
+.banner-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Prevent layout breaking for empty items */
+.banner-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Asset Thumbnail Layout constraints */
+.banner-thumb {
+    width: 120px;
+    height: 68px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    background-color: #f1f5f9;
+}
+
+/* Helper Utilities inside Cells */
+.text-bold {
+    font-weight: 500;
+    color: #0f172a;
+}
+
+.text-muted {
+    color: #64748b;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* Action Trigger Elements Layout */
+.action-group {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.edit-btn,
+.delete-btn {
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+/* Neutral Gray Corporate Action Primary */
+.edit-btn {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+}
+
+.edit-btn:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    border-color: #94a3b8;
+}
+
+/* Traditional Formal Corporate Restrictive Action */
+.delete-btn {
+    background-color: #ffffff;
+    border: 1px solid #fee2e2;
+    color: #dc2626;
+}
+
+.delete-btn:hover {
+    background-color: #dc2626;
+    border-color: #dc2626;
+    color: #ffffff;
+}
+
+/* Responsive Structural Refinement */
+@media (max-width: 768px) {
+    .banner-form {
+        grid-template-columns: 1fr;
+    }
+    .form-group.full-width {
+        grid-column: span 1;
+    }
+    .banner-preview {
+        grid-column: span 1;
+    }
+    .submit-btn {
+        grid-column: span 1;
+        width: 100%;
+    }
+    .table-wrapper {
+        overflow-x: auto; /* Ensures table scrolls cleanly horizontally on dynamic screens */
+    }
+}
+/* Header Actions Row Placement */
+.admin-header-actions {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: -8px; /* Pulled closer slightly to keep page look cohesive */
+}
+
+/* Classic Professional Back Button style */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: transparent;
+    border: 1px solid #e2e8f0;
+    padding: 8px 14px;
+    border-radius: 6px;
+    color: #475569; /* Soft dark gray slate */
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+/* Micro interaction highlights */
+.back-btn:hover {
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a; /* Switches to stark crisp black font focus */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Minor vector tweak to match font dynamics */
+.back-btn svg {
+    transition: transform 0.15s ease;
+}
+
+.back-btn:hover svg {
+    transform: translateX(-2px); /* Classic organic left nudge indicator */
+}

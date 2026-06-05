@@ -242,9 +242,8 @@ const Trending = () => {
               >
                 <img
                   src={
-                    complaint.evidence
-                      ? `${import.meta.env.VITE_API_BASE_URL}/uploads/${complaint.evidence}`
-                      : "https://images.news18.com/ibnlive/uploads/2023/06/public-grievance-168568115816x9.jpg"
+                    complaint.evidence ||
+                      "https://images.news18.com/ibnlive/uploads/2023/06/public-grievance-168568115816x9.jpg"
                   }
                   alt={complaint.title}
                 />
@@ -317,6 +316,7 @@ const Trending = () => {
                         <p className="comment-user">
 
                           {reply.username}
+                          {reply.role && ` (${reply.role})`}
                           {/* Optional: Add a badge if it's an official reply */}
                           {reply.role === "MLA" && <span className="official-badge">⭐ MLA</span>}
                         </p>

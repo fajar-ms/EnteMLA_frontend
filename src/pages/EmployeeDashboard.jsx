@@ -156,6 +156,9 @@ export default function EmployeeComplaintDashboard() {
   const [sentStatus, setSentStatus] = useState({});
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [imageModal, setImageModal] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -528,6 +531,7 @@ export default function EmployeeComplaintDashboard() {
           <div className="complaints-header">
 
             <div>Citizen</div><div>Title</div><div>Category</div>
+            <div>Evidence</div>
 
             <div>Urgency</div><div>Status</div><div>Reposts</div><div>Date</div>
 
@@ -552,6 +556,32 @@ export default function EmployeeComplaintDashboard() {
               <div data-label="Title">{c.title}</div>
 
               <div data-label="Category">{c.category}</div>
+              <div data-label="Evidence">
+                {c.evidence ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(c.evidence, "_blank");
+                    }}
+                    style={{
+                      padding: "4px 10px",
+                      borderRadius: 999,
+                      border: "none",
+                      cursor: "pointer",
+                      background: "#EAF4FB",
+                      color: "#124E66",
+                      fontSize: 11,
+                      fontWeight: 700,
+                    }}
+                  >
+                    📎 View
+                  </button>
+                ) : (
+                  <span style={{ color: "#94A3B8" }}>
+                    No File
+                  </span>
+                )}
+              </div>
 
               <div data-label="Urgency">{c.urgency}</div>
 
@@ -724,6 +754,179 @@ export default function EmployeeComplaintDashboard() {
                         </div>
 
                       )}
+                      {selectedComplaint.evidence && (
+                        <div
+                          style={{
+                            marginBottom: 16,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 10,
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontSize: 12,
+                              fontWeight: 700,
+                              color: COLORS.textMuted,
+                            }}
+                          >
+                            Evidence
+                          </div>
+
+                          <div
+                            style={{
+                              width: "100%",
+                              height: 220,
+                              border: `1px solid ${COLORS.border}`,
+                              borderRadius: 12,
+                              overflow: "hidden",
+                              background: "#F8FAFC",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <img
+                              src={selectedComplaint.evidence}
+                              alt="Evidence"
+                              onClick={() => {
+                                setPreviewImage(selectedComplaint.evidence);
+                                setImageModal(true);
+                              }}
+                              style={{
+                                maxWidth: "100%",
+                                maxHeight: "100%",
+                                objectFit: "contain",
+                                cursor: "pointer",
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {(selectedComplaint.comment ||
+                        (selectedComplaint.replies &&
+                          selectedComplaint.replies.length > 0)) && (
+                          <div
+                            style={{
+                              marginBottom: 16,
+                              background: "#FFFFFF",
+                              border: `1px solid ${COLORS.border}`,
+                              borderRadius: 12,
+                              padding: 14,
+                            }}
+                          >
+                            <div
+                              style={{
+                                fontSize: 12,
+                                fontWeight: 700,
+                                color: COLORS.textMuted,
+                                marginBottom: 12,
+                                textTransform: "uppercase",
+                                letterSpacing: "0.5px",
+                              }}
+                            >
+                              Discussion & Replies
+                            </div>
+
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 10,
+                                maxHeight: 250,
+                                overflowY: "auto",
+                              }}
+                            >
+
+                              {/* MLA / Authority Comment */}
+                              {selectedComplaint.comment && (
+                                <div
+                                  style={{
+                                    background: "#EAF4FB",
+                                    border: "1px solid #B6D7E5",
+                                    borderRadius: 10,
+                                    padding: "10px 12px",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      fontSize: 12,
+                                      fontWeight: 700,
+                                      color: "#124E66",
+                                      marginBottom: 6,
+                                    }}
+                                  >
+                                    MLA Office (Official)
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      fontSize: 13,
+                                      lineHeight: 1.6,
+                                      color: COLORS.textPrimary,
+                                      whiteSpace: "pre-wrap",
+                                    }}
+                                  >
+                                    {selectedComplaint.comment}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Replies */}
+                              {selectedComplaint.replies?.map((reply, index) => (
+                                <div
+                                  key={reply._id || index}
+                                  style={{
+                                    background:
+                                      reply.role === "citizen"
+                                        ? "#F8FAFC"
+                                        : "#EAF4FB",
+                                    border: `1px solid ${COLORS.border}`,
+                                    borderRadius: 10,
+                                    padding: "10px 12px",
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      marginBottom: 6,
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        fontSize: 12,
+                                        fontWeight: 700,
+                                        color:
+                                          reply.role === "citizen"
+                                            ? "#475569"
+                                            : "#124E66",
+                                      }}
+                                    >
+                                      {reply.username || reply.from}
+                                      {reply.role === "citizen"
+                                        ? " (Citizen)"
+                                        : " (Authority)"}
+                                    </span>
+                                  </div>
+
+                                  <div
+                                    style={{
+                                      fontSize: 13,
+                                      lineHeight: 1.6,
+                                      color: COLORS.textPrimary,
+                                      whiteSpace: "pre-wrap",
+                                      wordBreak: "break-word",
+                                    }}
+                                  >
+                                    {reply.text}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
                       <div style={{ display: "grid", gridTemplateColumns: "0.6fr 1fr", gap: "10px 0", fontSize: 12 }}>
 
