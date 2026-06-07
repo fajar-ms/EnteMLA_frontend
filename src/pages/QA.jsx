@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from "react";
-import "./QA.css";
+import "../style/QA.css";
 import Navbar from "../components/home/Navbar";
 import { useTranslation } from "react-i18next";
 

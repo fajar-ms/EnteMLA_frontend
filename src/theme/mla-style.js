@@ -121,3 +121,13 @@ export const styles = {
     transition: "all 0.2s ease",
   },
 };
+export const labelSt = {
+  fontSize: 9,
+  fontWeight: 700,
+  color: clr.hint,
+  letterSpacing: "1.4px",
+  textTransform: "uppercase",
+  display: "block",
+  marginBottom: 6,
+  fontFamily: font.body,
+};

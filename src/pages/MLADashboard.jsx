@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./MLADashboard.css";
-import { font, selectSt, clr, styles } from "../theme/mla-style";
+import "../style/MLADashboard.css";
+import { font, selectSt, clr, styles, labelSt } from "../theme/mla-style";
 import { FaClipboardList, FaExclamationCircle, FaClock, FaCheckCircle, FaRetweet } from "react-icons/fa";
 
 // ── Atoms ──────────────────────────────────────────────────────
@@ -129,16 +129,7 @@ const StatCard = ({ label, value, color, icon, sub }) => (
 
 
 
-const labelSt = {
-  fontSize: 9,
-  fontWeight: 700,
-  color: clr.hint,
-  letterSpacing: "1.4px",
-  textTransform: "uppercase",
-  display: "block",
-  marginBottom: 6,
-  fontFamily: font.body,
-};
+
 
 const urgencyScore = (u) => (u === "Urgent" ? 1 : u === "Medium" ? 2 : 3);
 

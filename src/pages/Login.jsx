@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./Login.css";
+import "../style/Login.css";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaUser, FaLandmark, FaTools } from "react-icons/fa";
 export default function LoginPage() {
   console.log("LOGIN PAGE OPENED");

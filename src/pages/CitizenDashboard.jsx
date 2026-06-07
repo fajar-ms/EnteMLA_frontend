@@ -709,9 +709,22 @@ export default function CitizenDashboard() {
                 >
                   <option value="">Select…</option>
                   <option>Electricity</option>
-                  <option>Roads & Infrastructure</option>
-                  <option>Sanitation</option>
-                  <option value="Water">Water Supply</option>
+                  <option>Environment</option>
+                  <option>Healthcare</option>
+                  <option>Transport</option>
+                  <option>Education</option>
+                  <option>Public Safety</option>
+                  <option>Welfare</option>
+                  <option>Agriculture</option>
+                  <option>Sports</option>
+                  <option>Industries & Commerce</option>
+                  <option>Public Works Department</option>
+                  <option>Fisheries</option>
+                  <option>Food & Civil Supplies</option>
+                  <option>Forest & Wildlife</option>
+                  <option>Motor Vehicle </option>
+                  <option value="Water">Water Supply & Sanitation</option>
+                  <option>Information Technology</option>
                   <option value="Other">Other</option>
                 </select>
                 {category === "Other" && (

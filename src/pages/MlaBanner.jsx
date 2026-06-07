@@ -4,7 +4,7 @@ import React, {
 } from "react";
 
 import mlaAxiosInstance from "../sevices/axiosInstance";
-import "./MlaBanner.css";
+import "../style/MlaBanner.css";
 import { toast } from "react-toastify";
 
 
