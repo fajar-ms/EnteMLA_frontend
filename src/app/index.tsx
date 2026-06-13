@@ -21,8 +21,12 @@ const Home = () => {
                 contentContainerStyle={styles.scrollContent}
             >
                 <Hero />
-                <Stats />
-                <Trending />
+                <View style={styles.sectionSpacing}>
+        <Stats />
+    </View>
+                <View style={styles.sectionSpacing}>
+        <Trending />
+    </View>
             </ScrollView>
         </View>
     );
@@ -36,6 +40,10 @@ const styles = StyleSheet.create({
     scrollContent: {
         flexGrow: 1,
     },
+
+    sectionSpacing: {
+    marginBottom: 30,
+},
 });
 
 export default Home;

@@ -111,7 +111,7 @@ const [showStatusModal, setShowStatusModal] = useState(false);
   fetchComplaints();
 }, []);
 
-const API_URL = "http://10.144.180.158:3001"; // your backend IP
+const API_URL = "http://10.144.180.158:3002"; // your backend IP
 
 const fetchComplaints = async () => {
   try {
