@@ -5,85 +5,110 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   ScrollView,
-  KeyboardAvoidingView,
+  ImageBackground,
+  StatusBar,
   Platform,
+  KeyboardAvoidingView,
+  Alert,
+  TextStyle,
+  ViewStyle,
 } from "react-native";
+import axios, { AxiosError } from "axios";
+import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import { router } from "expo-router";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ── Role type ─────────────────────────────────────────────────────
+type Role = "citizen" | "mla" | "employee";
 
-type Role = "citizen" | "mla" | "employee" | null;
-
-interface UserData {
-  _id: string;
-  name: string;
-  role: string;
-  [key: string]: unknown;
+// ── API response shape ────────────────────────────────────────────
+interface LoginResponse {
+  user: Record<string, unknown>;
+  token: string;
 }
 
-interface LoginResponse {
-  user: UserData;
-  token: string;
+interface ApiError {
   message?: string;
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ── Design tokens ─────────────────────────────────────────────────
+const C = {
+  ink: "#030f18",
+  muted: "#4b6478",
+  mutedLt: "#8fa3b1",
+  sky: "#38bdf8",
+  sky300: "#7dd3fc",
+  skydd: "#0e7490",
+  white: "#ffffff",
+  teal: "rgba(20,184,166,0.1)",
+  tealBorder: "rgba(20,184,166,0.22)",
+} as const;
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? "";
+// ── AsyncStorage helpers ──────────────────────────────────────────
+const getItem = async (key: string): Promise<string | null> => {
+  try {
+    return await AsyncStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
 
-// ─── Component ────────────────────────────────────────────────────────────────
+const setItem = async (key: string, value: string): Promise<void> => {
+  await AsyncStorage.setItem(key, value);
+};
 
-export default function LoginPage() {
+const removeItem = async (key: string): Promise<void> => {
+  await AsyncStorage.removeItem(key);
+};
+
+// ── Component ─────────────────────────────────────────────────────
+export default function LoginPage(): React.JSX.Element {
+  console.log("LOGIN PAGE OPENED");
+
+  const router = useRouter();
 
   const [identifier, setIdentifier] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [role, setRole] = useState<Role>(null);
+  const [role, setRole] = useState<Role | null>(null);
+  const [focusedField, setFocusedField] = useState<"id" | "pw" | null>(null);
 
-  // ── Load role & check existing token (replaces localStorage in useEffect) ──
   useEffect(() => {
-    const init = async () => {
-      try {
-        const storedRole = await AsyncStorage.getItem("role");
-        const token = await AsyncStorage.getItem("token");
+    (async () => {
+      const selectedRole = await getItem("role");
 
-        if (!storedRole) {
-            router.replace("/role-select" as any);
-          return;
-        }
-
-        setRole(storedRole as Role);
-
-        if (token) {
-          router.replace("/");
-        }
-      } catch (e) {
-        console.error("Init error:", e);
+      // No role chosen yet — send back to role picker
+      if (!selectedRole) {
+        (router as any).replace("/");
+        return;
       }
-    };
 
-    init();
+      setRole(selectedRole as Role | null);
+
+      // Only auto-redirect if BOTH token and user exist (genuine active session)
+      // Avoids stale token from a previous role redirecting a fresh login attempt
+      const token = await getItem("token");
+      const storedUser = await getItem("user");
+      if (token && storedUser) {
+        (router as any).replace("/");
+      }
+    })();
   }, []);
 
-  // ── Login Handler ─────────────────────────────────────────────────────────
-  const handleLogin = async () => {
+  const handleLogin = async (): Promise<void> => {
+    // Clear any stale session from a previous role before attempting login
+    await removeItem("user");
+    await removeItem("token");
+
+    const selectedRole = await getItem("role");
+
+    if (!selectedRole) {
+      Alert.alert("Please select a role first");
+      (router as any).push("/role");
+      return;
+    }
+
     try {
-      await AsyncStorage.removeItem("user");
-      await AsyncStorage.removeItem("token");
-
-      const selectedRole = await AsyncStorage.getItem("role");
-
-      if (!selectedRole) {
-  Alert.alert("Error", "Please select a role first");
-  router.replace("/");
-  return;
-}
-
       let endpoint = "";
       let payload: Record<string, string> = {};
 
@@ -98,6 +123,7 @@ export default function LoginPage() {
         payload = { employeeId: identifier, password };
       }
 
+      const API_BASE_URL: string = process.env.EXPO_PUBLIC_API_BASE_URL ?? "";
       const response = await axios.post<LoginResponse>(
         `${API_BASE_URL}${endpoint}`,
         payload
@@ -108,344 +134,464 @@ export default function LoginPage() {
 
         if (userData) {
           console.log(userData);
-
-          await AsyncStorage.setItem("user", JSON.stringify(userData));
-          await AsyncStorage.setItem("role", selectedRole);
+          await setItem("user", JSON.stringify(userData));
+          await setItem("role", selectedRole);
 
           if (!token) {
-            Alert.alert("Error", "Authentication token missing");
+            Alert.alert("Authentication token missing");
             return;
           }
 
-          await AsyncStorage.setItem("token", token);
+          await setItem("token", token);
 
-          const redirectAfterLogin = await AsyncStorage.getItem("redirectAfterLogin");
-
+          const redirectAfterLogin = await getItem("redirectAfterLogin");
           if (redirectAfterLogin) {
-  await AsyncStorage.removeItem("redirectAfterLogin");
-  router.replace(redirectAfterLogin as any);
-} else {
-  router.replace("/");
-}
+            await removeItem("redirectAfterLogin");
+            (router as any).replace(redirectAfterLogin);
+          } else {
+            (router as any).replace("/");
+          }
         }
       }
     } catch (error) {
-      const err = error as { response?: { data?: { message?: string } } };
+      const axiosError = error as AxiosError<ApiError>;
       const errorMsg =
-        err.response?.data?.message ?? "Login failed. Please check your credentials.";
+        axiosError.response?.data?.message ??
+        "Login failed. Please check your credentials.";
       Alert.alert("Login Failed", errorMsg);
     }
   };
 
-  // ── Role Badge ────────────────────────────────────────────────────────────
-  const renderRoleBadge = () => {
-    if (role === "citizen") {
-      return (
-        <View style={styles.roleBadge}>
-          <FontAwesome name="user" size={13} color="#4f46e5" />
-          <Text style={styles.roleBadgeText}>Citizen Login</Text>
-        </View>
-      );
-    }
-    if (role === "mla") {
-      return (
-        <View style={styles.roleBadge}>
-          <FontAwesome name="bank" size={13} color="#4f46e5" />
-          <Text style={styles.roleBadgeText}>MLA Login</Text>
-        </View>
-      );
-    }
-    if (role === "employee") {
-      return (
-        <View style={styles.roleBadge}>
-          <MaterialIcons name="build" size={13} color="#4f46e5" />
-          <Text style={styles.roleBadgeText}>Employee Login</Text>
-        </View>
-      );
-    }
-    return null;
-  };
+  // ── Derived display values ────────────────────────────────────
+  const badgeLabel: string =
+    role === "citizen"  ? "Citizen Login"  :
+    role === "mla"      ? "MLA Login"      :
+    role === "employee" ? "Employee Login" : "";
 
-  // ── Label & Placeholder per role ──────────────────────────────────────────
-  const identifierLabel =
-    role === "citizen"
-      ? "Email Address"
-      : role === "mla"
-      ? "MLA ID"
-      : "Employee ID";
+  const idLabel: string =
+    role === "citizen"  ? "Email Address" :
+    role === "mla"      ? "MLA ID"        :
+    role === "employee" ? "Employee ID"   : "ID";
 
-  const identifierPlaceholder =
-    role === "citizen"
-      ? "Enter your email"
-      : role === "mla"
-      ? "Enter your MLA ID"
-      : "Enter your Employee ID";
+  const idPlaceholder: string =
+    role === "citizen" ? "Enter your email"      :
+    role === "mla"     ? "Enter your MLA ID"     :
+                         "Enter your Employee ID";
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────
   return (
-    <KeyboardAvoidingView
-      style={styles.loginPage}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    <ImageBackground
+      source={{ uri: "https://i.postimg.cc/xC3v5cLV/2.png" }}
+      style={styles.page}
+      resizeMode="cover"
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
+
+      {/* Overlay tint — position set manually, no absoluteFillObject */}
+      <View style={styles.overlay} pointerEvents="none" />
+
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <View style={styles.loginCard}>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* ── Card ─────────────────────────────────────────── */}
+          <View style={styles.card}>
 
-          {/* Back to Home */}
-          <TouchableOpacity
-  style={styles.backHome}
-  onPress={() => router.replace("/")}
->
-          
-            <Text style={styles.backHomeText}>← Back to Home</Text>
-          </TouchableOpacity>
+            {/* Back link */}
+            <TouchableOpacity
+              style={styles.backHome}
+              onPress={() => (router as any).push("/")}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.backHomeText}>← Back to Home</Text>
+            </TouchableOpacity>
 
-          {/* Header */}
-          <View style={styles.loginHeader}>
-            <Text style={styles.logo}>
-              Ente<Text style={styles.logoHighlight}>MLA</Text>
-            </Text>
-            <Text style={styles.welcomeText}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Secure Digital Governance Portal</Text>
-            {renderRoleBadge()}
-          </View>
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={styles.logo}>
+                Ente<Text style={styles.logoAccent}>MLA</Text>
+              </Text>
+              <Text style={styles.h1}>Welcome Back</Text>
+              <Text style={styles.subtitle}>Secure Digital Governance Portal</Text>
 
-          {/* Identifier Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>{identifierLabel}</Text>
-            <View style={styles.inputBox}>
-              <FontAwesome name="envelope" size={14} color="#030f18" style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                placeholder={identifierPlaceholder}
-                placeholderTextColor="#aaa"
-                value={identifier}
-                onChangeText={setIdentifier}
-                autoCapitalize="none"
-                keyboardType={role === "citizen" ? "email-address" : "default"}
-              />
+              {/* Role badge */}
+              {badgeLabel ? (
+                <View style={styles.roleBadge}>
+                  <Text style={styles.roleBadgeText}>{badgeLabel}</Text>
+                </View>
+              ) : null}
+
+              {/* Accent bar */}
+              <View style={styles.accentBar} />
             </View>
-          </View>
 
-          {/* Password Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Password</Text>
-            <View style={styles.inputBox}>
-              <FontAwesome name="lock" size={14} color="#030f18" style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your password"
-                placeholderTextColor="#aaa"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-              />
+            {/* Form */}
+            <View style={styles.form}>
+
+              {/* Identifier field */}
+              <View style={styles.formGroup}>
+                <Text style={styles.label}>{idLabel}</Text>
+                <View
+                  style={[
+                    styles.inputBox,
+                    focusedField === "id" && styles.inputBoxFocused,
+                  ]}
+                >
+                  <View style={styles.iconWrap}>
+                    <Text style={styles.iconText}>✉</Text>
+                  </View>
+                  <TextInput
+                    style={styles.input}
+                    placeholder={idPlaceholder}
+                    placeholderTextColor={C.mutedLt}
+                    value={identifier}
+                    onChangeText={setIdentifier}
+                    autoCapitalize="none"
+                    keyboardType={role === "citizen" ? "email-address" : "default"}
+                    onFocus={() => setFocusedField("id")}
+                    onBlur={() => setFocusedField(null)}
+                    returnKeyType="next"
+                  />
+                </View>
+              </View>
+
+              {/* Password field */}
+              <View style={styles.formGroup}>
+                <Text style={styles.label}>Password</Text>
+                <View
+                  style={[
+                    styles.inputBox,
+                    focusedField === "pw" && styles.inputBoxFocused,
+                  ]}
+                >
+                  <View style={styles.iconWrap}>
+                    <Text style={styles.iconText}>🔒</Text>
+                  </View>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your password"
+                    placeholderTextColor={C.mutedLt}
+                    secureTextEntry={!showPassword}
+                    value={password}
+                    onChangeText={setPassword}
+                    onFocus={() => setFocusedField("pw")}
+                    onBlur={() => setFocusedField(null)}
+                    returnKeyType="done"
+                    onSubmitEditing={handleLogin}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowPassword((prev) => !prev)}
+                    style={styles.showBtn}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.showBtnText}>
+                      {showPassword ? "Hide" : "Show"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Login button */}
               <TouchableOpacity
-                style={styles.showBtn}
-                onPress={() => setShowPassword(!showPassword)}
+                style={styles.loginBtn}
+                onPress={handleLogin}
+                activeOpacity={0.88}
               >
-                <Text style={styles.showBtnText}>
-                  {showPassword ? "Hide" : "Show"}
-                </Text>
+                <Text style={styles.loginBtnText}>Sign In →</Text>
               </TouchableOpacity>
             </View>
-          </View>
 
-          {/* Login Button */}
-          <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
-            <Text style={styles.loginBtnText}>Sign In →</Text>
-          </TouchableOpacity>
-
-          {/* Register Link — Citizens only */}
-          {role === "citizen" && (
-            <View style={styles.registerLink}>
-              <Text style={styles.registerText}>
-                Not registered?{" "}
-                <Text
-                  style={styles.registerAnchor}
-                  onPress={() => router.push("/register")}
-                >
-                  Register
+            {/* Register link — citizens only */}
+            {role === "citizen" && (
+              <View style={styles.registerLink}>
+                <Text style={styles.registerText}>
+                  Not registered?{" "}
+                  <Text
+                    style={styles.registerSpan}
+                    onPress={() => (router as any).push("/register")}
+                  >
+                    Register
+                  </Text>
                 </Text>
-              </Text>
+              </View>
+            )}
+
+            {/* Footer */}
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>© 2026 Digital Governance Initiative</Text>
             </View>
-          )}
-
-          {/* Footer */}
-          <View style={styles.loginFooter}>
-            <Text style={styles.footerText}>© 2026 Digital Governance Initiative</Text>
           </View>
-
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// ── Styles ────────────────────────────────────────────────────────
+const styles = StyleSheet.create<{
+  flex: ViewStyle;
+  page: ViewStyle;
+  overlay: ViewStyle;
+  scroll: ViewStyle;
+  card: ViewStyle;
+  backHome: ViewStyle;
+  backHomeText: TextStyle;
+  header: ViewStyle;
+  logo: TextStyle;
+  logoAccent: TextStyle;
+  h1: TextStyle;
+  subtitle: TextStyle;
+  roleBadge: ViewStyle;
+  roleBadgeText: TextStyle;
+  accentBar: ViewStyle;
+  form: ViewStyle;
+  formGroup: ViewStyle;
+  label: TextStyle;
+  inputBox: ViewStyle;
+  inputBoxFocused: ViewStyle;
+  iconWrap: ViewStyle;
+  iconText: TextStyle;
+  input: TextStyle;
+  showBtn: ViewStyle;
+  showBtnText: TextStyle;
+  loginBtn: ViewStyle;
+  loginBtnText: TextStyle;
+  registerLink: ViewStyle;
+  registerText: TextStyle;
+  registerSpan: TextStyle;
+  footer: ViewStyle;
+  footerText: TextStyle;
+}>({
+  flex: { flex: 1 },
 
-const styles = StyleSheet.create({
-  loginPage: {
-    flex: 1,
-    backgroundColor: "#eef2ff",
+  page: { flex: 1 },
+
+  // ✅ Fixed: manual absolute positioning instead of absoluteFillObject spread
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(255,255,255,0.18)",
   },
-  scrollContent: {
+
+  scroll: {
     flexGrow: 1,
+    alignItems: "center",
     justifyContent: "center",
-    padding: 20,
-  },
-  loginCard: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 28,
-    elevation: 6,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
+    paddingVertical: 32,
+    paddingHorizontal: 16,
   },
 
-  // ── Back Button
+  // ── Card ──────────────────────────────────────────────────────
+  card: {
+    width: "100%",
+    maxWidth: 440,
+    backgroundColor: "rgba(255,255,255,0.72)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.82)",
+    borderRadius: 28,
+    paddingTop: 28,
+    paddingBottom: 24,
+    paddingHorizontal: 24,
+    shadowColor: "#14b8a6",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 40,
+    elevation: 8,
+  },
+
+  // ── Back link ─────────────────────────────────────────────────
   backHome: {
-    marginBottom: 16,
+    alignSelf: "flex-start",
+    marginBottom: 20,
   },
   backHomeText: {
-    fontSize: 14,
-    color: "#4f46e5",
-    fontWeight: "600",
+    fontSize: 12,
+    fontWeight: "400",
+    color: C.mutedLt,
+    letterSpacing: 0.5,
   },
 
-  // ── Header
-  loginHeader: {
+  // ── Header ────────────────────────────────────────────────────
+  header: {
     alignItems: "center",
-    marginBottom: 28,
+    marginBottom: 24,
   },
   logo: {
-    fontSize: 28,
-    fontWeight: "800",
-    color: "#1a1a1a",
-    marginBottom: 6,
-  },
-  logoHighlight: {
-    color: "#4f46e5",
-  },
-  welcomeText: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#1a1a1a",
+    color: C.ink,
+    letterSpacing: -0.3,
+    marginBottom: 10,
+  },
+  logoAccent: {
+    color: C.skydd,
+  },
+  h1: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: C.ink,
+    letterSpacing: -0.5,
+    lineHeight: 34,
     marginBottom: 4,
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 13,
-    color: "#888",
-    marginBottom: 12,
+    fontWeight: "300",
+    color: C.muted,
+    letterSpacing: 0.3,
+    marginBottom: 14,
+    textAlign: "center",
   },
 
-  // ── Role Badge
+  // ── Role badge ────────────────────────────────────────────────
   roleBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: "#eef2ff",
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
+    backgroundColor: C.teal,
     borderWidth: 1,
-    borderColor: "#c7d2fe",
+    borderColor: C.tealBorder,
+    borderRadius: 999,
+    paddingVertical: 5,
+    paddingHorizontal: 16,
+    marginBottom: 4,
   },
   roleBadgeText: {
-    fontSize: 13,
-    color: "#4f46e5",
-    fontWeight: "600",
-    marginLeft: 6,
+    fontSize: 11,
+    fontWeight: "500",
+    letterSpacing: 1,
+    color: C.skydd,
   },
 
-  // ── Form
+  accentBar: {
+    width: 40,
+    height: 3,
+    borderRadius: 999,
+    backgroundColor: C.sky,
+    opacity: 0.7,
+    marginTop: 16,
+  },
+
+  // ── Form ─────────────────────────────────────────────────────
+  form: {
+    flexDirection: "column",
+  },
   formGroup: {
-    marginBottom: 18,
+    flexDirection: "column",
+    marginBottom: 14,
   },
   label: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 8,
+    fontSize: 12,
+    fontWeight: "500",
+    color: C.ink,
+    letterSpacing: 0.5,
+    marginBottom: 6,
   },
+
+  // ── Input box ─────────────────────────────────────────────────
   inputBox: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: "#e0e0e0",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    backgroundColor: "#fafafa",
-    height: 50,
+    backgroundColor: "rgba(255,255,255,0.68)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.85)",
+    borderRadius: 999,
+    paddingHorizontal: 16,
+    shadowColor: "#14b8a6",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 2,
   },
-  inputIcon: {
-    marginRight: 10,
+  inputBoxFocused: {
+    borderColor: "rgba(20,184,166,0.4)",
+    shadowColor: "#14b8a6",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 4,
+  },
+  iconWrap: {
+    paddingRight: 8,
+    opacity: 0.6,
+  },
+  iconText: {
+    fontSize: 14,
   },
   input: {
     flex: 1,
     fontSize: 14,
-    color: "#333",
+    fontWeight: "300",
+    color: C.ink,
+    paddingVertical: 13,
+    paddingHorizontal: 0,
   },
+
+  // ── Show/Hide button ─────────────────────────────────────────
   showBtn: {
-    paddingHorizontal: 8,
     paddingVertical: 4,
+    paddingLeft: 8,
+    paddingRight: 2,
   },
   showBtnText: {
-    fontSize: 13,
-    color: "#4f46e5",
-    fontWeight: "600",
+    fontSize: 11,
+    fontWeight: "500",
+    color: C.skydd,
+    letterSpacing: 0.8,
   },
 
-  // ── Login Button
+  // ── Login button ─────────────────────────────────────────────
   loginBtn: {
-    backgroundColor: "#4f46e5",
-    borderRadius: 12,
-    paddingVertical: 15,
+    marginTop: 6,
+    borderRadius: 999,
+    paddingVertical: 14,
+    paddingHorizontal: 28,
     alignItems: "center",
-    marginTop: 4,
-    marginBottom: 20,
-    elevation: 3,
-    shadowColor: "#4f46e5",
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    backgroundColor: C.skydd,
+    shadowColor: "#14b8a6",
     shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 18,
+    elevation: 6,
   },
   loginBtnText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "700",
-    letterSpacing: 0.5,
+    color: C.white,
+    fontSize: 15,
+    fontWeight: "500",
+    letterSpacing: 0.8,
   },
 
-  // ── Register Link
+  // ── Register link ─────────────────────────────────────────────
   registerLink: {
     alignItems: "center",
-    marginBottom: 20,
+    marginTop: 20,
   },
   registerText: {
-    fontSize: 14,
-    color: "#666",
+    fontSize: 13,
+    fontWeight: "300",
+    color: C.muted,
   },
-  registerAnchor: {
-    color: "#4f46e5",
-    fontWeight: "700",
+  registerSpan: {
+    color: C.skydd,
+    fontWeight: "500",
+    textDecorationLine: "underline",
   },
 
-  // ── Footer
-  loginFooter: {
+  // ── Footer ────────────────────────────────────────────────────
+  footer: {
     alignItems: "center",
-    borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
-    paddingTop: 16,
+    marginTop: 20,
   },
   footerText: {
-    fontSize: 12,
-    color: "#bbb",
+    fontSize: 11,
+    fontWeight: "400",
+    color: C.mutedLt,
+    letterSpacing: 1,
   },
 });

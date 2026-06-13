@@ -1,76 +1,64 @@
 // src/components/home/Hero.tsx
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
+const isMobile = width < 768;
 
 const Hero = () => {
     const { t } = useTranslation();
 
     return (
         <View style={styles.hero}>
-            <View style={styles.heroGrid}>
-                {/* Header */}
-                <View style={styles.heroHeader}>
-                    <View style={styles.labelGroup}>
-                        <Text style={styles.govLabel}>{t("gov_label")}</Text>
-                        <View style={styles.divisionLine} />
-                        <Text style={styles.constituencyLabel}>{t("constituency")}</Text>
-                    </View>
-
-                    <Text style={styles.title}>
-                        {t("hero_title_main")} {t("hero_title_sub")}
-                    </Text>
-
-                    <Text style={styles.description}>
-                        {t("hero_description")}
-                    </Text>
+            <View style={styles.heroContent}>
+                {/* Top Label */}
+                <View style={styles.labelGroup}>
+                    <Text style={styles.govLabel}>GOVERNMENT OF KERALA</Text>
+                    <View style={styles.divider} />
+                    <Text style={styles.constituencyLabel}>{t("constituency")}</Text>
                 </View>
 
-                <View style={styles.heroContentSplit}>
-                    {/* Left: Quote */}
-                    <View style={styles.mainActions}>
-                        <View style={styles.quoteContainer}>
-                            <Text style={styles.quoteMark}>“</Text>
-                            <Text style={styles.quoteText}>
-                                Be the change that you wish to see in the world.
-                            </Text>
-                            <View style={styles.quoteFooter}>
-                                <Text style={styles.author}>— Mahatma Gandhi</Text>
-                            </View>
-                        </View>
+                {/* Main Title */}
+                <Text style={styles.title}>
+                    {t("hero_title_main")}{'\n'}
+                    <Text style={styles.titleAccent}>{t("hero_title_sub")}</Text>
+                </Text>
+
+                <Text style={styles.description}>
+                    {t("hero_description")}
+                </Text>
+
+                {/* Split Content */}
+                <View style={styles.splitContainer}>
+                    {/* Left - Inspirational Quote */}
+                    <View style={styles.quoteCard}>
+                        <Text style={styles.quoteMark}>“</Text>
+                        <Text style={styles.quoteText}>
+                            Be the change that you wish to see in the world.
+                        </Text>
+                        <Text style={styles.author}>— Mahatma Gandhi</Text>
                     </View>
 
-                    {/* Right: Brief Sections */}
-                    <View style={styles.sideBrief}>
-                        {/* Live Complaint Activity */}
-                        <View style={styles.briefSection}>
+                    {/* Right - Brief Highlights */}
+                    <View style={styles.briefContainer}>
+                        <View style={styles.briefCard}>
                             <Text style={styles.briefTitle}>{t("live_complaint_activity")}</Text>
-                            <View style={styles.bulletList}>
-                                <Text style={styles.bulletItem}>• {t("activity_1")}</Text>
-                                <Text style={styles.bulletItem}>• {t("activity_2")}</Text>
-                                <Text style={styles.bulletItem}>• {t("activity_3")}</Text>
-                            </View>
+                            <Text style={styles.bullet}>• {t("activity_1")}</Text>
+                            <Text style={styles.bullet}>• {t("activity_2")}</Text>
+                            <Text style={styles.bullet}>• {t("activity_3")}</Text>
                         </View>
 
-                        {/* Transparency & Response */}
-                        <View style={styles.briefSection}>
+                        <View style={styles.briefCard}>
                             <Text style={styles.briefTitle}>{t("transparency_response")}</Text>
-                            <View style={styles.bulletList}>
-                                <Text style={styles.bulletItem}>• {t("response_1")}</Text>
-                                <Text style={styles.bulletItem}>• {t("response_2")}</Text>
-                            </View>
+                            <Text style={styles.bullet}>• {t("response_1")}</Text>
+                            <Text style={styles.bullet}>• {t("response_2")}</Text>
                         </View>
 
-                        {/* Smart Governance */}
-                        <View style={styles.briefSection}>
+                        <View style={styles.briefCard}>
                             <Text style={styles.briefTitle}>{t("smart_governance")}</Text>
-                            <View style={styles.bulletList}>
-                                <Text style={styles.bulletItem}>• {t("smart_1")}</Text>
-                                <Text style={styles.bulletItem}>• {t("smart_2")}</Text>
-                                <Text style={styles.bulletItem}>• {t("smart_3")}</Text>
-                            </View>
+                            <Text style={styles.bullet}>• {t("smart_1")}</Text>
+                            <Text style={styles.bullet}>• {t("smart_2")}</Text>
                         </View>
                     </View>
                 </View>
@@ -82,126 +70,127 @@ const Hero = () => {
 const styles = StyleSheet.create({
     hero: {
         backgroundColor: '#f8ffff',
-        paddingVertical: 50,
-        paddingHorizontal: 16,
+        paddingTop: isMobile ? 60 : 80,
+        paddingBottom: isMobile ? 50 : 70,
+        paddingHorizontal: isMobile ? 16 : 24,
     },
-    heroGrid: {
+    heroContent: {
         maxWidth: 1200,
-        width: '100%',
         alignSelf: 'center',
-    },
-    heroHeader: {
-        alignItems: 'center',
-        marginBottom: 30,
+        width: '100%',
     },
     labelGroup: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
         gap: 12,
         marginBottom: 20,
+        flexWrap: 'wrap',
     },
     govLabel: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '700',
-        paddingHorizontal: 16,
-        paddingVertical: 6,
-        backgroundColor: 'rgba(20, 184, 166, 0.15)',
-        borderRadius: 20,
+        paddingHorizontal: 18,
+        paddingVertical: 7,
+        backgroundColor: 'rgba(20,184,166,0.12)',
+        borderRadius: 30,
         color: '#0c2f47',
         borderWidth: 1.5,
-        borderColor: 'rgba(20, 184, 166, 0.35)',
+        borderColor: '#14b8a6',
     },
-    divisionLine: {
-        width: 2,
-        height: 24,
-        backgroundColor: 'rgba(20, 184, 166, 0.4)',
+    divider: {
+        width: 3,
+        height: 26,
+        backgroundColor: '#14b8a6',
+        borderRadius: 2,
     },
     constituencyLabel: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: '700',
-        paddingHorizontal: 16,
-        paddingVertical: 6,
-        backgroundColor: 'rgba(20, 184, 166, 0.15)',
-        borderRadius: 20,
+        paddingHorizontal: 18,
+        paddingVertical: 7,
+        backgroundColor: 'rgba(20,184,166,0.12)',
+        borderRadius: 30,
         color: '#0c2f47',
         borderWidth: 1.5,
-        borderColor: 'rgba(20, 184, 166, 0.35)',
+        borderColor: '#14b8a6',
     },
     title: {
-        fontSize: 32,
+        fontSize: isMobile ? 34 : 48,
         fontWeight: '900',
         textAlign: 'center',
-        lineHeight: 40,
+        lineHeight: isMobile ? 42 : 56,
         color: '#0c2f47',
         marginBottom: 16,
+        letterSpacing: -1.2,
+    },
+    titleAccent: {
+        color: '#14b8a6',
     },
     description: {
-        fontSize: 18,
+        fontSize: isMobile ? 17 : 19,
         textAlign: 'center',
         color: '#0f766e',
-        lineHeight: 26,
-        maxWidth: 700,
+        lineHeight: 28,
+        maxWidth: 720,
+        alignSelf: 'center',
+        marginBottom: 40,
     },
-    heroContentSplit: {
-        flexDirection: width > 768 ? 'row' : 'column',
+    splitContainer: {
+        flexDirection: isMobile ? 'column' : 'row',
         gap: 24,
     },
-    mainActions: {
-        flex: 1.2,
-    },
-    quoteContainer: {
-        backgroundColor: '#ffffff',
-        borderRadius: 20,
-        padding: 24,
+    quoteCard: {
+        flex: 1,
+        backgroundColor: '#fff',
+        borderRadius: 24,
+        padding: 28,
         borderWidth: 2,
-        borderColor: 'rgba(20, 184, 166, 0.3)',
+        borderColor: 'rgba(20,184,166,0.25)',
+        shadowColor: '#14b8a6',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.1,
+        shadowRadius: 20,
+        elevation: 8,
     },
     quoteMark: {
-        fontSize: 60,
-        color: 'rgba(20, 184, 166, 0.2)',
-        position: 'absolute',
-        top: -15,
-        left: 10,
+        fontSize: 72,
+        color: 'rgba(20,184,166,0.15)',
+        marginBottom: -20,
     },
     quoteText: {
-        fontSize: 20,
+        fontSize: isMobile ? 19 : 22,
         fontWeight: '600',
         color: '#0c2f47',
-        lineHeight: 28,
-        marginTop: 20,
-    },
-    quoteFooter: {
-        marginTop: 16,
+        lineHeight: 32,
+        marginBottom: 16,
     },
     author: {
         fontSize: 16,
-        color: '#0f766e',
-        fontWeight: '500',
+        color: '#14b8a6',
+        fontWeight: '700',
     },
-    sideBrief: {
+    briefContainer: {
         flex: 1,
         gap: 16,
     },
-    briefSection: {
-        backgroundColor: '#ffffff',
-        borderRadius: 16,
+    briefCard: {
+        backgroundColor: '#fff',
+        borderRadius: 20,
         padding: 20,
         borderWidth: 1,
-        borderColor: 'rgba(20, 184, 166, 0.25)',
+        borderColor: 'rgba(20,184,166,0.2)',
     },
     briefTitle: {
-        fontSize: 18,
+        fontSize: 17,
         fontWeight: '700',
         color: '#0c2f47',
         marginBottom: 12,
     },
-    bulletList: {
-        gap: 8,
-    },
-    bulletItem: {
-        fontSize: 16,
+    bullet: {
+        fontSize: 15.5,
         color: '#475569',
-        lineHeight: 24,
+        lineHeight: 26,
     },
 });
 
