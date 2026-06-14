@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     StyleSheet,
     Dimensions,
+    ImageBackground,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -31,10 +32,19 @@ const Contact = () => {
     );
 
     return (
-        <View style={styles.container}>
-            <Navbar />
+    <ImageBackground
+        source={{ uri: "https://i.postimg.cc/xC3v5cLV/2.png" }}
+        style={styles.container}
+        resizeMode="cover"
+    >
+        <View style={styles.overlay} />
 
-            <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Navbar />
+
+        <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+        >
                 {/* Hero */}
                 <View style={styles.hero}>
                     <Text style={styles.heroTitle}>{t("contact_hero_title")}</Text>
@@ -144,18 +154,28 @@ const Contact = () => {
                     </View>
                 </View>
             </ScrollView>
-        </View>
+         </ImageBackground>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f8feff' },
+    container: { flex: 1 },
+    overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+},
     scrollContent: { paddingBottom: 40 },
-    hero: {
-        padding: 50,
-        alignItems: 'center',
-        backgroundColor: '#f0feff',
-    },
+   hero: {
+    paddingTop: 120,
+    paddingBottom: 50,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+},
     heroTitle: {
         fontSize: 36,
         fontWeight: '800',

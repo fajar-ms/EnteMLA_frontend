@@ -12,27 +12,22 @@ const Home = () => {
     const { t } = useTranslation();
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <StatusBar 
-                barStyle="dark-content" 
-                backgroundColor="#ffffff" 
-                translucent={false}
-            />
-
-            <View style={styles.container}>
-                <Navbar />
-                
-                <ScrollView 
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.scrollContent}
-                    keyboardShouldPersistTaps="handled"
-                >
-                    <Hero />
-                    <Stats />
-                    <Trending />
-                </ScrollView>
-            </View>
-        </SafeAreaView>
+        <View style={styles.container}>
+            <Navbar />
+            
+            <ScrollView 
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContent}
+            >
+                <Hero />
+                <View style={styles.sectionSpacing}>
+        <Stats />
+    </View>
+                <View style={styles.sectionSpacing}>
+        <Trending />
+    </View>
+            </ScrollView>
+        </View>
     );
 };
 
@@ -48,6 +43,10 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         paddingBottom: 40,   // Extra breathing space at bottom
     },
+
+    sectionSpacing: {
+    marginBottom: 30,
+},
 });
 
 export default Home;

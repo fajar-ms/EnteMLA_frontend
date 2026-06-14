@@ -106,7 +106,7 @@ console.log("TOKEN =", token);
       return;
     }
 
-        const userRes = await fetch("http://10.144.180.158:3001/users/me/profile", {
+        const userRes = await fetch("http://10.144.180.158:3002/users/me/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
           console.log("Status:", userRes.status);
@@ -114,7 +114,7 @@ console.log("TOKEN =", token);
         setUser(userData);
 
        const compRes = await fetch(
-  "http://10.144.180.158:3001/complaints/my-complaints",
+  "http://10.144.180.158:3002/complaints/my-complaints",
   {
     headers: { Authorization: `Bearer ${token}` },
   }

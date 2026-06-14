@@ -283,7 +283,7 @@ const router = useRouter();
 
   try {
     const token = await AsyncStorage.getItem("token");
-    const API_URL = "http://10.144.180.158:3001";
+    const API_URL = "http://10.144.180.158:3002";
 
     const res = await fetch(
   `${API_URL}/complaints/${selectedComplaint.id}/reply`,
