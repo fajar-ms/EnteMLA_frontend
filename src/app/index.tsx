@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import Navbar from '../components/home/Navbar';
 import Hero from '../components/home/Hero';
-import Stats from '../components/home/Stats';
+//import Stats from '../components/home/Stats';
 import Trending from '../components/home/Trending';
 
 const Home = () => {
@@ -20,9 +20,6 @@ const Home = () => {
                 contentContainerStyle={styles.scrollContent}
             >
                 <Hero />
-                <View style={styles.sectionSpacing}>
-        <Stats />
-    </View>
                 <View style={styles.sectionSpacing}>
         <Trending />
     </View>

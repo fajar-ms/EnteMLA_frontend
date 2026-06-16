@@ -39,6 +39,7 @@ const HomeBanner = () => {
         autoplay
         autoplayTimeout={4}
         showsPagination
+        style={{ height: width / 1.6 }} 
       >
         {banners.map((banner) => (
           <View
@@ -67,9 +68,9 @@ const HomeBanner = () => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    marginVertical: 16,
     paddingHorizontal: 16,
   },
+
 
   carouselItem: {
     width: "100%",

@@ -1,8 +1,15 @@
-// src/components/home/Navbar.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  View, Text, TouchableOpacity, StyleSheet,
-  Modal, SafeAreaView, useWindowDimensions, Platform,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+  SafeAreaView,
+  Platform,
+  StatusBar,
+  Animated,
+  Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter, type Href } from 'expo-router';
@@ -17,19 +24,21 @@ const NAV_LINKS: { label: string; route: Href }[] = [
   { label: 'Contact',    route: '/contact' },
 ];
 
+const DRAWER_WIDTH = 270;
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
 const Navbar = () => {
-  const { width } = useWindowDimensions();
-  const isMobile = width < 768;
   const { i18n } = useTranslation();
   const router = useRouter();
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [langOpen,    setLangOpen]    = useState(false);
-  const [authOpen,    setAuthOpen]    = useState(false);
+  const [drawerOpen, setDrawerOpen]   = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [user,        setUser]        = useState<any>(null);
-  const [role,        setRole]        = useState<string | null>(null);
+  const [user,  setUser]              = useState<any>(null);
+  const [role,  setRole]              = useState<string | null>(null);
   const [selectedLang, setSelectedLang] = useState('EN');
+
+  const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
+  const fadeAnim  = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     (async () => {
@@ -42,214 +51,168 @@ const Navbar = () => {
     })();
   }, []);
 
+  const openDrawer = () => {
+    setDrawerOpen(true);
+    Animated.parallel([
+      Animated.timing(slideAnim, { toValue: 0, duration: 260, useNativeDriver: true }),
+      Animated.timing(fadeAnim,  { toValue: 1, duration: 260, useNativeDriver: true }),
+    ]).start();
+  };
+
+  const closeDrawer = () => {
+    Animated.parallel([
+      Animated.timing(slideAnim, { toValue: -DRAWER_WIDTH, duration: 220, useNativeDriver: true }),
+      Animated.timing(fadeAnim,  { toValue: 0,             duration: 220, useNativeDriver: true }),
+    ]).start(() => setDrawerOpen(false));
+  };
+
   const handleLanguageChange = async (code: string) => {
     await i18n.changeLanguage(code);
     await AsyncStorage.setItem('i18nextLng', code);
     setSelectedLang(code === 'ml' ? 'ML' : 'EN');
-    setLangOpen(false);
   };
 
   const handleLogout = async () => {
     await AsyncStorage.multiRemove(['user', 'role', 'token']);
-    setUser(null); setRole(null);
-    setProfileOpen(false); setMobileMenuOpen(false);
+    setUser(null);
+    setRole(null);
+    setProfileOpen(false);
+    closeDrawer();
     router.replace('/');
   };
 
   const handleDashboard = () => {
-    setMobileMenuOpen(false);
-    if (role === 'citizen')  router.push('/citizendashboard' as Href);
-    else if (role === 'mla') router.push('/mladashboard' as Href);
-    else                     router.push('/employedashboard' as Href);
+    closeDrawer();
+    if (role === 'citizen')       router.push('/citizendashboard' as Href);
+    else if (role === 'mla')      router.push('/mladashboard' as Href);
+    else                          router.push('/employedashboard' as Href);
   };
 
   const displayName  = user?.name || user?.employee_name || user?.emp_name || 'User';
   const displayEmail = user?.email || user?.employee_email || user?.email_id || '';
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+    <>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" translucent={false} />
 
-        {/* ══ ROW 1: Logo  +  (desktop: nav links + actions)  +  (mobile: hamburger) ══ */}
-        <View style={styles.row1}>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.navbar}>
 
-          {/* Logo */}
-          <TouchableOpacity onPress={() => router.push('/')}>
-            <Text style={styles.logo}>
-              Ente<Text style={styles.logoAccent}>MLA</Text>
-            </Text>
-          </TouchableOpacity>
-
-          {/* Desktop centre links */}
-          {!isMobile && (
-            <View style={styles.navLinks}>
-              {NAV_LINKS.map((l) => (
-                <TouchableOpacity key={l.label} onPress={() => router.push(l.route)}>
-                  <Text style={styles.navText}>{l.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
-          {/* Desktop right actions */}
-          {!isMobile && (
-            <View style={styles.desktopRight}>
-              <TouchableOpacity style={styles.langBtn} onPress={() => setLangOpen(true)}>
-                <Ionicons name="globe-outline" size={14} color="#0f766e" />
-                <Text style={styles.langText}>{selectedLang}</Text>
-                <Ionicons name="chevron-down" size={13} color="#0f766e" />
-              </TouchableOpacity>
-
-              {!user ? (
-                <View style={styles.authRow}>
-                  <TouchableOpacity style={styles.primaryBtn} onPress={() => setAuthOpen(true)}>
-                    <Text style={styles.btnTextWhite}>Login</Text>
-                    <Ionicons name="chevron-down" size={13} color="#fff" />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.outlineBtn} onPress={() => router.push('/register' as Href)}>
-                    <Text style={styles.outlineBtnText}>Register</Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <View style={styles.authRow}>
-                  <TouchableOpacity style={styles.primaryBtn} onPress={handleDashboard}>
-                    <Text style={styles.btnTextWhite}>Dashboard</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.avatarBtn} onPress={() => setProfileOpen(true)}>
-                    <View style={styles.avatarCircle}>
-                      <Ionicons name="person" size={16} color="#fff" />
-                    </View>
-                    <Text style={styles.profileName} numberOfLines={1}>{displayName}</Text>
-                    <Ionicons name="chevron-down" size={13} color="#0c2f47" />
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          )}
-
-          {/* Mobile hamburger */}
-          {isMobile && (
-            <TouchableOpacity
-              style={styles.hamburger}
-              onPress={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <Ionicons
-                name={mobileMenuOpen ? 'close' : 'menu'}
-                size={26}
-                color="#0c2f47"
-              />
+          {/* Left: Hamburger + Logo */}
+          <View style={styles.navLeft}>
+            <TouchableOpacity style={styles.hamburger} onPress={openDrawer}>
+              <Ionicons name="menu" size={22} color="#0c2f47" />
             </TouchableOpacity>
-          )}
-        </View>
-
-        {/* ══ ROW 2 (mobile only): Lang  Login  Register — always full text, never overflows ══ */}
-        {isMobile && (
-          <View style={styles.row2}>
-            {/* Language */}
-            <TouchableOpacity style={styles.langBtn} onPress={() => setLangOpen(true)}>
-              <Ionicons name="globe-outline" size={13} color="#0f766e" />
-              <Text style={styles.langText}>{selectedLang}</Text>
-              <Ionicons name="chevron-down" size={12} color="#0f766e" />
+            <TouchableOpacity onPress={() => router.push('/')}>
+              <Text style={styles.logo}>
+                Ente<Text style={styles.logoAccent}>MLA</Text>
+              </Text>
             </TouchableOpacity>
-
-            {!user ? (
-              <View style={styles.authRowMobile}>
-                {/* Login */}
-                <TouchableOpacity style={styles.primaryBtn} onPress={() => setAuthOpen(true)}>
-                  <Text style={styles.btnTextWhite}>Login</Text>
-                  <Ionicons name="chevron-down" size={12} color="#fff" />
-                </TouchableOpacity>
-
-                {/* Register — flex so it fills remaining space */}
-                <TouchableOpacity
-                  style={[styles.outlineBtn, styles.outlineBtnGrow]}
-                  onPress={() => router.push('/register' as Href)}
-                >
-                  <Text style={styles.outlineBtnText}>Register</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={styles.authRowMobile}>
-                <TouchableOpacity style={[styles.primaryBtn, styles.primaryBtnGrow]} onPress={handleDashboard}>
-                  <Text style={styles.btnTextWhite}>Dashboard</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.avatarBtn} onPress={() => setProfileOpen(true)}>
-                  <View style={styles.avatarCircle}>
-                    <Ionicons name="person" size={15} color="#fff" />
-                  </View>
-                  <Ionicons name="chevron-down" size={12} color="#0c2f47" />
-                </TouchableOpacity>
-              </View>
-            )}
           </View>
-        )}
-      </View>
 
-      {/* ══ Mobile slide-down menu ══ */}
-      {isMobile && mobileMenuOpen && (
-        <View style={styles.mobileMenu}>
-          {user && (
-            <TouchableOpacity style={styles.mobileMenuDashRow} onPress={handleDashboard}>
-              <Ionicons name="grid-outline" size={18} color="#0f766e" />
-              <Text style={styles.mobileMenuDashText}>Dashboard</Text>
+          {/* Right: Avatar or Login */}
+          {user ? (
+            <TouchableOpacity style={styles.avatarCircle} onPress={() => setProfileOpen(true)}>
+              <Ionicons name="person" size={17} color="#fff" />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.loginBtn}
+              onPress={async () => {
+                await AsyncStorage.setItem('role', 'citizen');
+                router.push('/login' as Href);
+              }}
+            >
+              <Text style={styles.loginBtnText}>Login</Text>
             </TouchableOpacity>
           )}
-          {NAV_LINKS.map((l) => (
-            <TouchableOpacity
-              key={l.label}
-              style={styles.mobileMenuRow}
-              onPress={() => { setMobileMenuOpen(false); router.push(l.route); }}
-            >
-              <Text style={styles.mobileMenuText}>{l.label}</Text>
-              <Ionicons name="chevron-forward" size={16} color="#94a3b8" />
-            </TouchableOpacity>
-          ))}
         </View>
+      </SafeAreaView>
+
+      {/* Drawer */}
+      {drawerOpen && (
+        <Modal visible transparent animationType="none" onRequestClose={closeDrawer}>
+          <View style={styles.drawerContainer}>
+
+            {/* Dim overlay */}
+            <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
+              <TouchableOpacity style={StyleSheet.absoluteFill} onPress={closeDrawer} />
+            </Animated.View>
+
+            {/* Sliding panel */}
+            <Animated.View style={[styles.drawer, { transform: [{ translateX: slideAnim }] }]}>
+
+              {/* Drawer header */}
+              <SafeAreaView style={styles.drawerSafeArea}>
+                <View style={styles.drawerHeader}>
+                  <Text style={styles.logo}>
+                    Ente<Text style={styles.logoAccent}>MLA</Text>
+                  </Text>
+                  <TouchableOpacity onPress={closeDrawer}>
+                    <Ionicons name="close" size={22} color="#0c2f47" />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Nav Links */}
+                <Text style={styles.sectionLabel}>Navigation</Text>
+                {NAV_LINKS.map((l) => (
+                  <TouchableOpacity
+                    key={l.label}
+                    style={styles.drawerRow}
+                    onPress={() => { closeDrawer(); router.push(l.route); }}
+                  >
+                    <Text style={styles.drawerRowText}>{l.label}</Text>
+                    <Ionicons name="chevron-forward" size={15} color="#94a3b8" />
+                  </TouchableOpacity>
+                ))}
+
+                {/* Dashboard — only when logged in */}
+                {user && (
+                  <>
+                    <Text style={styles.sectionLabel}>Account</Text>
+                    <TouchableOpacity style={styles.drawerRow} onPress={handleDashboard}>
+                      <View style={styles.drawerRowLeft}>
+                        <Ionicons name="grid-outline" size={16} color="#0f766e" />
+                        <Text style={[styles.drawerRowText, styles.drawerRowTextAccent]}>
+                          Dashboard
+                        </Text>
+                      </View>
+                      <Ionicons name="chevron-forward" size={15} color="#94a3b8" />
+                    </TouchableOpacity>
+                  </>
+                )}
+
+                {/* Language */}
+                <Text style={styles.sectionLabel}>Language</Text>
+                <View style={styles.langRow}>
+                  <Ionicons name="globe-outline" size={15} color="#0f766e" />
+                  {[{ code: 'en', label: 'EN' }, { code: 'ml', label: 'ML' }].map((opt) => (
+                    <TouchableOpacity
+                      key={opt.code}
+                      style={[
+                        styles.langPill,
+                        selectedLang === opt.label && styles.langPillActive,
+                      ]}
+                      onPress={() => handleLanguageChange(opt.code)}
+                    >
+                      <Text
+                        style={[
+                          styles.langPillText,
+                          selectedLang === opt.label && styles.langPillTextActive,
+                        ]}
+                      >
+                        {opt.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </SafeAreaView>
+            </Animated.View>
+          </View>
+        </Modal>
       )}
 
-      {/* ══ Language modal ══ */}
-      <Modal visible={langOpen} transparent animationType="fade">
-        <TouchableOpacity style={styles.modalOverlay} onPress={() => setLangOpen(false)}>
-          <View style={styles.dropdownCard}>
-            <Text style={styles.dropdownTitle}>Language</Text>
-            {[{ code: 'en', label: 'English' }, { code: 'ml', label: 'Malayalam' }].map((opt) => (
-              <TouchableOpacity
-                key={opt.code}
-                style={[styles.dropdownRow, selectedLang === opt.code.toUpperCase() && styles.dropdownRowActive]}
-                onPress={() => handleLanguageChange(opt.code)}
-              >
-                <Text style={[styles.dropdownRowText, selectedLang === opt.code.toUpperCase() && styles.dropdownRowTextActive]}>
-                  {opt.label}
-                </Text>
-                {selectedLang === opt.code.toUpperCase() && (
-                  <Ionicons name="checkmark" size={16} color="#0f766e" />
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
-        </TouchableOpacity>
-      </Modal>
-
-      {/* ══ Login modal ══ */}
-      <Modal visible={authOpen} transparent animationType="fade">
-        <TouchableOpacity style={styles.modalOverlay} onPress={() => setAuthOpen(false)}>
-          <View style={styles.dropdownCard}>
-            <Text style={styles.dropdownTitle}>Login as</Text>
-            {['citizen', 'mla', 'employee'].map((r) => (
-              <TouchableOpacity
-                key={r}
-                style={styles.dropdownRow}
-                onPress={() => { AsyncStorage.setItem('role', r); setAuthOpen(false); router.push('/login' as Href); }}
-              >
-                <Text style={styles.dropdownRowText}>{r.charAt(0).toUpperCase() + r.slice(1)}</Text>
-                <Ionicons name="arrow-forward" size={15} color="#94a3b8" />
-              </TouchableOpacity>
-            ))}
-          </View>
-        </TouchableOpacity>
-      </Modal>
-
-      {/* ══ Profile modal ══ */}
+      {/* Profile Modal */}
       <Modal visible={profileOpen} transparent animationType="fade">
         <TouchableOpacity style={styles.modalOverlay} onPress={() => setProfileOpen(false)}>
           <View style={styles.profileCard}>
@@ -276,161 +239,144 @@ const Navbar = () => {
           </View>
         </TouchableOpacity>
       </Modal>
-    </SafeAreaView>
+    </>
   );
 };
 
-// ──────────────────────────────────────────
-//  STYLES
-// ──────────────────────────────────────────
 const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: '#fff',
     zIndex: 1000,
-    ...Platform.select({
-      ios:     { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 6 },
-      android: { elevation: 5 },
-    }),
   },
 
-  container: {
-    backgroundColor: '#fff',
-    borderBottomWidth: 1.5,
-    borderBottomColor: 'rgba(20,184,166,0.25)',
-  },
+  navbar: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  backgroundColor: '#fff',
+  borderBottomWidth: 1.5,
+  borderBottomColor: 'rgba(20,184,166,0.25)',
+  paddingHorizontal: 16,
+  paddingVertical: 10,
+  paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) + 10 : 10,
+},
 
-  /* ── Row 1: Logo + nav/hamburger ── */
-  row1: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    height: 56,
-  },
-
-  /* ── Row 2 (mobile): Lang + Login + Register ── */
-  row2: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingBottom: 10,
-    gap: 8,
-  },
-
-  /* Logo */
-  logo:       { fontSize: 22, fontWeight: '900', color: '#0c2f47' },
-  logoAccent: { color: '#14b8a6' },
-
-  /* Desktop nav */
-  navLinks: { flexDirection: 'row', gap: 24, flex: 1, justifyContent: 'center' },
-  navText:  { fontSize: 15, fontWeight: '600', color: '#475569' },
-
-  /* Desktop right */
-  desktopRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-
-  /* Language pill */
-  langBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#f0fdf9',
-    borderRadius: 20,
-    paddingHorizontal: 9,
-    paddingVertical: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(20,184,166,0.35)',
-  },
-  langText: { fontSize: 12, fontWeight: '700', color: '#0f766e' },
-
-  /* Auth rows */
-  authRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  /* Mobile auth: fills remaining width after lang pill */
-  authRowMobile: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-
-  primaryBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    backgroundColor: '#0f766e',
-    borderRadius: 20,
-    paddingHorizontal: 13,
-    paddingVertical: 8,
-  },
-  primaryBtnGrow: { flex: 1, justifyContent: 'center' },
-  btnTextWhite: { color: '#fff', fontSize: 13, fontWeight: '700' },
-
-  outlineBtn: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-    backgroundColor: '#0f766e',
-    borderRadius: 20,
-    paddingHorizontal: 13,
-    paddingVertical: 8,
-  },
-  outlineBtnGrow: { flex: 1 },
-  outlineBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
-
-  /* Avatar / profile button */
-  avatarBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(20,184,166,0.35)',
-    borderRadius: 20,
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    backgroundColor: '#f0fdf9',
-  },
-  avatarCircle: {
-    width: 28, height: 28, borderRadius: 14,
-    backgroundColor: '#14b8a6',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  profileName: { fontSize: 13, fontWeight: '600', color: '#0c2f47', maxWidth: 80 },
-
-  /* Hamburger */
-  hamburger: { padding: 2 },
-
-  /* ── Mobile menu ── */
-  mobileMenu: {
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-    paddingBottom: 8,
-    ...Platform.select({ android: { elevation: 4 } }),
-  },
-  mobileMenuDashRow: {
+  navLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    backgroundColor: '#f0fdf9',
   },
-  mobileMenuDashText: { fontSize: 15, fontWeight: '700', color: '#0f766e' },
-  mobileMenuRow: {
+
+  hamburger: {
+    width: 36, height: 36,
+    borderRadius: 10,
+    backgroundColor: '#f8fafc',
+    borderWidth: 0.5,
+    borderColor: 'rgba(0,0,0,0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  logo:       { fontSize: 20, fontWeight: '900', color: '#0c2f47' },
+  logoAccent: { color: '#14b8a6' },
+
+  avatarCircle: {
+    width: 36, height: 36, borderRadius: 18,
+    backgroundColor: '#14b8a6',
+    alignItems: 'center', justifyContent: 'center',
+  },
+
+  loginBtn: {
+    backgroundColor: '#0f766e',
+    borderRadius: 20,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+  },
+  loginBtnText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+
+  // Drawer
+  drawerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  drawer: {
+    width: DRAWER_WIDTH,
+    height: '100%',
+    backgroundColor: '#fff',
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    ...Platform.select({
+      ios:     { shadowColor: '#000', shadowOffset: { width: 4, height: 0 }, shadowOpacity: 0.12, shadowRadius: 16 },
+      android: { elevation: 8 },
+    }),
+  },
+  drawerSafeArea: { flex: 1 },
+  drawerHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#f1f5f9',
+  },
+
+  sectionLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#94a3b8',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    paddingHorizontal: 18,
+    paddingTop: 18,
+    paddingBottom: 4,
+  },
+
+  drawerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 18,
     paddingVertical: 14,
-    borderTopWidth: 1,
+    borderTopWidth: 0.5,
     borderTopColor: '#f8fafc',
   },
-  mobileMenuText: { fontSize: 15, fontWeight: '500', color: '#1e3a5f' },
+  drawerRowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  drawerRowText:       { fontSize: 15, color: '#1e3a5f', fontWeight: '500' },
+  drawerRowTextAccent: { color: '#0f766e', fontWeight: '700' },
 
-  /* ── Modal backdrop ── */
+  langRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    borderTopWidth: 0.5,
+    borderTopColor: '#f8fafc',
+  },
+  langPill: {
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    backgroundColor: '#f8fafc',
+    borderWidth: 0.5,
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  langPillActive:     { backgroundColor: '#f0fdf9', borderColor: 'rgba(20,184,166,0.4)' },
+  langPillText:       { fontSize: 12, fontWeight: '700', color: '#475569' },
+  langPillTextActive: { color: '#0f766e' },
+
+  // Modal overlay
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.35)',
@@ -438,40 +384,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  /* Dropdown card */
-  dropdownCard: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 16,
-    width: 230,
-    ...Platform.select({
-      ios:     { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.12, shadowRadius: 16 },
-      android: { elevation: 10 },
-    }),
-  },
-  dropdownTitle: {
-    fontSize: 11, fontWeight: '700', color: '#94a3b8',
-    textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8,
-  },
-  dropdownRow: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingVertical: 12, paddingHorizontal: 8, borderRadius: 8,
-  },
-  dropdownRowActive:     { backgroundColor: '#f0fdf9' },
-  dropdownRowText:       { fontSize: 15, color: '#1e3a5f', fontWeight: '500' },
-  dropdownRowTextActive: { color: '#0f766e', fontWeight: '700' },
-
-  /* Profile card */
+  // Profile card
   profileCard: {
     backgroundColor: '#fff',
     borderRadius: 20,
     padding: 24,
     width: 280,
     alignItems: 'center',
-    ...Platform.select({
-      ios:     { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.14, shadowRadius: 16 },
-      android: { elevation: 10 },
-    }),
   },
   profileAvatarLarge: {
     width: 60, height: 60, borderRadius: 30,
@@ -486,14 +405,12 @@ const styles = StyleSheet.create({
   },
   roleBadgeText: { fontSize: 11, fontWeight: '700', color: '#0f766e', letterSpacing: 1 },
   divider: { height: 1, backgroundColor: '#f1f5f9', width: '100%', marginBottom: 16 },
-
   dashBtnFull: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     backgroundColor: '#0f766e', borderRadius: 10,
     paddingVertical: 11, width: '100%', justifyContent: 'center', marginBottom: 10,
   },
   dashBtnFullText: { color: '#fff', fontWeight: '700', fontSize: 14 },
-
   logoutBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     borderWidth: 1.5, borderColor: '#fecaca', borderRadius: 10,
