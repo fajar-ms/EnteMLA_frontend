@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useRouter } from "expo-router";
 import {
   View,
   Text,
@@ -47,6 +48,7 @@ const clr = {
 
 const radius = { sm: 10, md: 14, lg: 20, xl: 28 };
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
 
 // ─── Avatar ───────────────────────────────────────────────────────────────────
 const Avatar = ({ name, size = 52 }: { name?: string; size?: number }) => {
@@ -263,14 +265,14 @@ export default function CitizenDashboard() {
   const [imageModal, setImageModal] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const router = useRouter();
   const itemsPerPage = 5;
 
   const handleLogout = async () => {
-    await AsyncStorage.multiRemove(["user", "role", "token"]);
-    // Navigate to login — replace with your navigation call:
-    // navigation.replace("Login");
-    Alert.alert("Logged out", "You have been signed out.");
-  };
+  await AsyncStorage.multiRemove(["user", "role", "token"]);
+
+  Alert.alert("Logged out", "You have been signed out.");
+};
 
   useEffect(() => {
     const fetchData = async () => {
@@ -429,9 +431,12 @@ export default function CitizenDashboard() {
               </View>
             </View>
             <View style={styles.headerActions}>
-              <TouchableOpacity style={styles.dashBtn}>
-                <Text style={styles.dashBtnText}>⌂  Home</Text>
-              </TouchableOpacity>
+              <TouchableOpacity
+  style={styles.dashBtn}
+  onPress={() => router.push("/")}
+>
+  <Text style={styles.logoutBtnText}>⌂ Home</Text>
+</TouchableOpacity>
               <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
                 <Text style={styles.logoutBtnText}>⏻  Logout</Text>
               </TouchableOpacity>
@@ -895,15 +900,15 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: clr.border,
-    backgroundColor: "#fff",
+    borderColor: clr.primary,
+    backgroundColor: clr.primary,
     alignItems: "center",
     justifyContent: "center",
   },
   dashBtnText: {
     fontSize: 13,
     fontWeight: "700",
-    color: clr.text,
+    color:" #fff",
   },
   logoutBtn: {
     flex: 1,
