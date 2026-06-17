@@ -19,7 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const NAV_LINKS: { label: string; route: Href }[] = [
   { label: 'Home',       route: '/' },
   { label: 'About',      route: '/about' },
-  { label: 'Complaints', route: '/login' },
+  { label: 'Complaints', route: '/complaints' },
   { label: 'Q/A',        route: '/qa' },
   { label: 'Contact',    route: '/contact' },
 ];
