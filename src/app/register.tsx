@@ -340,8 +340,8 @@ export default function Register() {
           {/* Step 1 — Identity */}
           {step === 1 && (
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Who are you?</Text>
-              <Text style={styles.stepDesc}>Let's start with the basics.</Text>
+              <Text style={styles.stepTitle}>Personal Details</Text>
+              
 
               <Field icon="person-outline" placeholder="Full Name"
                 value={form.name} onChangeText={(v) => handleChange("name", v)} />
@@ -362,8 +362,7 @@ export default function Register() {
           {/* Step 2 — Location */}
           {step === 2 && (
             <View style={styles.stepContent}>
-              <Text style={styles.stepTitle}>Where are you?</Text>
-              <Text style={styles.stepDesc}>We use this to connect you with your MLA.</Text>
+              <Text style={styles.stepTitle}>Personal Details</Text>
 
               {/* District */}
               <View style={styles.pickerBox}>
