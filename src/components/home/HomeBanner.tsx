@@ -53,7 +53,9 @@ export default function HomeBanner() {
               resizeMode="cover"
             />
 
-            
+            {/* <View style={styles.legend}>
+              <Text style={styles.legendText}>{item.title}</Text>
+            </View> */}
           </View>
         )}
       />

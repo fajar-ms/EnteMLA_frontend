@@ -17,6 +17,7 @@ import {
 import axios, { AxiosError } from "axios";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
 
 // ── Role type ─────────────────────────────────────────────────────
 type Role = "citizen" | "mla" | "employee";
@@ -164,19 +165,19 @@ export default function LoginPage(): React.JSX.Element {
 
   // ── Derived display values ────────────────────────────────────
   const badgeLabel: string =
-    role === "citizen"  ? "Citizen Login"  :
-    role === "mla"      ? "MLA Login"      :
-    role === "employee" ? "Employee Login" : "";
+    role === "citizen" ? "Citizen Login" :
+      role === "mla" ? "MLA Login" :
+        role === "employee" ? "Employee Login" : "";
 
   const idLabel: string =
-    role === "citizen"  ? "Email Address" :
-    role === "mla"      ? "MLA ID"        :
-    role === "employee" ? "Employee ID"   : "ID";
+    role === "citizen" ? "Email Address" :
+      role === "mla" ? "MLA ID" :
+        role === "employee" ? "Employee ID" : "ID";
 
   const idPlaceholder: string =
-    role === "citizen" ? "Enter your email"      :
-    role === "mla"     ? "Enter your MLA ID"     :
-                         "Enter your Employee ID";
+    role === "citizen" ? "Enter your email" :
+      role === "mla" ? "Enter your MLA ID" :
+        "Enter your Employee ID";
 
   // ── Render ────────────────────────────────────────────────────
   return (
@@ -208,7 +209,7 @@ export default function LoginPage(): React.JSX.Element {
               onPress={() => (router as any).push("/")}
               activeOpacity={0.7}
             >
-              <Text style={styles.backHomeText}>← Back to Home</Text>
+              <Ionicons name="arrow-back" size={24} color="#1e3a5f" />
             </TouchableOpacity>
 
             {/* Header */}
@@ -220,14 +221,14 @@ export default function LoginPage(): React.JSX.Element {
               <Text style={styles.subtitle}>Secure Digital Governance Portal</Text>
 
               {/* Role badge */}
-              {badgeLabel ? (
+              {/* {badgeLabel ? (
                 <View style={styles.roleBadge}>
                   <Text style={styles.roleBadgeText}>{badgeLabel}</Text>
                 </View>
-              ) : null}
+              ) : null} */}
 
               {/* Accent bar */}
-              <View style={styles.accentBar} />
+              {/* <View style={styles.accentBar} /> */}
             </View>
 
             {/* Form */}
@@ -243,7 +244,7 @@ export default function LoginPage(): React.JSX.Element {
                   ]}
                 >
                   <View style={styles.iconWrap}>
-                    <Text style={styles.iconText}>✉</Text>
+                    <Text style={styles.iconText}></Text>
                   </View>
                   <TextInput
                     style={styles.input}
@@ -270,7 +271,7 @@ export default function LoginPage(): React.JSX.Element {
                   ]}
                 >
                   <View style={styles.iconWrap}>
-                    <Text style={styles.iconText}>🔒</Text>
+                    <Text style={styles.iconText}></Text>
                   </View>
                   <TextInput
                     style={styles.input}
@@ -302,7 +303,7 @@ export default function LoginPage(): React.JSX.Element {
                 onPress={handleLogin}
                 activeOpacity={0.88}
               >
-                <Text style={styles.loginBtnText}>Sign In →</Text>
+                <Text style={styles.loginBtnText}>Sign In</Text>
               </TouchableOpacity>
             </View>
 
@@ -410,13 +411,28 @@ const styles = StyleSheet.create<{
   // ── Back link ─────────────────────────────────────────────────
   backHome: {
     alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: 10,
+    height: 10,
+    borderRadius: 20,
+    backgroundColor: "rgba(255,255,255,0.75)",
+    borderWidth: 1,
+    borderColor: "rgba(20,184,166,0.15)",
     marginBottom: 20,
+
+    shadowColor: "#14b8a6",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 3,
   },
   backHomeText: {
-    fontSize: 12,
-    fontWeight: "400",
-    color: C.mutedLt,
-    letterSpacing: 0.5,
+    marginLeft: 6,
+    fontSize: 14,
+    fontWeight: "500",
+    color: C.skydd,
   },
 
   // ── Header ────────────────────────────────────────────────────
@@ -594,4 +610,5 @@ const styles = StyleSheet.create<{
     color: C.mutedLt,
     letterSpacing: 1,
   },
+
 });
