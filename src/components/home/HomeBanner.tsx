@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
-import Swiper from "react-native-swiper";
 import {
   View,
-  Image,
   Text,
+  Image,
   StyleSheet,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
+import Carousel from "react-native-reanimated-carousel";
 import axios from "axios";
 
-
-const { width } = Dimensions.get("window");
-
-const HomeBanner = () => {
-  const [banners, setBanners] = useState<any[]>([]);
+const { width } = useWindowDimensions();
+export default function HomeBanner() {
+  
+  const carouselWidth = width - 64; // Adjust if parent has 16px padding on each side
+  const carouselHeight = carouselWidth / 1.77;
+  const [banners, setBanners] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     fetchBanners();
@@ -24,7 +26,6 @@ const HomeBanner = () => {
       const res = await axios.get(
         `${process.env.EXPO_PUBLIC_API_BASE_URL}/banner`
       );
-
       setBanners(res.data);
     } catch (err) {
       console.log(err);
@@ -35,49 +36,53 @@ const HomeBanner = () => {
 
   return (
     <View style={styles.container}>
-      <Swiper
-        autoplay
-        autoplayTimeout={4}
-        showsPagination
-        style={{ height: width / 1.6 }} 
-      >
-        {banners.map((banner) => (
-          <View
-            key={banner._id}
-            style={styles.carouselItem}
-          >
+      <Carousel
+        width={carouselWidth}
+        height={carouselHeight}
+        data={banners}
+        loop
+        autoPlay
+        autoPlayInterval={4000}
+        scrollAnimationDuration={800}
+        onSnapToItem={setActiveIndex}
+        renderItem={({ item }) => (
+          <View style={styles.carouselItem}>
             <Image
-              source={{ uri: banner.imageUrl }}
+              source={{ uri: item.imageUrl }}
               style={styles.bannerImage}
               resizeMode="cover"
             />
 
-            <View style={styles.legend}>
-              <Text style={styles.legendText}>
-                {banner.title}
-              </Text>
-            </View>
+            
           </View>
+        )}
+      />
+
+      <View style={styles.pagination}>
+        {banners.map((_, index) => (
+          <View
+            key={index}
+            style={[
+              styles.dot,
+              index === activeIndex && styles.activeDot,
+            ]}
+          />
         ))}
-      </Swiper>
+      </View>
     </View>
   );
-};
-
-
+}
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    paddingHorizontal: 16,
+    alignItems: "center",
   },
 
-
   carouselItem: {
-    width: "100%",
-    height: width / 1.77,
-    backgroundColor: "#f8fafc",
+    flex: 1,
     borderRadius: 16,
     overflow: "hidden",
+    backgroundColor: "#f8fafc",
   },
 
   bannerImage: {
@@ -87,17 +92,37 @@ const styles = StyleSheet.create({
 
   legend: {
     position: "absolute",
-    bottom: 16,
-    alignSelf: "center",
-    backgroundColor: "rgba(15,23,42,0.85)",
-    paddingHorizontal: 16,
+    left: 12,
+    right: 12,
+    bottom: 12,
+    backgroundColor: "rgba(15,23,42,0.8)",
+    borderRadius: 10,
+    paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 8,
   },
 
   legendText: {
     color: "#fff",
     fontWeight: "600",
+    textAlign: "center",
+  },
+
+  pagination: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 12,
+  },
+
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#CBD5E1",
+    marginHorizontal: 4,
+  },
+
+  activeDot: {
+    width: 20,
+    backgroundColor: "#2563EB",
   },
 });
-export default HomeBanner;
