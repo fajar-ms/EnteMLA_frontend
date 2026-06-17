@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
@@ -13,7 +15,7 @@ import {
   Alert,
   Platform,
   KeyboardAvoidingView,
-  SafeAreaView,
+  
   Dimensions,
   StatusBar,
 } from "react-native";
@@ -249,6 +251,7 @@ interface User {
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3001";
 
 export default function CitizenDashboard() {
+  const [evidence, setEvidence] = useState<string | null>(null);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
@@ -267,9 +270,21 @@ export default function CitizenDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
   const itemsPerPage = 5;
+  const pickEvidence = async () => {
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    quality: 0.8,
+    base64: false,
+  });
+
+  if (!result.canceled) {
+    setEvidence(result.assets[0].uri);
+  }
+};
 
   const handleLogout = async () => {
   await AsyncStorage.multiRemove(["user", "role", "token"]);
+  router.replace("/login");
 
   Alert.alert("Logged out", "You have been signed out.");
 };
@@ -361,6 +376,7 @@ export default function CitizenDashboard() {
       details,
       visibility: visibility || "Public",
       citizenId: user?._id,
+      evidence,
     };
     try {
       const token = await AsyncStorage.getItem("token");
@@ -383,6 +399,7 @@ export default function CitizenDashboard() {
           ...prev,
         ]);
         setTitle(""); setCategory(""); setDetails(""); setUrgency(""); setVisibility("");
+        setEvidence(null); 
         setSubmitSuccess(true);
         setTimeout(() => setSubmitSuccess(false), 3000);
       } else {
@@ -582,6 +599,30 @@ export default function CitizenDashboard() {
               placeholderTextColor="#9CA3AF"
             />
             <FieldError msg={errors.details} />
+            <Text style={[styles.formLabel, { marginTop: 12 }]}>
+  Upload Evidence
+</Text>
+
+<TouchableOpacity
+  style={styles.uploadBtn}
+  onPress={pickEvidence}
+>
+  <Text style={styles.uploadBtnText}>
+    📎 Select Image
+  </Text>
+</TouchableOpacity>
+
+{evidence && (
+  <Image
+    source={{ uri: evidence }}
+    style={{
+      width: 120,
+      height: 120,
+      marginTop: 10,
+      borderRadius: 10,
+    }}
+  />
+)}
 
             <TouchableOpacity style={styles.submitBtn} onPress={handleAddComplaint}>
               <Text style={styles.submitBtnText}>Submit Complaint  ➤</Text>
@@ -1391,6 +1432,18 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     fontWeight: "500",
   },
+  uploadBtn: {
+  backgroundColor: clr.primaryLight,
+  padding: 12,
+  borderRadius: 10,
+  alignItems: "center",
+  marginTop: 5,
+},
+
+uploadBtnText: {
+  color: clr.primary,
+  fontWeight: "700",
+},
 
   // Image modal
   imageModalOverlay: {
