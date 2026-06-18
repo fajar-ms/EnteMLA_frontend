@@ -73,12 +73,16 @@ export default function LoginPage(): React.JSX.Element {
   }>({ visible: false, type: "success", title: "", message: "" });
 
   useEffect(() => {
-  const init = async () => {
-    console.log("Login mounted");
-  };
-
-  init();
-}, []);
+    (async () => {
+      const selectedRole = await getItem("role");
+      if (!selectedRole) { (router as any).replace("/"); return; }
+      setRole(selectedRole as Role);
+      const token = await getItem("token");
+      const storedUser = await getItem("user");
+      console.log("Login mounted");
+      if (token && storedUser) (router as any).replace("/");
+    })();
+  }, []);
 
   const handleLogin = async () => {
   if (!identifier.trim() || !password.trim()) {
@@ -141,9 +145,32 @@ export default function LoginPage(): React.JSX.Element {
   //   role === "citizen" ? "Enter your email" :
   //     role === "mla" ? "Enter your MLA ID" : "Enter your Employee ID";
 
-  // const roleLabel =
-  //   role === "citizen" ? "Citizen" :
-  //     role === "mla" ? "MLA" : "Employee";
+  // const handleModalClose = async () => {
+  //   if (modal.type === "success") {
+  //     setModal((m) => ({ ...m, visible: false }));
+  //     const redirectAfterLogin = await getItem("redirectAfterLogin");
+  //     if (redirectAfterLogin) {
+  //       await removeItem("redirectAfterLogin");
+  //       (router as any).replace(redirectAfterLogin);
+  //     } else {
+  //       (router as any).replace("/");
+  //     }
+  //   } else {
+  //     setModal((m) => ({ ...m, visible: false }));
+  //   }
+  // };
+
+  const idLabel =
+    role === "citizen" ? "Email Address" :
+      role === "mla" ? "MLA ID" : "Employee ID";
+
+  const idPlaceholder =
+    role === "citizen" ? "Enter your email" :
+      role === "mla" ? "Enter your MLA ID" : "Enter your Employee ID";
+
+  const roleLabel =
+    role === "citizen" ? "Citizen" :
+      role === "mla" ? "MLA" : "Employee";
 
   return (
     <View style={[styles.page, { backgroundColor: "#eef8fa" }]}>
@@ -179,7 +206,7 @@ export default function LoginPage(): React.JSX.Element {
         {/* Hero text */}
         <View style={styles.heroDot}>
           <View style={styles.dot} />
-          {/* <Text style={styles.heroTag}>{roleLabel} Portal</Text> */}
+          <Text style={styles.heroTag}>{roleLabel} Portal</Text>
         </View>
         <Text style={styles.heading}>Welcome{"\n"}back.</Text>
         <Text style={styles.subheading}>
@@ -199,12 +226,12 @@ export default function LoginPage(): React.JSX.Element {
               size={13}
               color={C.skydd}
             />
-            {/* <Text style={styles.rolePillText}>{roleLabel} Login</Text> */}
+            <Text style={styles.rolePillText}>{roleLabel} Login</Text>
           </View>
 
           {/* ID field */}
           <View style={styles.formGroup}>
-            {/* <Text style={styles.label}>{idLabel}</Text> */}
+            <Text style={styles.label}>{idLabel}</Text>
             <View style={[styles.inputBox, focusedField === "id" && styles.inputBoxFocused]}>
               <Ionicons
                 name={role === "citizen" ? "mail-outline" : "id-card-outline"}
@@ -214,7 +241,7 @@ export default function LoginPage(): React.JSX.Element {
               />
               <TextInput
                 style={styles.input}
-                // placeholder={idPlaceholder}
+                placeholder={idPlaceholder}
                 placeholderTextColor={C.mutedLt}
                 value={identifier}
                 onChangeText={setIdentifier}
