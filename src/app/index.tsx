@@ -1,11 +1,10 @@
 // src/app/index.tsx
 import React from 'react';
-import { View, ScrollView, StyleSheet, SafeAreaView, StatusBar } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import Navbar from '../components/home/Navbar';
 import Hero from '../components/home/Hero';
-//import Stats from '../components/home/Stats';
 import Trending from '../components/home/Trending';
 
 const Home = () => {
@@ -18,32 +17,30 @@ const Home = () => {
             <ScrollView 
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
+                nestedScrollEnabled={true}   // ← Helps reduce the warning
             >
                 <Hero />
+                
                 <View style={styles.sectionSpacing}>
-        <Trending />
-    </View>
+                    <Trending />
+                </View>
             </ScrollView>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    safeArea: {
+    container: {
         flex: 1,
         backgroundColor: '#fff',
     },
-    container: {
-        flex: 1,
-    },
     scrollContent: {
         flexGrow: 1,
-        paddingBottom: 40,   // Extra breathing space at bottom
+        paddingBottom: 80,
     },
-
     sectionSpacing: {
-    marginBottom: 30,
-},
+        marginBottom: 30,
+    },
 });
 
 export default Home;
