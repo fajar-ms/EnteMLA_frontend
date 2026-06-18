@@ -613,17 +613,38 @@ export default function CitizenDashboard() {
 </TouchableOpacity>
 
 {evidence && (
-  <Image
-    source={{ uri: evidence }}
-    style={{
-      width: 120,
-      height: 120,
-      marginTop: 10,
-      borderRadius: 10,
-    }}
-  />
+  <View style={{ marginTop: 10, position: 'relative', width: 120, height: 120 }}>
+    <TouchableOpacity 
+      activeOpacity={0.8} 
+      onPress={() => { setPreviewImage(evidence); setImageModal(true); }}
+    >
+      <Image
+        source={{ uri: evidence }}
+        style={{
+          width: 120,
+          height: 120,
+          borderRadius: 10,
+        }}
+      />
+    </TouchableOpacity>
+    <TouchableOpacity
+      onPress={() => setEvidence(null)}
+      style={{
+        position: 'absolute',
+        top: 5,
+        right: 5,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700', marginTop: -1 }}>✕</Text>
+    </TouchableOpacity>
+  </View>
 )}
-
             <TouchableOpacity style={styles.submitBtn} onPress={handleAddComplaint}>
               <Text style={styles.submitBtnText}>Submit Complaint  ➤</Text>
             </TouchableOpacity>
