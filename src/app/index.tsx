@@ -1,6 +1,7 @@
 // src/app/index.tsx
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
+import { Text } from "react-native";   // ✅ Correct
 import { useTranslation } from 'react-i18next';
 
 import Navbar from '../components/home/Navbar';
@@ -8,21 +9,17 @@ import Hero from '../components/home/Hero';
 import Trending from '../components/home/Trending';
 
 const Home = () => {
-    const { t } = useTranslation();
+    console.log("HOME RENDER");
 
     return (
         <View style={styles.container}>
             <Navbar />
-
-
             <Hero />
-            {/* <View style={styles.sectionSpacing}>
-                <Trending />
-            </View> */}
-
         </View>
     );
 };
+
+
 
 const styles = StyleSheet.create({
     container: {

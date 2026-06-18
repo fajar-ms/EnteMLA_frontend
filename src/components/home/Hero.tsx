@@ -40,7 +40,7 @@ const Hero = () => {
     >
       {/* Video Banner */}
       <View style={[styles.heroBanner, { height: bannerHeight }]}>
-        <Video
+        {/* <Video
           source={{
             uri: "https://res.cloudinary.com/dw5bky38i/video/upload/v1780556713/14723614_3840_2160_60fps_mqjgun.mp4",
           }}
@@ -49,7 +49,7 @@ const Hero = () => {
           shouldPlay
           isLooping
           isMuted
-        />
+        /> */}
 
         <LinearGradient
           colors={["rgba(230, 228, 228, 0.55)", "transparent"]}
