@@ -1,8 +1,21 @@
 import { Stack } from "expo-router";
 import "../i18n";
 
+
 export default function RootLayout() {
+//   useEffect(() => {
+//   const checkAuth = async () => {
+//     const token = await getItem("token");
+
+//     if (token) {
+//       router.replace("/");
+//     }
+//   };
+
+//   checkAuth();
+// }, []);
   return (
+    
     <Stack
       screenOptions={{
         headerShown: false,
@@ -17,5 +30,6 @@ export default function RootLayout() {
       <Stack.Screen name="explore" />
       <Stack.Screen name="qa" />
     </Stack>
+    
   );
 }

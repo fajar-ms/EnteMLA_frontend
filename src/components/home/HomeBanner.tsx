@@ -9,9 +9,9 @@ import {
 import Carousel from "react-native-reanimated-carousel";
 import axios from "axios";
 
-const { width } = useWindowDimensions();
+
 export default function HomeBanner() {
-  
+  const { width } = useWindowDimensions();
   const carouselWidth = width - 64; // Adjust if parent has 16px padding on each side
   const carouselHeight = carouselWidth / 1.77;
   const [banners, setBanners] = useState([]);

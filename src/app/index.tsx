@@ -14,16 +14,13 @@ const Home = () => {
     return (
         <View style={styles.container}>
             <Navbar />
-            
-            <ScrollView 
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-            >
-                <Hero />
-                <View style={styles.sectionSpacing}>
-        <Trending />
-    </View>
-            </ScrollView>
+
+
+            <Hero />
+            {/* <View style={styles.sectionSpacing}>
+                <Trending />
+            </View> */}
+
         </View>
     );
 };
@@ -42,8 +39,8 @@ const styles = StyleSheet.create({
     },
 
     sectionSpacing: {
-    marginBottom: 30,
-},
+        marginBottom: 30,
+    },
 });
 
 export default Home;
