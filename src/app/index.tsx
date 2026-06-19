@@ -8,22 +8,23 @@ import Hero from '../components/home/Hero';
 import Trending from '../components/home/Trending';
 
 const Home = () => {
-    const { t } = useTranslation();
+    console.log("HOME RENDER");
 
     return (
         <View style={styles.container}>
             <Navbar />
-            
+
             <ScrollView 
-                showsVerticalScrollIndicator={false}
+                style={styles.scrollView}
                 contentContainerStyle={styles.scrollContent}
-                nestedScrollEnabled={true}   // ← Helps reduce the warning
+                showsVerticalScrollIndicator={false}
             >
                 <Hero />
+                <Trending />
                 
-                <View style={styles.sectionSpacing}>
-                    <Trending />
-                </View>
+                {/* Add more sections here later */}
+                {/* <Categories /> */}
+                {/* <Popular /> */}
             </ScrollView>
         </View>
     );
@@ -34,9 +35,12 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
     },
+    scrollView: {
+        flex: 1,
+    },
     scrollContent: {
         flexGrow: 1,
-        paddingBottom: 80,
+        paddingBottom: 80,   // Extra space at bottom
     },
     sectionSpacing: {
         marginBottom: 30,

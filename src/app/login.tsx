@@ -20,6 +20,7 @@ import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 
+
 type Role = "citizen" | "mla" | "employee";
 
 interface LoginResponse {
@@ -78,283 +79,264 @@ export default function LoginPage(): React.JSX.Element {
       setRole(selectedRole as Role);
       const token = await getItem("token");
       const storedUser = await getItem("user");
+      console.log("Login mounted");
       if (token && storedUser) (router as any).replace("/");
     })();
   }, []);
 
   const handleLogin = async () => {
-    if (!identifier.trim() || !password.trim()) {
-      setModal({
-        visible: true, type: "error",
-        title: "Missing fields",
-        message: "Please enter both your ID and password to continue.",
-      });
-      return;
-    }
+  if (!identifier.trim() || !password.trim()) {
+    setModal({
+      visible: true,
+      type: "error",
+      title: "Missing fields",
+      message: "Please enter both email and password.",
+    });
+    return;
+  }
 
-    await removeItem("user");
-    await removeItem("token");
-    const selectedRole = await getItem("role");
+  setLoading(true);
 
-    if (!selectedRole) {
-      (router as any).push("/");
-      return;
-    }
+  try {
+    const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL ?? "";
 
-    setLoading(true);
+    const response = await axios.post(`${API_BASE}/auth/login`, {
+      email: identifier,
+      password,
+    });
 
-    try {
-      let endpoint = "";
-      let payload: Record<string, string> = {};
+    const { user: userData, token } = response.data;
 
-      if (selectedRole === "citizen") {
-        endpoint = "/auth/login";
-        payload = { email: identifier, password };
-      } else if (selectedRole === "mla") {
-        endpoint = "/auth/mla/login";
-        payload = { mlaId: identifier, password };
-      } else if (selectedRole === "employee") {
-        endpoint = "/auth/employee/login";
-        payload = { employeeId: identifier, password };
-      }
+    await setItem("user", JSON.stringify(userData));
+    await setItem("token", token);
 
-      const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL ?? "";
-      const response = await axios.post<LoginResponse>(`${API_BASE}${endpoint}`, payload);
+    setModal({
+      visible: true,
+      type: "success",
+      title: "Welcome back!",
+      message: "Login successful",
+    });
 
-      if (response.status === 200 || response.status === 201) {
-        const { user: userData, token } = response.data;
+  } catch (error) {
+    setModal({
+      visible: true,
+      type: "error",
+      title: "Login failed",
+      message: "Invalid credentials",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
 
-        if (!token) {
-          setModal({
-            visible: true, type: "error",
-            title: "Auth error",
-            message: "No token received from server. Please try again.",
-          });
-          return;
-        }
+  const handleModalClose = () => {
+  setModal((m) => ({ ...m, visible: false }));
 
-        await setItem("user", JSON.stringify(userData));
-        await setItem("role", selectedRole);
-        await setItem("token", token);
+  if (modal.type === "success") {
+    router.replace("/");
+  }
+};
 
-        const userName =
-          (userData as any)?.name ||
-          (userData as any)?.employee_name ||
-          (userData as any)?.mla_name ||
-          "User";
+  // const idLabel =
+  //   role === "citizen" ? "Email Address" :
+  //     role === "mla" ? "MLA ID" : "Employee ID";
 
-        setModal({
-          visible: true, type: "success",
-          title: "Welcome back!",
-          message: `Signed in successfully as ${selectedRole}.`,
-          userName,
-        });
-      }
-    } catch (error) {
-      const axiosError = error as AxiosError<ApiError>;
-      const msg =
-        axiosError.response?.data?.message ??
-        "Incorrect credentials. Please check your ID and password.";
-      setModal({
-        visible: true, type: "error",
-        title: "Sign in failed",
-        message: Array.isArray(msg) ? msg.join(", ") : msg,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const idPlaceholder =
+  //   role === "citizen" ? "Enter your email" :
+  //     role === "mla" ? "Enter your MLA ID" : "Enter your Employee ID";
 
-  const handleModalClose = async () => {
-    if (modal.type === "success") {
-      setModal((m) => ({ ...m, visible: false }));
-      const redirectAfterLogin = await getItem("redirectAfterLogin");
-      if (redirectAfterLogin) {
-        await removeItem("redirectAfterLogin");
-        (router as any).replace(redirectAfterLogin);
-      } else {
-        (router as any).replace("/");
-      }
-    } else {
-      setModal((m) => ({ ...m, visible: false }));
-    }
-  };
+  // const handleModalClose = async () => {
+  //   if (modal.type === "success") {
+  //     setModal((m) => ({ ...m, visible: false }));
+  //     const redirectAfterLogin = await getItem("redirectAfterLogin");
+  //     if (redirectAfterLogin) {
+  //       await removeItem("redirectAfterLogin");
+  //       (router as any).replace(redirectAfterLogin);
+  //     } else {
+  //       (router as any).replace("/");
+  //     }
+  //   } else {
+  //     setModal((m) => ({ ...m, visible: false }));
+  //   }
+  // };
 
   const idLabel =
     role === "citizen" ? "Email Address" :
-    role === "mla" ? "MLA ID" : "Employee ID";
+      role === "mla" ? "MLA ID" : "Employee ID";
 
   const idPlaceholder =
     role === "citizen" ? "Enter your email" :
-    role === "mla" ? "Enter your MLA ID" : "Enter your Employee ID";
+      role === "mla" ? "Enter your MLA ID" : "Enter your Employee ID";
 
   const roleLabel =
     role === "citizen" ? "Citizen" :
-    role === "mla" ? "MLA" : "Employee";
+      role === "mla" ? "MLA" : "Employee";
 
   return (
-    <ImageBackground
-      source={{ uri: "https://i.postimg.cc/xC3v5cLV/2.png" }}
-      style={styles.page}
-      resizeMode="cover"
-    >
+    <View style={[styles.page, { backgroundColor: "#eef8fa" }]}>
       <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
       <View style={styles.overlay} pointerEvents="none" />
 
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      {/* <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      > */}
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="none"
+        automaticallyAdjustKeyboardInsets={true}
+        showsVerticalScrollIndicator={false}
       >
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Top bar */}
-          <View style={styles.topBar}>
-            <TouchableOpacity
-              style={styles.backBtn}
-              onPress={() => (router as any).push("/")}
-            >
-              <Ionicons name="arrow-back" size={18} color="#0c2f47" />
-              <Text style={styles.backText}>Home</Text>
-            </TouchableOpacity>
-            <Text style={styles.logo}>
-              Ente<Text style={styles.logoAccent}>MLA</Text>
-            </Text>
-          </View>
 
-          {/* Hero text */}
-          <View style={styles.heroDot}>
-            <View style={styles.dot} />
-            <Text style={styles.heroTag}>{roleLabel} Portal</Text>
-          </View>
-          <Text style={styles.heading}>Welcome{"\n"}back.</Text>
-          <Text style={styles.subheading}>
-            Sign in to manage complaints{"\n"}and track progress.
+        {/* Top bar */}
+        <View style={styles.topBar}>
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => (router as any).push("/")}
+          >
+            <Ionicons name="arrow-back" size={18} color="#0c2f47" />
+            <Text style={styles.backText}>Home</Text>
+          </TouchableOpacity>
+          <Text style={styles.logo}>
+            Ente<Text style={styles.logoAccent}>MLA</Text>
           </Text>
+        </View>
 
-          {/* Card */}
-          <View style={styles.card}>
+        {/* Hero text */}
+        <View style={styles.heroDot}>
+          <View style={styles.dot} />
+          <Text style={styles.heroTag}>{roleLabel} Portal</Text>
+        </View>
+        <Text style={styles.heading}>Welcome{"\n"}back.</Text>
+        <Text style={styles.subheading}>
+          Sign in to manage complaints{"\n"}and track progress.
+        </Text>
 
-            {/* Role pill */}
-            <View style={styles.rolePill}>
-              <Ionicons
-                name={
-                  role === "mla" ? "ribbon-outline" :
+        {/* Card */}
+        <View style={styles.card}>
+
+          {/* Role pill */}
+          <View style={styles.rolePill}>
+            <Ionicons
+              name={
+                role === "mla" ? "ribbon-outline" :
                   role === "employee" ? "construct-outline" : "person-outline"
-                }
-                size={13}
-                color={C.skydd}
+              }
+              size={13}
+              color={C.skydd}
+            />
+            <Text style={styles.rolePillText}>{roleLabel} Login</Text>
+          </View>
+
+          {/* ID field */}
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>{idLabel}</Text>
+            <View style={[styles.inputBox, focusedField === "id" && styles.inputBoxFocused]}>
+              <Ionicons
+                name={role === "citizen" ? "mail-outline" : "id-card-outline"}
+                size={16}
+                color={focusedField === "id" ? C.teal : C.mutedLt}
+                style={styles.inputIcon}
               />
-              <Text style={styles.rolePillText}>{roleLabel} Login</Text>
+              <TextInput
+                style={styles.input}
+                placeholder={idPlaceholder}
+                placeholderTextColor={C.mutedLt}
+                value={identifier}
+                onChangeText={setIdentifier}
+                autoCapitalize="none"
+                keyboardType={role === "citizen" ? "email-address" : "default"}
+                // onFocus={() => setFocusedField("id")}
+                // onBlur={() => setFocusedField(null)}
+                onFocus={() => console.log("Focused")}
+                onBlur={() => console.log("Blurred")}
+                returnKeyType="next"
+              />
             </View>
+          </View>
 
-            {/* ID field */}
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>{idLabel}</Text>
-              <View style={[styles.inputBox, focusedField === "id" && styles.inputBoxFocused]}>
+          {/* Password field */}
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Password</Text>
+            <View style={[styles.inputBox, focusedField === "pw" && styles.inputBoxFocused]}>
+              <Ionicons
+                name="lock-closed-outline"
+                size={16}
+                color={focusedField === "pw" ? C.teal : C.mutedLt}
+                style={styles.inputIcon}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your password"
+                placeholderTextColor={C.mutedLt}
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
+                // onFocus={() => setFocusedField("pw")}
+                // onBlur={() => setFocusedField(null)}
+                returnKeyType="done"
+                onSubmitEditing={handleLogin}
+              />
+              <TouchableOpacity
+                onPress={() => setShowPassword((p) => !p)}
+                style={styles.eyeBtn}
+              >
                 <Ionicons
-                  name={role === "citizen" ? "mail-outline" : "id-card-outline"}
-                  size={16}
-                  color={focusedField === "id" ? C.teal : C.mutedLt}
-                  style={styles.inputIcon}
+                  name={showPassword ? "eye-off-outline" : "eye-outline"}
+                  size={18}
+                  color={C.mutedLt}
                 />
-                <TextInput
-                  style={styles.input}
-                  placeholder={idPlaceholder}
-                  placeholderTextColor={C.mutedLt}
-                  value={identifier}
-                  onChangeText={setIdentifier}
-                  autoCapitalize="none"
-                  keyboardType={role === "citizen" ? "email-address" : "default"}
-                  onFocus={() => setFocusedField("id")}
-                  onBlur={() => setFocusedField(null)}
-                  returnKeyType="next"
-                />
-              </View>
+              </TouchableOpacity>
             </View>
+          </View>
 
-            {/* Password field */}
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Password</Text>
-              <View style={[styles.inputBox, focusedField === "pw" && styles.inputBoxFocused]}>
-                <Ionicons
-                  name="lock-closed-outline"
-                  size={16}
-                  color={focusedField === "pw" ? C.teal : C.mutedLt}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter your password"
-                  placeholderTextColor={C.mutedLt}
-                  secureTextEntry={!showPassword}
-                  value={password}
-                  onChangeText={setPassword}
-                  onFocus={() => setFocusedField("pw")}
-                  onBlur={() => setFocusedField(null)}
-                  returnKeyType="done"
-                  onSubmitEditing={handleLogin}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword((p) => !p)}
-                  style={styles.eyeBtn}
-                >
-                  <Ionicons
-                    name={showPassword ? "eye-off-outline" : "eye-outline"}
-                    size={18}
-                    color={C.mutedLt}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Sign in button */}
-            <TouchableOpacity
-              style={[styles.loginBtn, loading && { opacity: 0.75 }]}
-              onPress={handleLogin}
-              disabled={loading}
-              activeOpacity={0.88}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" size="small" />
-              ) : (
-                <>
-                  <Text style={styles.loginBtnText}>Sign In</Text>
-                  <Ionicons name="arrow-forward" size={18} color="#fff" />
-                </>
-              )}
-            </TouchableOpacity>
-
-            {/* Register link */}
-            {role === "citizen" && (
-              <View style={styles.registerRow}>
-                <Text style={styles.registerText}>Not registered? </Text>
-                <TouchableOpacity onPress={() => (router as any).push("/register")}>
-                  <Text style={styles.registerLink}>Create account</Text>
-                </TouchableOpacity>
-              </View>
+          {/* Sign in button */}
+          <TouchableOpacity
+            style={[styles.loginBtn, loading && { opacity: 0.75 }]}
+            onPress={handleLogin}
+            disabled={loading}
+            activeOpacity={0.88}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <>
+                <Text style={styles.loginBtnText}>Sign In</Text>
+                <Ionicons name="arrow-forward" size={18} color="#fff" />
+              </>
             )}
+          </TouchableOpacity>
 
-            <Text style={styles.footerText}>© 2026 Digital Governance Initiative</Text>
-          </View>
+          {/* Register link */}
+          {role === "citizen" && (
+            <View style={styles.registerRow}>
+              <Text style={styles.registerText}>Not registered? </Text>
+              <TouchableOpacity onPress={() => (router as any).push("/register")}>
+                <Text style={styles.registerLink}>Create account</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
-          {/* Trust row */}
-          <View style={styles.trustRow}>
-            {[
-              { icon: "shield-checkmark-outline" as const, label: "Secure" },
-              { icon: "lock-closed-outline" as const, label: "Encrypted" },
-              { icon: "ribbon-outline" as const, label: "Official" },
-            ].map((b) => (
-              <View key={b.label} style={styles.trustBadge}>
-                <Ionicons name={b.icon} size={14} color={C.teal} />
-                <Text style={styles.trustLabel}>{b.label}</Text>
-              </View>
-            ))}
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          <Text style={styles.footerText}>© 2026 Digital Governance Initiative</Text>
+        </View>
+
+        {/* Trust row */}
+        <View style={styles.trustRow}>
+          {[
+            { icon: "shield-checkmark-outline" as const, label: "Secure" },
+            { icon: "lock-closed-outline" as const, label: "Encrypted" },
+            { icon: "ribbon-outline" as const, label: "Official" },
+          ].map((b) => (
+            <View key={b.label} style={styles.trustBadge}>
+              <Ionicons name={b.icon} size={14} color={C.teal} />
+              <Text style={styles.trustLabel}>{b.label}</Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+
+      {/* </KeyboardAvoidingView> */}
 
       {/* ── Feedback Modal ── */}
       <Modal visible={modal.visible} transparent animationType="fade">
@@ -413,7 +395,7 @@ export default function LoginPage(): React.JSX.Element {
           </View>
         </View>
       </Modal>
-    </ImageBackground>
+    </View>
   );
 }
 
@@ -426,7 +408,7 @@ const styles = StyleSheet.create({
   },
 
   scroll: {
-    flexGrow: 1,
+    flexGrow: 10,
     paddingHorizontal: 20,
     paddingTop: Platform.OS === "android" ? 48 : 56,
     paddingBottom: 48,

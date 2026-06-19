@@ -41,7 +41,7 @@ const Hero = () => {
     >
       {/* Video Banner */}
       <View style={[styles.heroBanner, { height: bannerHeight }]}>
-        <Video
+        {/* <Video
           source={{
             uri: "https://res.cloudinary.com/dw5bky38i/video/upload/v1780556713/14723614_3840_2160_60fps_mqjgun.mp4",
           }}
@@ -50,6 +50,11 @@ const Hero = () => {
           shouldPlay
           isLooping
           isMuted
+        /> */}
+        <Image
+          source={{ uri: "https://i.postimg.cc/g2Cpbrzd/images.jpg" }}
+          style={[StyleSheet.absoluteFillObject, { opacity: 0.2 }]} // Slightly less opaque than video
+          resizeMode="cover"
         />
 
         <LinearGradient
