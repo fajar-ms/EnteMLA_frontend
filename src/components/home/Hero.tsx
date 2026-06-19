@@ -33,6 +33,7 @@ const Hero = () => {
   const showMlaCard = role === "citizen" || role === "employee";
 
   return (
+    
     <ScrollView
       style={styles.hero}
       contentContainerStyle={styles.heroContent}
@@ -162,6 +163,7 @@ const BulletItem = ({ text, accent }: { text: string; accent: string }) => (
 );
 
 /* Styles */
+/* Replace your styles object with these adjusted spacing properties */
 const styles = StyleSheet.create({
   hero: {
     flex: 1,
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
   },
   heroContent: {
     flexGrow: 1,
-    paddingBottom: 80,
+    paddingBottom: 40, // Reduced from 80 to prevent excessive empty space at the bottom
   },
 
   heroBanner: {
@@ -196,13 +198,13 @@ const styles = StyleSheet.create({
   heroHeader: {
     zIndex: 2,
     paddingHorizontal: 20,
-    paddingBottom: 28,
+    paddingBottom: 20, // Reduced from 28
     paddingTop: 16,
   },
   labelGroup: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 14,
+    marginBottom: 10, // Reduced from 14
     flexWrap: "wrap",
     gap: 8,
   },
@@ -237,7 +239,7 @@ const styles = StyleSheet.create({
   heroTitle: {
     color: "#fff",
     fontWeight: "900",
-    marginBottom: 12,
+    marginBottom: 10, // Reduced from 12
     letterSpacing: -0.8,
   },
   heroTitleAccent: {
@@ -247,12 +249,12 @@ const styles = StyleSheet.create({
   description: {
     color: "rgba(255,255,255,0.88)",
     fontSize: 14.5,
-    lineHeight: 22,
+    lineHeight: 21,
     maxWidth: 480,
     fontWeight: "400",
   },
   accentBar: {
-    marginTop: 18,
+    marginTop: 12, // Reduced from 18
     width: 56,
     height: 3.5,
     borderRadius: 2,
@@ -260,20 +262,20 @@ const styles = StyleSheet.create({
   },
 
   heroLayout: {
-    padding: 16,
-    gap: 16,
+    padding: 12, // Reduced from 16 for cleaner edge-gaps
+    gap: 12,     // Tighter global gap between cards
   },
   heroLayoutTablet: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
   },
 
   topCard: {
-    gap: 12,
+    gap: 10,
   },
   guestCard: {
     backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 18,
+    padding: 16, // Reduced from 18
     ...Platform.select({
       ios: { shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8 },
       android: { elevation: 3 },
@@ -286,29 +288,29 @@ const styles = StyleSheet.create({
     backgroundColor: "#eff6ff",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 10,
+    marginBottom: 8, // Tighter spacing below image
   },
   govEmblem: {
-  width: 34,
-  height: 34,
-},
+    width: 34,
+    height: 34,
+  },
   guestCardIconText: { fontSize: 20 },
   guestCardTitle: {
     fontSize: 18,
     fontWeight: "800",
     color: "#1a1a2e",
-    marginBottom: 6,
+    marginBottom: 4, // Reduced from 6
   },
   guestCardDesc: {
     fontSize: 13.5,
     color: "#64748b",
-    lineHeight: 21,
+    lineHeight: 20,
   },
 
-  /* TIGHTER SPLIT SECTION */
+  /* SPLIT SECTION */
   splitSection: { 
-    gap: 8,                    // Reduced gap
-    marginTop: 4,
+    gap: 20, // Harmonized with top section
+    marginTop: 2,
   },
   splitSectionRow: {
     flexDirection: "row",
@@ -316,19 +318,23 @@ const styles = StyleSheet.create({
   },
   bannerSide: { 
     width: "100%",
-    marginBottom: 4,           // Very small margin below banner
+    marginBottom: 2,
   },
 
-  sideBrief: { gap: 12 },
+  sideBrief: { 
+    gap: 10, // Reduced from 12
+  },
   sideBriefTablet: {
     flex: 1,
-    paddingLeft: 16,
+    paddingLeft: 12, // Slightly tighter left offset on large screens
   },
 
   briefSection: {
     backgroundColor: "#fff",
     borderRadius: 12,
-    padding: 14,
+    paddingHorizontal: 14,
+    paddingTop: 12,    // Compact vertical frame padding
+    paddingBottom: 10,
     borderLeftWidth: 4,
     ...Platform.select({
       ios: { shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 6 },
@@ -338,7 +344,7 @@ const styles = StyleSheet.create({
   briefHeadingRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 8, // Reduced from 10
     gap: 8,
   },
   briefDot: {
@@ -355,11 +361,11 @@ const styles = StyleSheet.create({
   bulletItem: {
     flexDirection: "row",
     alignItems: "flex-start",
-    marginBottom: 5,
+    marginBottom: 4, // Clean tracking between items
   },
   bullet: {
-    fontSize: 18,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 18,
     marginRight: 6,
     fontWeight: "700",
   },
@@ -367,8 +373,9 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 12.5,
     color: "#475569",
-    lineHeight: 20,
+    lineHeight: 18,
   },
 });
+
 
 export default Hero;

@@ -52,198 +52,207 @@ export default function About() {
   ];
 
   return (
-  <ImageBackground
-    source={{ uri: "https://i.postimg.cc/xC3v5cLV/2.png" }}
-    style={styles.container}
-    resizeMode="cover"
-  >
-    <View style={styles.overlay} />
-
-    <Navbar />
-
-    <ScrollView
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
+    <ImageBackground
+      source={{ uri: "https://i.postimg.cc/xC3v5cLV/2.png" }}
+      style={styles.container}
+      resizeMode="cover"
     >
-      {/* HERO */}
-      <View style={styles.hero}>
-        <Text style={styles.heroTitle}>
-          {t("about.hero_title")}
-        </Text>
+      <View style={styles.overlay} />
 
-        <Text style={styles.heroSubtitle}>
-          {t("about.hero_desc")}
-        </Text>
-      </View>
+      <Navbar />
 
-      {/* WHAT IS ENTEMLA */}
-      <View style={styles.card}>
-        <SectionTitle
-          icon="landmark"
-          title={t("about.what_is_heading")}
-        />
-
-        <Text style={styles.text}>
-          {t("about.what_is_p1")}
-        </Text>
-
-        <Text style={styles.text}>
-          {t("about.what_is_p2")}
-        </Text>
-
-        <Text style={styles.text}>
-          {t("about.what_is_p3")}
-        </Text>
-      </View>
-
-      {/* WHY WE BUILT THIS */}
-      <View style={styles.card}>
-        <SectionTitle
-          icon="bullseye"
-          title={t("about.why_heading")}
-        />
-
-        <Text style={styles.text}>
-          {t("about.why_intro")}
-        </Text>
-
-        <Text style={styles.sectionLabel}>
-          {t("about.why_points_title")}
-        </Text>
-
-        {(
-          t("about.why_points", {
-            returnObjects: true,
-          }) as string[]
-        ).map((item, index) => (
-          <Text key={index} style={styles.bullet}>
-            • {item}
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* HERO */}
+        <View style={styles.hero}>
+          <Text style={styles.heroTitle}>
+            {t("about.hero_title")}
           </Text>
-        ))}
 
-        <Text style={styles.text}>
-          {t("about.why_outro")}
-        </Text>
-      </View>
+          <Text style={styles.heroSubtitle}>
+            {t("about.hero_desc")}
+          </Text>
+        </View>
 
-      {/* FEATURES */}
-      <View style={styles.card}>
-        <SectionTitle
-          icon="magic"
-          title={t("about.features_heading")}
-        />
+        {/* WHAT IS ENTEMLA */}
+        <View style={styles.card}>
+          <SectionTitle
+            icon="landmark"
+            title={t("about.what_is_heading")}
+          />
 
-        <View style={styles.grid}>
-          {features.map((feature, index) => (
-            <View key={index} style={styles.featureCard}>
-              <FontAwesome5
-                name={feature.icon as any}
-                size={26}
-                color="#14b8a6"
-              />
+          <Text style={styles.text}>
+            {t("about.what_is_p1")}
+          </Text>
 
-              <Text style={styles.featureTitle}>
-                {feature.title}
-              </Text>
+          <Text style={styles.text}>
+            {t("about.what_is_p2")}
+          </Text>
 
-              <Text style={styles.featureText}>
-                {feature.desc}
-              </Text>
+          <Text style={styles.text}>
+            {t("about.what_is_p3")}
+          </Text>
+        </View>
+
+        {/* WHY WE BUILT THIS */}
+        <View style={styles.card}>
+          <SectionTitle
+            icon="bullseye"
+            title={t("about.why_heading")}
+          />
+
+          <Text style={styles.text}>
+            {t("about.why_intro")}
+          </Text>
+
+          <Text style={styles.sectionLabel}>
+            {t("about.why_points_title")}
+          </Text>
+
+          {(
+            t("about.why_points", {
+              returnObjects: true,
+            }) as string[]
+          ).map((item, index) => (
+            <Text key={index} style={styles.bullet}>
+              • {item}
+            </Text>
+          ))}
+
+          <Text style={styles.text}>
+            {t("about.why_outro")}
+          </Text>
+        </View>
+
+        {/* FEATURES */}
+        <View style={styles.card}>
+          <SectionTitle
+            icon="magic"
+            title={t("about.features_heading")}
+          />
+
+          <View style={styles.grid}>
+            {features.map((feature, index) => (
+              <View key={index} style={styles.featureCard}>
+                <FontAwesome5
+                  name={feature.icon as any}
+                  size={26}
+                  color="#14b8a6"
+                />
+
+                <Text style={styles.featureTitle}>
+                  {feature.title}
+                </Text>
+
+                <Text style={styles.featureText}>
+                  {feature.desc}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* HOW IT WORKS */}
+        <View style={styles.card}>
+          <SectionTitle
+            icon="cogs"
+            title={t("about.how_heading")}
+          />
+
+          {[1, 2, 3, 4].map((step) => (
+            <View key={step} style={styles.step}>
+              <View style={styles.stepCircle}>
+                <Text style={styles.stepNumber}>
+                  {step}
+                </Text>
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <Text style={styles.stepTitle}>
+                  {t(`about.step${step}_title`)}
+                </Text>
+
+                <Text style={styles.stepDesc}>
+                  {t(`about.step${step}_desc`)}
+                </Text>
+              </View>
             </View>
           ))}
         </View>
-      </View>
 
-      {/* HOW IT WORKS */}
-      <View style={styles.card}>
-        <SectionTitle
-          icon="cogs"
-          title={t("about.how_heading")}
-        />
+        {/* ROLES */}
+        <View style={styles.card}>
+          <SectionTitle
+            icon="users"
+            title={t("about.roles_heading")}
+          />
 
-        {[1, 2, 3, 4].map((step) => (
-          <View key={step} style={styles.step}>
-            <View style={styles.stepCircle}>
-              <Text style={styles.stepNumber}>
-                {step}
-              </Text>
-            </View>
+          <View style={styles.grid}>
+            <RoleCard
+              icon="user"
+              title="Citizen"
+              text={t("about.role_citizen")}
+            />
 
-            <View style={{ flex: 1 }}>
-              <Text style={styles.stepTitle}>
-                {t(`about.step${step}_title`)}
-              </Text>
+            <RoleCard
+              icon="user-tie"
+              title="Employee"
+              text={t("about.role_employee")}
+            />
 
-              <Text style={styles.stepDesc}>
-                {t(`about.step${step}_desc`)}
-              </Text>
-            </View>
+            <RoleCard
+              icon="user-graduate"
+              title="MLA"
+              text={t("about.role_mla")}
+            />
           </View>
-        ))}
-      </View>
+        </View>
 
-      {/* ROLES */}
-      <View style={styles.card}>
-        <SectionTitle
-          icon="users"
-          title={t("about.roles_heading")}
-        />
-
-        <View style={styles.grid}>
-          <RoleCard
-            icon="user"
-            title="Citizen"
-            text={t("about.role_citizen")}
+        {/* VISION */}
+        <View style={styles.card}>
+          <SectionTitle
+            icon="globe"
+            title={t("about.vision_heading")}
           />
 
-          <RoleCard
-            icon="user-tie"
-            title="Employee"
-            text={t("about.role_employee")}
+          <Text style={styles.text}>
+            {t("about.vision_p1")}
+          </Text>
+
+          <Text style={styles.text}>
+            {t("about.vision_p2")}
+          </Text>
+        </View>
+
+        {/* FUTURE GOALS */}
+        <View style={styles.card}>
+          <SectionTitle
+            icon="rocket"
+            title={t("about.future_heading")}
           />
 
-          <RoleCard
-            icon="user-graduate"
-            title="MLA"
-            text={t("about.role_mla")}
+          {[1, 2, 3, 4, 5].map((item) => (
+            <Text key={item} style={styles.bullet}>
+              • {t(`about.future_${item}`)}
+            </Text>
+          ))}
+        </View>
+
+        {/* NEW IMAGE AT THE END OF THE PAGE */}
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: "https://i.postimg.cc/4d54Tq5G/bg2.png" }}
+            style={styles.image}
+            resizeMode="cover"
           />
         </View>
-      </View>
 
-      {/* VISION */}
-      <View style={styles.card}>
-        <SectionTitle
-          icon="globe"
-          title={t("about.vision_heading")}
-        />
-
-        <Text style={styles.text}>
-          {t("about.vision_p1")}
-        </Text>
-
-        <Text style={styles.text}>
-          {t("about.vision_p2")}
-        </Text>
-      </View>
-
-      {/* FUTURE GOALS */}
-      <View style={styles.card}>
-        <SectionTitle
-          icon="rocket"
-          title={t("about.future_heading")}
-        />
-
-        {[1, 2, 3, 4, 5].map((item) => (
-          <Text key={item} style={styles.bullet}>
-            • {t(`about.future_${item}`)}
-          </Text>
-        ))}
-      </View>
-
-      <View style={{ height: 40 }} />
-    </ScrollView>
-  </ImageBackground>
-);
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    </ImageBackground>
+  );
 }
 
 function SectionTitle({
@@ -301,14 +310,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
- overlay: {
-  position: "absolute",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  backgroundColor: "rgba(255,255,255,0.3)",
-},
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(255,255,255,0.3)",
+  },
 
   scrollContent: {
     paddingBottom: 50,
@@ -430,7 +439,8 @@ const styles = StyleSheet.create({
   },
 
   imageContainer: {
-    margin: 20,
+    marginHorizontal: 20,
+    marginBottom: 20,
   },
 
   image: {

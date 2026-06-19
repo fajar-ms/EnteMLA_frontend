@@ -61,7 +61,7 @@ const MyMlaCard = () => {
             </Text>
 
             <Text style={styles.pretitle}>
-              Your MLA
+              Your MLA :
             </Text>
 
             <Text style={styles.name}>
@@ -148,6 +148,7 @@ const styles = StyleSheet.create({
   },
 
   badge: {
+    fontSize: 11.5,
     alignSelf: "flex-start",
     backgroundColor: "#f1f5f9",
     borderWidth: 1,
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
   },
 
   name: {
-    fontSize: 28,
+    fontSize: 19,
     fontWeight: "700",
     color: "#0f172a",
     marginTop: 4,
