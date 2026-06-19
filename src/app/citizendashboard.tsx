@@ -161,7 +161,7 @@ const FieldError = ({ msg }: { msg?: string }) =>
     </Text>
   ) : null;
 
-// ─── SelectPicker (native modal picker for RN) ────────────────────────────────
+// ─── SelectPicker - Fixed (Status Bar + Top Space) ─────────────────────────
 const SelectPicker = ({
   value,
   onChange,
@@ -176,6 +176,7 @@ const SelectPicker = ({
   hasError?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
+
   return (
     <>
       <TouchableOpacity
@@ -189,8 +190,9 @@ const SelectPicker = ({
         <Text style={{ fontSize: 13, color: value ? clr.text : "#9CA3AF" }}>
           {value || placeholder}
         </Text>
-        <Text style={{ color: clr.muted, fontSize: 12 }}>▾</Text>
+        <Text style={{ color: clr.muted, fontSize: 18 }}>▾</Text>
       </TouchableOpacity>
+
       <Modal visible={open} transparent animationType="slide">
         <TouchableOpacity
           style={styles.pickerOverlay}
@@ -198,28 +200,44 @@ const SelectPicker = ({
           activeOpacity={1}
         >
           <View style={styles.pickerSheet}>
+            <View style={{ paddingTop: 40 }} />
+            
             <Text style={styles.pickerTitle}>{placeholder}</Text>
-            {options.map((opt) => (
-              <TouchableOpacity
-                key={opt}
-                onPress={() => { onChange(opt); setOpen(false); }}
-                style={[
-                  styles.pickerOption,
-                  value === opt && { backgroundColor: clr.primaryLight },
-                ]}
-              >
-                <Text style={{ fontSize: 14, color: clr.text, fontWeight: value === opt ? "700" : "400" }}>
-                  {opt}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            
+            <ScrollView 
+              showsVerticalScrollIndicator={true}
+              nestedScrollEnabled={true}
+              style={styles.pickerScrollView}
+              contentContainerStyle={{ paddingTop: 12, paddingBottom: 40 }}
+            >
+              {options.map((opt) => (
+                <TouchableOpacity
+                  key={opt}
+                  onPress={() => {
+                    onChange(opt);
+                    setOpen(false);
+                  }}
+                  style={[
+                    styles.pickerOption,
+                    value === opt && styles.pickerOptionSelected,
+                  ]}
+                >
+                  <Text style={{
+                    fontSize: 15.5,
+                    color: clr.text,
+                    fontWeight: value === opt ? "700" : "500",
+                  }}>
+                    {opt}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
         </TouchableOpacity>
       </Modal>
     </>
   );
 };
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 interface Complaint {
   id: string;
@@ -548,7 +566,7 @@ export default function CitizenDashboard() {
             <SelectPicker
               value={category}
               onChange={setCategory}
-              options={["Electricity", "Roads & Infrastructure", "Sanitation", "Water Supply", "Other"]}
+              options={["Electricity", "Roads & Infrastructure", "Water Supply & Sanitation","Environment","Healthcare","Transport","Education","Public Safety","Welfare","Agriculture","Sports","Industries & Commerce","Public Works Department","Fisheries","Food & Civic Supplies","Forest & Wildlife","Motor Vehicle","Information Technology", "Other"]}
               placeholder="Select…"
               hasError={!!errors.category}
             />
@@ -1200,6 +1218,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     padding: 20,
     paddingBottom: 36,
+    maxHeight: "85%",
+  },
+  pickerScrollView: {
+    maxHeight: "100%",
   },
   pickerTitle: {
     fontSize: 12,
@@ -1215,7 +1237,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 4,
   },
-
+  pickerOptionSelected: {
+    backgroundColor: clr.primaryLight,
+  },
   // Complaints list
   sectionTitle: {
     fontSize: 15,
